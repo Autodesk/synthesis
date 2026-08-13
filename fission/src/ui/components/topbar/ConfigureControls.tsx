@@ -1,5 +1,6 @@
 import { Box } from "@mui/material"
 import type React from "react"
+import { useMemo } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { CollapsibleGroup, type CollapsibleItem } from "@/ui/components/topbar/CollapsibleGroup"
 import { ConfigureIcon } from "@/ui/components/topbar/ConfigureIcon"
@@ -13,17 +14,21 @@ const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = (
 
     const disabledTooltip = selectedAssembly ? undefined : "Spawn an assembly first"
 
-    const items: CollapsibleItem[] = configureButtons.map(({ icon, label, mode }) => ({
-        key: label,
-        node: (
-            <TopBarButton
-                label={label}
-                icon={<ConfigureIcon icon={icon} size={30} />}
-                disabledTooltip={disabledTooltip}
-                onClick={() => openConfig(mode)}
-            />
-        ),
-    }))
+    const items: CollapsibleItem[] = useMemo(
+        () =>
+            configureButtons.map(({ icon, label, mode }) => ({
+                key: label,
+                node: (
+                    <TopBarButton
+                        label={label}
+                        icon={<ConfigureIcon icon={icon} size={30} />}
+                        disabledTooltip={disabledTooltip}
+                        onClick={() => openConfig(mode)}
+                    />
+                ),
+            })),
+        [configureButtons, disabledTooltip, openConfig]
+    )
 
     // TODO: add a "..." after a long robot name to ensure it isn't rendered underneath the dropdown arrow
     return (
