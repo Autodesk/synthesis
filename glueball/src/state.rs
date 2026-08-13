@@ -1,7 +1,6 @@
 use crate::model::RoomInfo;
 use crate::room::{Client, ClientId, ClientSender, Room, RoomId, RoomStatus};
 
-use anyhow::Result;
 use dashmap::DashMap;
 use dashmap::mapref::one::{Ref, RefMut};
 use rand::RngExt;
@@ -36,7 +35,7 @@ impl State {
     ) -> Option<(ClientId, RoomId)> {
         match room_id {
             None if self.room_count() == MAX_ROOM_COUNT => None,
-            None => Some(self.add_room_and_host(name.to_string(), tx).ok()?),
+            None => Some(self.add_room_and_host(name, tx)),
             Some(room_id) => self
                 .add_client_to_room(name, tx, &room_id)
                 .map(|client_id| (client_id, room_id)),
@@ -48,13 +47,9 @@ impl State {
         room.get_sender(client_id)
     }
 
-    pub fn add_room_and_host(
-        &self,
-        host_name: String,
-        host_tx: ClientSender,
-    ) -> Result<(ClientId, RoomId)> {
+    pub fn add_room_and_host(&self, host_name: &str, host_tx: ClientSender) -> (ClientId, RoomId) {
         let host_id = Uuid::new_v4();
-        let room = Room::new_with_host(&host_id, &host_name, host_tx);
+        let room = Room::new_with_host(&host_id, host_name, host_tx);
 
         let room_id = loop {
             let code = generate_6_digit_code();
@@ -68,7 +63,7 @@ impl State {
         self.users.insert(host_id, room_id.clone());
         self.rooms.insert(room_id.clone(), room);
 
-        Ok((host_id, room_id))
+        (host_id, room_id)
     }
 
     /// # Safety
@@ -168,6 +163,7 @@ impl State {
         let mut room = self.rooms.get_mut(room_id)?;
         room.locked = !room.locked;
         let locked = room.locked;
+        drop(room);
 
         if locked {
             info_room!(room_id, "Room Locked");
@@ -295,9 +291,7 @@ mod tests {
     fn create_room_adds_host() {
         log_tx();
         let state = State::new();
-        state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        state.add_room_and_host("Alice", client_tx());
         assert_eq!(state.room_count(), 1);
 
         let rooms = state.list_rooms();
@@ -309,9 +303,7 @@ mod tests {
     fn join_existing_room() {
         log_tx();
         let state = State::new();
-        let (_, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        let (_, room_id) = state.add_room_and_host("Alice", client_tx());
 
         assert!(
             state
@@ -336,9 +328,7 @@ mod tests {
     fn join_locked_room_returns_none() {
         log_tx();
         let state = State::new();
-        let (_, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        let (_, room_id) = state.add_room_and_host("Alice", client_tx());
         state.toggle_room_lock(&room_id);
 
         assert!(
@@ -352,9 +342,7 @@ mod tests {
     fn last_client_leaving_closes_room() {
         log_tx();
         let state = State::new();
-        let (client_id, _) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        let (client_id, _) = state.add_room_and_host("Alice", client_tx());
         state.remove_client(&client_id);
 
         assert_eq!(state.room_count(), 0);
@@ -364,9 +352,7 @@ mod tests {
     fn host_leaving_transfers_to_next_member() {
         log_tx();
         let state = State::new();
-        let (host_id, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        let (host_id, room_id) = state.add_room_and_host("Alice", client_tx());
 
         state
             .add_client_to_room("Bob", client_tx(), &room_id)
@@ -398,9 +384,7 @@ mod tests {
         let state = State::new();
         assert!(state.list_rooms().is_empty());
 
-        let (_, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        let (_, room_id) = state.add_room_and_host("Alice", client_tx());
         state.toggle_room_lock(&room_id);
         let rooms = state.list_rooms();
 
@@ -413,9 +397,7 @@ mod tests {
     fn toggle_lock_flips_state() {
         log_tx();
         let state = State::new();
-        let (_, room_id) = state
-            .add_room_and_host("Alice".to_string(), client_tx())
-            .unwrap();
+        let (_, room_id) = state.add_room_and_host("Alice", client_tx());
 
         assert_eq!(state.toggle_room_lock(&room_id), Some(true));
         assert_eq!(state.toggle_room_lock(&room_id), Some(false));
@@ -426,9 +408,7 @@ mod tests {
         log_tx();
         let state = State::new();
         for i in 0..MAX_ROOM_COUNT {
-            state
-                .add_room_and_host(format!("Client{i}"), client_tx())
-                .unwrap();
+            state.add_room_and_host(&format!("Client{i}"), client_tx());
         }
 
         assert!(

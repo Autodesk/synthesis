@@ -26,7 +26,7 @@ pub struct Room {
 
 impl Room {
     pub fn new_with_host(host_id: &ClientId, host_name: &str, host_tx: ClientSender) -> Self {
-        Room {
+        Self {
             members: vec![Client::new(*host_id, host_name.to_string(), host_tx)],
             host: Some(*host_id),
             locked: false,

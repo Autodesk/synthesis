@@ -105,13 +105,12 @@ fn run_app(
             let room_logs_len = app
                 .focused_room
                 .clone()
-                .map(|room_id| {
+                .and_then(|room_id| {
                     logger_snapshot
                         .1
                         .get::<str>(room_id.as_ref())
-                        .map(|logs| logs.len())
+                        .map(VecDeque::len)
                 })
-                .flatten()
                 .unwrap_or(0);
 
             app.on_key(
@@ -266,7 +265,7 @@ impl App {
             // Clamping to valid range is handled in render_logs.
             KeyCode::Char('[') => {
                 self.room_log_cursor =
-                    usize::min(self.room_log_cursor + 1, room_log_len.saturating_sub(1))
+                    usize::min(self.room_log_cursor + 1, room_log_len.saturating_sub(1));
             }
             KeyCode::Char(']') => self.room_log_cursor = self.room_log_cursor.saturating_sub(1),
 
@@ -274,7 +273,7 @@ impl App {
             // Clamping to valid range is handled in render_logs.
             KeyCode::Char('{') => {
                 self.system_log_cursor =
-                    usize::min(self.system_log_cursor + 1, sys_log_len.saturating_sub(1))
+                    usize::min(self.system_log_cursor + 1, sys_log_len.saturating_sub(1));
             }
             KeyCode::Char('}') => self.system_log_cursor = self.system_log_cursor.saturating_sub(1),
 
