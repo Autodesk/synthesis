@@ -1,16 +1,17 @@
 import { act, fireEvent, getByText, render, waitFor } from "@testing-library/react"
 import React from "react"
-import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
+import { afterEach, assert, beforeEach, describe, type MockInstance, test, vi } from "vitest"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import { Panel } from "@/ui/components/Panel"
 import type { CloseType, PanelPosition, UIScreen } from "@/ui/helpers/UIProviderHelpers"
-import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
+import MatchModeConfigPanel, { type MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import { UICallback } from "@/ui/UICallbacks"
 import { UIProvider } from "@/ui/UIProvider"
 import { mockConsole } from "@/test/mocks/Common.ts"
 
 describe("MatchModeConfigPanel", () => {
     let container: HTMLElement
+    let getConfigsSpy: MockInstance<typeof DefaultMatchModeConfigs.getConfigs>
 
     beforeEach(async () => {
         // Suppress console output during tests
@@ -19,22 +20,15 @@ describe("MatchModeConfigPanel", () => {
         // Clear local storage
         window.localStorage.setItem("match-mode-configs", JSON.stringify([]))
 
-        const defaultConfigs = await DefaultMatchModeConfigs.getConfigs()
+        getConfigsSpy = vi.spyOn(DefaultMatchModeConfigs, "getConfigs").mockResolvedValue([])
 
         container = createTestContainer()
-        await waitFor(() =>
-            assert(
-                getMatchModeCount(container) === defaultConfigs.length,
-                `Default configs have not been rendered yet (expected ${defaultConfigs.length})`
-            )
-        )
+        await act(async () => {})
     })
 
     afterEach(() => {
         // Restore original console methods
         vi.restoreAllMocks()
-
-        if (container) container.remove()
     })
 
     function createTestContainer() {
@@ -64,16 +58,7 @@ describe("MatchModeConfigPanel", () => {
     }
 
     function getMatchModeCount(container: HTMLElement): number {
-        // Find the element that contains the count by looking for text that matches pattern "X Match Mode"
-        const elements = container.querySelectorAll("*")
-        for (const element of elements) {
-            const text = element.textContent?.trim()
-            if (text && /^\d+\s+Match\s+Mode/.test(text)) {
-                const match = text.match(/(\d+)/)
-                return match ? parseInt(match[1]) : 0
-            }
-        }
-        return 0
+        return parseInt(getByText(container, /^\d+ Match Modes?$/).textContent!, 10)
     }
 
     async function uploadMatchModeConfig(container: HTMLElement, json: unknown) {
@@ -121,47 +106,31 @@ describe("MatchModeConfigPanel", () => {
         assert(matchModeConfigButton != undefined)
     })
 
-    test("Shows default configs that arrive after the panel is opened", async () => {
-        const defaultConfigs = await DefaultMatchModeConfigs.getConfigs()
-
-        let releaseManifest: () => void = () => {}
-        const manifestHeld = new Promise<void>(resolve => {
-            releaseManifest = resolve
-        })
-        const realFetch = window.fetch.bind(window)
-        vi.spyOn(window, "fetch").mockImplementation(async (...args) => {
-            await manifestHeld
-            return realFetch(...args)
-        })
-        const reloaded = DefaultMatchModeConfigs.reload()
+    test("Merges default configs that arrive after the panel is opened", async () => {
+        const lateDefault: MatchModeConfig = {
+            ...DefaultMatchModeConfigs.fallbackValues(),
+            id: "late-default",
+            name: "Late Default",
+        }
+        let deliverDefaults: (configs: MatchModeConfig[]) => void = () => {}
+        getConfigsSpy.mockReturnValue(new Promise(resolve => (deliverDefaults = resolve)))
 
         const lateContainer = createTestContainer()
-        try {
-            assert(getMatchModeCount(lateContainer) === 0, "Defaults should not be listed before the manifest lands")
+        assert(getMatchModeCount(lateContainer) === 0, "Nothing should be listed while the defaults are still pending")
 
-            await uploadMatchModeConfig(lateContainer, {
-                id: "uploaded-before-defaults",
-                name: "Uploaded Before Defaults",
-                autonomousTime: 10,
-                teleopTime: 20,
-                endgameTime: 10,
-            })
-            await waitFor(() => assert(getMatchModeCount(lateContainer) === 1))
+        await uploadMatchModeConfig(lateContainer, { id: "early-upload", name: "Early Upload" })
+        await waitFor(() => getByText(lateContainer, "Early Upload"))
 
-            releaseManifest()
-            await reloaded
+        await act(async () => deliverDefaults([lateDefault]))
 
-            await waitFor(() =>
-                assert(
-                    getMatchModeCount(lateContainer) === defaultConfigs.length + 1,
-                    `Expected ${defaultConfigs.length + 1} configs, but got ${getMatchModeCount(lateContainer)}`
-                )
-            )
-        } finally {
-            releaseManifest()
-            await reloaded
-            lateContainer.remove()
-        }
+        await waitFor(() => {
+            getByText(lateContainer, "Late Default")
+            getByText(lateContainer, "Early Upload")
+        })
+        assert(
+            getMatchModeCount(lateContainer) === 2,
+            `Expected 2 configs, but got ${getMatchModeCount(lateContainer)}`
+        )
     })
 
     test("Upload Valid MatchModeConfig", async () => {
