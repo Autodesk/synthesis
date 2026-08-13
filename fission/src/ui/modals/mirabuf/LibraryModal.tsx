@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Stack, Tab, Tabs, Tooltip } from "@mui/material"
 import type React from "react"
-import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 import { type Data, getMirabufFiles, hasMirabufFiles, requestMirabufFiles } from "@/aps/APSDataManagement"
 import DefaultAssetLoader, { type DefaultAssetInfo } from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
@@ -24,12 +24,10 @@ import {
     ToggleButton,
     ToggleButtonGroup,
 } from "@/ui/components/StyledComponents"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { tourTarget } from "@/ui/tour/tourSteps"
 import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
-import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import type TaskStatus from "@/util/TaskStatus"
 import { downloadAll, spawnAPS, spawnCachedMira, spawnRemote } from "./librarySpawnActions"
 
@@ -41,7 +39,7 @@ const yearOf = (asset: { year?: number }): YearKey => asset.year ?? OTHER_YEAR
 interface AssetCardProps {
     name: string
     thumbnail?: string
-    embeddedThumbnailHash?: string // for when the mira data doesn't contain a thumbnail
+    embeddedThumbnailHash?: string
     miraType: MiraType
     cached: boolean
     onSpawn: () => void
@@ -271,8 +269,7 @@ const AutodeskHubAccordion: React.FC<{ onSpawned: () => void }> = ({ onSpawned }
 }
 
 const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
-    const { addToast, closeModal, openModal, configureScreen } = useUIContext()
-    const { unconfirmedImport } = useStateContext()
+    const { closeModal, openModal, configureScreen } = useUIContext()
     const libraryRef = useTourAnchor("spawn-panel")
 
     const [manifestRobots, setManifestRobots] = useState<DefaultAssetInfo[]>(DefaultAssetLoader.robots)
@@ -336,14 +333,6 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
         configureScreen(modal!, { title: "Library", hideAccept: true, cancelText: "Close", allowClickAway: true }, {})
     }, [])
 
-    // biome-ignore lint: must run only on mount; the closeModal dep would re-run it and re-close
-    useLayoutEffect(() => {
-        if (unconfirmedImport) {
-            addToast("warning", "You're already importing a model!", "Confirm that one before importing another.")
-            closeModal(CloseType.CANCEL)
-        }
-    }, [])
-
     const spawnLibraryAsset = useCallback(
         (asset: DefaultAssetInfo) => {
             const cached = cachedByHash.get(asset.hash)
@@ -380,7 +369,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
 
     const importFromFile = useCallback(() => {
         // openModal auto-closes this Library modal (fires its onClose(Overwrite)).
-        openModal(ImportLocalMirabufModal, { configurationType: "ROBOTS" as ConfigurationType })
+        openModal(ImportLocalMirabufModal, { configurationType: "ROBOTS" })
     }, [openModal])
 
     const hasRemoteInYear = assetsForYear.some(asset => !cachedByHash.has(asset.hash))

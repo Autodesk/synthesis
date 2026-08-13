@@ -20,8 +20,6 @@ const BLOCKED_CONTEXT: UIContextProps = {
 describe("top bar blocking", () => {
     test.for(APP_MODES)("interactive elements disabled ($0)", mode => {
         const stateContextValue: AppState = {
-            unconfirmedImport: false,
-            setUnconfirmedImport: () => {},
             setSelectedScheme: () => {},
             appMode: mode,
             setAppMode: () => {},
