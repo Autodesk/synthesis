@@ -1,4 +1,4 @@
-import { MiraType } from "@/mirabuf/MirabufLoader.ts"
+import { MiraType } from "@/mirabuf/MiraType.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type React from "react"
 import type { ConfigurePanelCustomProps } from "@/panels/configuring/assembly-config/ConfigurePanel.tsx"
