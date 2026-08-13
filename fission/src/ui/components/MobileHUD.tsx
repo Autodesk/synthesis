@@ -33,7 +33,7 @@ const DRAWER_SX = {
 type DrawerView = "root" | "configure"
 
 const MobileHUD: React.FC = () => {
-    const { openModal, openPanel, addToast } = useUIContext()
+    const { openModal, openPanel, addToast, blockState } = useUIContext()
 
     setAddToast(addToast)
     setOpenPanel(openPanel)
@@ -168,6 +168,7 @@ const MobileHUD: React.FC = () => {
                 aria-label="Open menu"
                 disableRipple
                 onClick={() => setOpen(true)}
+                disabled={blockState.blocked}
                 sx={{
                     position: "fixed",
                     top: 12,
