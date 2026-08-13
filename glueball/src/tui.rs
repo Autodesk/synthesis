@@ -35,7 +35,7 @@ use ratatui::{
     DefaultTerminal, Frame,
     text::{Line, Span},
 };
-use rtrb::Producer;
+use tokio::sync::mpsc::Sender;
 use uuid::Uuid;
 
 /// How many room panels are shown side-by-side on a single tab.
@@ -53,7 +53,7 @@ const COLOR_PALETTE_SIZE: usize = 6;
 
 pub fn start_tui_thread(
     state: &Arc<State>,
-    usr_msg_tx: Producer<UserAction>,
+    usr_msg_tx: Sender<UserAction>,
     logger: Arc<Mutex<Logger>>,
 ) {
     let tui_state_handle = state.clone();
@@ -62,7 +62,7 @@ pub fn start_tui_thread(
     // On an OS thread because crossterm (and thus ratatui) will block on user input
     // So it wouldn't play nice with tokio's runtime, which expects yielding
     thread::spawn(move || {
-        if let Err(e) = run(tui_state_handle, usr_msg_tx, &logger) {
+        if let Err(e) = run(tui_state_handle, &usr_msg_tx, &logger) {
             eprintln!("TUI error: {e}");
         }
 
@@ -73,7 +73,7 @@ pub fn start_tui_thread(
 
 fn run(
     state: Arc<State>,
-    usr_msg_tx: Producer<UserAction>,
+    usr_msg_tx: &Sender<UserAction>,
     logger: &Arc<Mutex<Logger>>,
 ) -> io::Result<()> {
     let mut terminal = ratatui::init();
@@ -85,13 +85,15 @@ fn run(
 fn run_app(
     terminal: &mut DefaultTerminal,
     state: Arc<State>,
-    mut usr_msg_tx: Producer<UserAction>,
+    usr_msg_tx: &Sender<UserAction>,
     logger: &Arc<Mutex<Logger>>,
 ) -> io::Result<()> {
     let mut app = App::new(state);
 
+    let mut logger_snapshot = lock!(logger).new_snapshot();
     loop {
-        let logger_snapshot = lock!(logger).snapshot();
+        lock!(logger).update_snapshot(&mut logger_snapshot);
+
         let state_snapshot = app.state.snapshot();
         app.sync(&state_snapshot);
 
@@ -116,7 +118,7 @@ fn run_app(
             app.on_key(
                 key.code,
                 key.modifiers,
-                &mut usr_msg_tx,
+                usr_msg_tx,
                 room_logs_len,
                 logger_snapshot.0.len(),
             );
@@ -145,7 +147,7 @@ struct App {
     /// Cursor distance from the bottom in the system log (0 = latest entry).
     system_log_cursor: usize,
 
-    /// Informatoin cached from the last `sync` so key handling can act without a snapshot.
+    /// Information cached from the last `sync` so key handling can act without a snapshot.
     tab_count: usize,
     panels_on_tab: usize,
     focused_members: Vec<(ClientId, String)>,
@@ -215,7 +217,7 @@ impl App {
         &mut self,
         code: KeyCode,
         mods: KeyModifiers,
-        user_msg_tx: &mut Producer<UserAction>,
+        user_msg_tx: &Sender<UserAction>,
         room_log_len: usize,
         sys_log_len: usize,
     ) {
@@ -224,7 +226,7 @@ impl App {
             match code {
                 KeyCode::Char('y' | 'Y') => {
                     if let Some(user_id) = self.pending_kick.take() {
-                        let _ = user_msg_tx.push(UserAction::Kick(user_id));
+                        let _ = user_msg_tx.blocking_send(UserAction::Kick(user_id));
 
                         self.selected_user = self.selected_user.saturating_sub(1);
                     }
@@ -257,7 +259,7 @@ impl App {
             }
             KeyCode::Char('l') => {
                 if let Some(room_id) = &self.focused_room {
-                    let _ = user_msg_tx.push(UserAction::Lock(room_id.clone()));
+                    let _ = user_msg_tx.blocking_send(UserAction::Lock(room_id.clone()));
                 }
             }
 

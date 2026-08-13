@@ -9,6 +9,8 @@ use tokio::sync::mpsc::{self, Receiver};
 
 use crate::{LOG_TX, room::RoomId};
 
+/// Maximum number of log lines retained in each log (both per-room and system logs)
+/// Oldest lines are dropped once the buffer is full.
 pub const MAX_LOG_LINES: usize = 500;
 
 pub type RoomLogs = HashMap<RoomId, VecDeque<Event>>;
@@ -85,14 +87,14 @@ pub enum LogDestination {
     RemoveRoom(RoomId),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum EventType {
     Info,
     Warning,
     Error,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Event {
     pub message: String,
     pub kind: EventType,
@@ -180,8 +182,18 @@ impl Logger {
         let _ = self.room_logs.remove(id);
     }
 
-    pub fn snapshot(&self) -> LogSnapshot {
+    pub fn new_snapshot(&self) -> LogSnapshot {
         (self.global_log.clone(), self.room_logs.clone())
+    }
+
+    pub fn update_snapshot(&self, old_snapshot: &mut LogSnapshot) {
+        if old_snapshot.0 != self.global_log {
+            old_snapshot.0.clone_from(&self.global_log);
+        }
+
+        if old_snapshot.1 != self.room_logs {
+            old_snapshot.1.clone_from(&self.room_logs);
+        }
     }
 }
 
