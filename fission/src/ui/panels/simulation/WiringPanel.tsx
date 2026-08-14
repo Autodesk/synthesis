@@ -5,7 +5,6 @@ import {
     type FinalConnectionState,
     type Edge as FlowEdge,
     type Node as FlowNode,
-    type NodeProps,
     ReactFlow,
     ReactFlowProvider,
     useEdgesState,
@@ -13,26 +12,17 @@ import {
     useReactFlow,
 } from "@xyflow/react"
 import type React from "react"
-import { type ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import {
-    deleteConnection,
+    removeConnection,
     type HandleInfo,
     handleInfoDisplayCompare,
     makeConnection,
     removeNode,
     type SimConfigData,
 } from "@/systems/simulation/wiring/SimGraph"
-import {
-    addConstructorNode,
-    addDeconstructorNode,
-    addJunctionNode,
-    defaultConfig,
-    refreshRobotIO,
-    syncRobotIOHandles,
-    syncSimIOHandles,
-} from "@/systems/simulation/wiring/NodeFactories"
 import { compile } from "@/systems/simulation/wiring/Compile"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import World from "@/systems/World.ts"
@@ -44,10 +34,12 @@ import { Button } from "@/ui/components/StyledComponents"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
-import { NODE_ID_ROBOT_IO, RobotIONode } from "@/systems/simulation/wiring/nodes/RobotIONode"
-import { JunctionNode } from "@/systems/simulation/wiring/nodes/JunctionNode"
-import { NODE_ID_SIM_IN, SimInputNode } from "@/systems/simulation/wiring/nodes/SimInputNode"
-import { NODE_ID_SIM_OUT, SimOutputNode } from "@/systems/simulation/wiring/nodes/SimOutputNode"
+import { NODE_ID_ROBOT_IO } from "@/systems/simulation/wiring/nodes/RobotIONode"
+import { NODE_ID_SIM_IN } from "@/systems/simulation/wiring/nodes/SimInputNode"
+import { NODE_ID_SIM_OUT } from "@/systems/simulation/wiring/nodes/SimOutputNode"
+import { nodeTypes } from "@/systems/simulation/wiring/NodeKinds"
+import { addConstructorNode, addDeconstructorNode, addJunctionNode, defaultConfig, syncRobotIOHandles, syncSimIOHandles } from "@/systems/simulation/wiring/Factories"
+import { titleCase } from "@/util/Utility"
 
 export type ConfigState = "wiring" | "simIO" | "robotIO"
 
@@ -61,27 +53,6 @@ type ConfigComponentProps = {
     selectedAssembly: MirabufSceneObject
     simConfig: SimConfigData
     reset?: () => void
-}
-
-type NodeType = ComponentType<
-    NodeProps & {
-        data: Record<string, unknown>
-        type: string
-    }
->
-
-// const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{
-//     [k: string]: NodeType
-// }>((prev, next) => {
-//     prev[next.name] = next
-//     return prev
-// }, {})
-
-const nodeTypes = {
-    robotIO: RobotIONode,
-    simInput: SimInputNode,
-    simOutput: SimOutputNode,
-    junction: JunctionNode,
 }
 
 function generateGraph(
@@ -103,7 +74,7 @@ function generateGraph(
                 title = "Robot IO"
                 onEdit = () => setConfigState("robotIO")
                 onRefresh = () => {
-                    refreshRobotIO(simConfig)
+                    syncRobotIOHandles(simConfig)
                     refreshGraph()
                 }
                 break
@@ -116,6 +87,7 @@ function generateGraph(
                 onEdit = () => setConfigState("simIO")
                 break
             default:
+                title = titleCase(v.kind)
                 onDelete = () => {
                     if (removeNode(simConfig, v.id)) refreshGraph()
                 }
@@ -124,7 +96,7 @@ function generateGraph(
 
         nodes.set(v.id, {
             id: v.id,
-            type: v.type,
+            type: v.kind,
             position: v.position,
             data: {
                 title: title,
@@ -347,7 +319,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
 
     const onEdgeDoubleClick = useCallback(
         (_: React.MouseEvent, edge: FlowEdge) => {
-            if (deleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
+            if (removeConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
                 refreshGraph()
             }
         },
@@ -414,12 +386,15 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         refreshGraph()
     }, [refreshGraph, simConfig])
 
-    const onEdgesDelete = useCallback((edges: FlowEdge[]) => {
-        edges.forEach(edge => {
-            deleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
-        })
-        refreshGraph()
-    }, [refreshGraph, simConfig])
+    const onEdgesDelete = useCallback(
+        (edges: FlowEdge[]) => {
+            edges.forEach(edge => {
+                removeConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
+            })
+            refreshGraph()
+        },
+        [refreshGraph, simConfig]
+    )
 
     return (
         <ReactFlow

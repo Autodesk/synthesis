@@ -18,9 +18,9 @@ export function clamp(num: number, min: number, max: number): number {
 export function deobf(s: string) {
     return decodeURIComponent(
         "%" +
-            atob(s)
-                .match(/.{1,2}/g)!
-                .join("%")
+        atob(s)
+            .match(/.{1,2}/g)!
+            .join("%")
     )
 }
 
@@ -73,6 +73,13 @@ export function hexStringToUint8Array(hexString: string) {
     return arrayBuffer
 }
 
+export function titleCase(str: string): string {
+    return str
+        .split(" ")
+        .map((s: string) => s.substring(0, 1).toUpperCase() + s.substring(1))
+        .join(" ")
+}
+
 // biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns `any`
 export function tryParse(data: string): any {
     try {
@@ -112,8 +119,8 @@ export const yieldToMain = () => new Promise<void>(resolve => setTimeout(resolve
 
 export type RecursivePartial<T> = {
     [P in keyof T]?: T[P] extends (infer U)[]
-        ? RecursivePartial<U>[]
-        : T[P] extends object | undefined
-          ? RecursivePartial<T[P]>
-          : T[P]
+    ? RecursivePartial<U>[]
+    : T[P] extends object | undefined
+    ? RecursivePartial<T[P]>
+    : T[P]
 }

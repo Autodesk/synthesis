@@ -1,4 +1,11 @@
-import { areTypesCompatible, BaseType, valueMatchesType, type NoraType, type NoraValueOf } from "../Nora"
+import {
+    areTypesCompatible,
+    BaseType,
+    type NoraBaseValue,
+    valueMatchesType,
+    type NoraType,
+    type NoraValueOf,
+} from "../Nora"
 
 export type SimSupplier<T extends NoraType> = {
     get supplierType(): T
@@ -33,19 +40,22 @@ const aggregateAverage: AggregateValuesFunc = <T extends NoraType>(type: T, vals
     if (vals.some(v => !valueMatchesType(v, type)))
         throw new Error("Tried to aggregate NoraValues with mismatching types")
 
-    let ret = []
+    let ret: NoraBaseValue[] = type.map(
+        t => ({ value: t.type === BaseType.BOOLEAN ? false : 0.0, baseType: t }) as NoraBaseValue
+    )
 
-    // TODO: test this
     for (let i = 0; i < type.length; i++) {
         const t = type[i]
         const avg = vals.map(v => Number(v[i].value)).reduce((acc, v) => acc + v, 0) / vals.length
         if (t.type === BaseType.BOOLEAN) {
             // majority vote
-            ret.push(avg > 0.5)
+            ret[i].value = avg > 0.5
         } else if (t.type === BaseType.NUMBER) {
-            ret.push(avg)
+            ret[i].value = avg
         }
     }
+
+    console.log("aggregate", ret)
 
     return ret as NoraValueOf<T>
 }

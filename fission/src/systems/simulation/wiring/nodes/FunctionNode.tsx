@@ -4,7 +4,7 @@ import { handleInfoDisplayCompare, type SimConfigData } from "@/systems/simulati
 import { DeleteButton } from "@/ui/components/StyledComponents"
 import { HandleRow, WiringNodeShell } from "../NodeKinds"
 
-export const JunctionNode = memo(({ id, data }: NodeProps) => {
+export const FunctionNode = memo(({ id, data }: NodeProps) => {
     const simConfig = data.simConfig as SimConfigData
     const onDelete = data.onDelete as (() => void) | undefined
 
@@ -15,7 +15,7 @@ export const JunctionNode = memo(({ id, data }: NodeProps) => {
     const sources = handles.filter(x => x.isSource)
 
     return (
-        <WiringNodeShell title="Junction">
+        <WiringNodeShell title={data.title as string}>
             <div className="flex flex-col gap-4">
                 {targets.map(x => (
                     <HandleRow key={x.id} handle={x} />
