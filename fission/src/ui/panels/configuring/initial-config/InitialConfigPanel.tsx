@@ -15,7 +15,7 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { Box, Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import InputSchemeSelection from "./InputSchemeSelection"
 import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
@@ -35,6 +35,9 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
+    // Accepting through the gizmo also closes the panel, which finishes it a second time
+    const drivetrainReported = useRef(false)
+
     useHoldPhysicsPause()
 
     const closeFinish = useCallback(() => {
@@ -42,6 +45,16 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
             targetAssembly.alliance = alliance
             targetAssembly.station = station
             World.scoreTracker.addPerRobotScore(targetAssembly, 0)
+
+            const brain = targetAssembly.brain
+            if (brain?.isSynthesis() && !drivetrainReported.current) {
+                drivetrainReported.current = true
+                World.analyticsSystem?.event("Drivetrain Configured", {
+                    driveType: brain.driveType,
+                    robotCentric: brain.mecanumRobotCentric,
+                    source: "Assembly Setup",
+                })
+            }
 
             const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 

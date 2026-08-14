@@ -1,5 +1,6 @@
 import { Box, MenuItem, Stack } from "@mui/material"
 import type React from "react"
+import { reportUIInteraction } from "@/systems/analytics/AnalyticsSystem"
 import SplitButtonDropdown from "@/ui/components/SplitButtonDropdown"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -58,10 +59,21 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject; 
             caretTooltip={disabledMessage ?? "Configure options"}
             caretDisabled={disabledMessage != null || blockState.blocked}
             iconDisabled={disabledMessage != null || blockState.blocked}
-            onIconClick={() => togglePanel(ConfigurePanel, { selectedAssembly, configurationType })}
+            onIconClick={() => {
+                reportUIInteraction("Top Bar Button", "Configure Asset")
+                togglePanel(ConfigurePanel, { selectedAssembly, configurationType })
+            }}
         >
             {entries.map(({ key, icon, label, mode }) => (
-                <MenuItem key={key} dense disabled={!selectedAssembly} onClick={() => openConfig(mode)}>
+                <MenuItem
+                    key={key}
+                    dense
+                    disabled={!selectedAssembly}
+                    onClick={() => {
+                        reportUIInteraction("Configure Dropdown", label)
+                        openConfig(mode)
+                    }}
+                >
                     <Stack direction="row" alignItems="center" gap={1} sx={{ pointerEvents: "none" }}>
                         {icon}
                         {label}

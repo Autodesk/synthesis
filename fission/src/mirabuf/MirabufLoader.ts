@@ -263,13 +263,7 @@ class MirabufCachingService {
         miraType: MiraType
     ): Promise<{ assembly: mirabuf.Assembly; cacheInfo: MirabufCacheInfo } | undefined> {
         const assembly = this.assemblyFromBuffer(buffer)
-        const hash = await hashBuffer(buffer)
 
-        World.analyticsSystem?.event("Local Upload", {
-            fileSize: buffer.byteLength,
-            key: hash,
-            type: miraType == MiraType.ROBOT ? "robot" : "field",
-        })
         if (assembly.dynamic && miraType == MiraType.FIELD) {
             globalAddToast("warning", "Cannot import robot assembly as a field")
             return

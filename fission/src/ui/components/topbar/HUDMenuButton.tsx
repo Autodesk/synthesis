@@ -1,5 +1,7 @@
 import { Box, Stack, Tooltip, Typography } from "@mui/material"
 import type { FC, ReactNode } from "react"
+import { useCallback } from "react"
+import { reportUIInteraction } from "@/systems/analytics/AnalyticsSystem"
 import { IconButton } from "@/ui/components/StyledComponents"
 import { TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarIcon, type TopBarIconName } from "@/ui/components/topbar/TopBarIcons"
@@ -27,6 +29,11 @@ export const HUDMenuButton: FC<HUDMenuButtonProps> = ({
     disabled = false,
     disabledTooltip,
 }) => {
+    const onButtonClicked = useCallback(() => {
+        reportUIInteraction("HUD Menu Button", label)
+        onClick()
+    }, [label, onClick])
+
     const content = (
         <Stack
             alignItems="center"
@@ -37,7 +44,7 @@ export const HUDMenuButton: FC<HUDMenuButtonProps> = ({
                 size="large"
                 disableRipple
                 sx={{ ...TOP_BAR_ICON_BUTTON_SX, flexDirection: "column", p: "clamp(4px, 1vh, 8px)" }}
-                onClick={disabled ? undefined : onClick}
+                onClick={disabled ? undefined : onButtonClicked}
             >
                 {iconName ? (
                     <TopBarIcon name={iconName} size={iconSize} />

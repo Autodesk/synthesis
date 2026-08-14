@@ -1,5 +1,7 @@
 import { Tooltip } from "@mui/material"
 import type React from "react"
+import { useCallback } from "react"
+import { reportUIInteraction } from "@/systems/analytics/AnalyticsSystem"
 import { IconButton } from "@/ui/components/StyledComponents"
 import { TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
@@ -16,6 +18,11 @@ export const TopBarButton: React.FC<TopBarButtonProps> = ({ label, icon, disable
     const { blockState } = useUIContext()
     const disabled = disabledTooltip !== undefined || blockState.blocked
 
+    const onButtonClicked = useCallback(() => {
+        reportUIInteraction("Top Bar Button", label)
+        onClick()
+    }, [label, onClick])
+
     return (
         <Tooltip title={disabledTooltip ?? label}>
             <span>
@@ -24,7 +31,7 @@ export const TopBarButton: React.FC<TopBarButtonProps> = ({ label, icon, disable
                     disableRipple
                     disabled={disabled}
                     sx={{ ...TOP_BAR_ICON_BUTTON_SX, ...(disabled && { opacity: 0.4 }) }}
-                    onClick={onClick}
+                    onClick={onButtonClicked}
                 >
                     {icon}
                 </IconButton>

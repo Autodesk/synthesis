@@ -5,6 +5,7 @@ import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
+import type { UploadFileFormat } from "@/systems/analytics/AnalyticsSystem"
 import { loadURDF } from "@/urdf/URDFLoader"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
@@ -87,6 +88,15 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             const buffer = await selectedFile.arrayBuffer()
             World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
 
+            const reportUpload = (fileFormat: UploadFileFormat, key: string, meshFormats?: string[]) =>
+                World.analyticsSystem?.event("Local Upload", {
+                    key: key,
+                    type: miraType === MiraType.ROBOT ? "robot" : "field",
+                    fileSize: buffer.byteLength,
+                    fileFormat: fileFormat,
+                    meshFormats: meshFormats?.join(","),
+                })
+
             const progressHandle = new ProgressHandle(`Importing ${selectedFile.name}`)
             try {
                 let mirabufSceneObject
@@ -94,7 +104,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 if (isURDFFile(selectedFile.name)) {
                     const inputHash = await hashBuffer(buffer)
                     const uuid = uuidV4({ random: hexStringToUint8Array(inputHash).slice(0, 16) })
-                    const assembly = await loadURDF(buffer, selectedFile.name, progressHandle)
+                    const { assembly, meshFormats } = await loadURDF(buffer, selectedFile.name, progressHandle)
                     // Default is the assembly name, which is often Assembly 1 or something else similarly non-descriptive. People will (likely) name the files something useful
                     assembly.info!.name = selectedFile.name.split(".")[0]
                     assembly.info!.GUID = uuid
@@ -109,6 +119,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                         hash = res.hash
                     }
 
+                    reportUpload("urdf-zip", hash, meshFormats)
+
                     mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
                     progressHandle.done("Import complete!")
                 } else {
@@ -119,6 +131,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                         })
                         return
                     }
+                    reportUpload("mira", result.cacheInfo.hash)
+
                     mirabufSceneObject = await createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
                 }
 
@@ -141,6 +155,9 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             } catch (e) {
                 console.error("[Import]", e)
                 progressHandle.fail("Import failed!")
+                World.analyticsSystem?.exception(
+                    `Failed to import ${isURDFFile(selectedFile.name) ? "urdf-zip" : "mira"} file`
+                )
                 globalOpenModal(ImportLocalMirabufModal, {
                     configurationType: miraTypeToConfigType(miraType),
                     errorMessage: e instanceof Error ? e.message : "An unknown error occurred during import.",

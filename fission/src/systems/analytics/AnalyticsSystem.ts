@@ -1,5 +1,6 @@
 import { consent, event, exception, init, setUserId, setUserProperty } from "@haensl/google-analytics"
 import APS from "@/aps/APS"
+import type { DriveType } from "@/systems/simulation/behavior/Behavior"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "@/systems/World"
 import WorldSystem from "@/systems/WorldSystem"
@@ -35,6 +36,23 @@ type MiraEvent = {
      */
     fileSize?: number
 }
+
+export type UploadFileFormat = "mira" | "urdf-zip"
+
+type UploadEvent = MiraEvent & {
+    fileFormat: UploadFileFormat
+    meshFormats?: string
+}
+
+export type UIInteractionType =
+    | "Top Bar Button"
+    | "HUD Menu Button"
+    | "Mode Dropdown"
+    | "Configure Dropdown"
+    | "Command Palette Command"
+
+export type DrivetrainConfigSource = "Assembly Setup" | "Drivetrain Config"
+
 export type MatchEvent = {
     matchName: string
     isDefault?: boolean
@@ -74,7 +92,7 @@ export interface AnalyticsEvents {
 
     // Remote Download Events
     "Remote Download": MiraEvent
-    "Local Upload": MiraEvent
+    "Local Upload": UploadEvent
 
     // Devtool Cache Events
     "Devtool Cache Persist": MiraEvent
@@ -107,14 +125,28 @@ export interface AnalyticsEvents {
         durationSeconds: number
     }
 
-    // Main Menu Events
-    "Mode Selected": {
-        mode: string
+    // UI Events
+    "UI Interaction": {
+        interactionType: UIInteractionType
+        interactionName: string
     }
 
-    "Command Executed": {
-        command: string
+    // Robot Configuration Events
+    "Drivetrain Configured": {
+        driveType: DriveType
+        robotCentric: boolean
+        source: DrivetrainConfigSource
     }
+}
+
+/**
+ * Reports a UI interaction, ignored when the world (and with it the analytics system) isn't alive.
+ */
+export function reportUIInteraction(interactionType: UIInteractionType, interactionName: string) {
+    World.analyticsSystem?.event("UI Interaction", {
+        interactionType: interactionType,
+        interactionName: interactionName,
+    })
 }
 
 class AnalyticsSystem extends WorldSystem {
