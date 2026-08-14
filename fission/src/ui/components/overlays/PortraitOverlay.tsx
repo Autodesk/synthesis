@@ -1,7 +1,7 @@
 import CloseIcon from "@mui/icons-material/Close"
 import { Box, IconButton, Stack, Typography, useMediaQuery } from "@mui/material"
 import type React from "react"
-import { useCallback, useState } from "react"
+import { useState } from "react"
 import { useIsMobile } from "@/ui/helpers/useIsMobile.ts"
 
 /** "Rotate your device to landscape" screen; dismissible */
@@ -9,7 +9,6 @@ const PortraitOverlay: React.FC = () => {
     const isMobile = useIsMobile()
     const isPortrait = useMediaQuery("(orientation: portrait)")
     const [dismissed, setDismissed] = useState(false)
-    const dismiss = useCallback(() => setDismissed(true), [])
 
     if (!isMobile || !isPortrait || dismissed) return null
 
@@ -27,7 +26,7 @@ const PortraitOverlay: React.FC = () => {
         >
             <IconButton
                 aria-label="Dismiss"
-                onClick={dismiss}
+                onClick={() => setDismissed(true)}
                 sx={{
                     position: "absolute",
                     top: theme => theme.spacing(1),
