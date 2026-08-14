@@ -8,7 +8,7 @@ import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
 const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
-    const { configureButtons, openConfig } = useConfigureAssembly(selectedAssembly)
+    const { configureButtons, openConfig, disabledMessage } = useConfigureAssembly(selectedAssembly)
 
     // TODO: add a "..." after a long robot name to ensure it isn't rendered underneath the dropdown arrow
     return (
@@ -18,14 +18,14 @@ const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = (
                     key={label}
                     label={label}
                     icon={<TopBarIcon name={name} size={30} />}
-                    disabledTooltip={selectedAssembly ? undefined : "Spawn an assembly first"}
+                    disabledTooltip={disabledMessage}
                     onClick={() => openConfig(mode)}
                 />
             ))}
 
             <Box sx={TOP_BAR_DIVIDER_SX} />
 
-            <ConfigureSplitDropdown selectedAssembly={selectedAssembly} />
+            <ConfigureSplitDropdown disabledMessage={disabledMessage} selectedAssembly={selectedAssembly} />
         </Stack>
     )
 }

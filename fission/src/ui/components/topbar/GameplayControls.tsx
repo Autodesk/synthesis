@@ -2,17 +2,16 @@ import { Stack } from "@mui/material"
 import type React from "react"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
-import MultiplayerStartModal from "@/ui/modals/MultiplayerStartModal"
-import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
+import MultiplayerStartModal from "@/modals/multiplayer/MultiplayerStartModal.tsx"
 
 const GameplayControls: React.FC = () => {
     const { openModal, togglePanel } = useUIContext()
 
     const openMatchMode = () => togglePanel(MatchModeConfigPanel, undefined)
 
-    const openMultiplayer = () => openModal(MultiplayerStartModal, { startWorldCallback: startMultiplayerWorld })
+    const openMultiplayer = () => openModal(MultiplayerStartModal, undefined)
 
     return (
         <Stack direction="row" alignItems="center" gap={1.5}>

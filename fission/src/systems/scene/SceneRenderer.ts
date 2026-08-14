@@ -17,7 +17,7 @@ import {
 } from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
+import type { PixelSpaceCoord } from "@/components/overlays/SceneOverlayEvents.ts"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { rayCastForRigidBody } from "@/util/RaycastUtils"
@@ -403,10 +403,9 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public registerSceneObject<T extends SceneObject>(
-        obj: T,
-        id: SceneObjectId = uuidv4() as SceneObjectId
-    ): SceneObjectId {
+    public registerSceneObject<T extends SceneObject>(obj: T, id?: SceneObjectId): SceneObjectId {
+        id ??= uuidv4() as SceneObjectId
+
         obj.id = id
         this._sceneObjects.set(id, obj)
 
@@ -430,13 +429,15 @@ class SceneRenderer extends WorldSystem {
 
     public removeSceneObject(id: SceneObjectId) {
         const obj = this._sceneObjects.get(id)
-
         if (!obj) return
 
         // If the object is a mirabuf object, remove the gizmo as well
         if (obj instanceof MirabufSceneObject) {
             const objGizmo = this._gizmosOnMirabuf.get(id)
-            if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
+            if (this._gizmosOnMirabuf.delete(id)) {
+                this._sceneObjects.delete(objGizmo!.id)
+                objGizmo!.dispose()
+            }
 
             World?.multiplayerSystem?.broadcast({
                 type: "deleteObject",
@@ -590,18 +591,15 @@ class SceneRenderer extends WorldSystem {
         const hit = rayCastForRigidBody(e.position)
         if (hit) {
             const sceneObject = hit.association.sceneObject
-            if (
-                !World.multiplayerSystem ||
-                (sceneObject.miraType === MiraType.ROBOT &&
-                    World.multiplayerSystem
-                        ?.getOwnRobots()
-                        .map(obj => obj.id)
-                        .includes(sceneObject.id))
-            ) {
+
+            const configurableObjectIds = World.getOwnRobots().map(obj => obj?.id)
+            const isField = sceneObject.miraType === MiraType.FIELD
+
+            if ((isField && sceneObject.isOwnObject) || configurableObjectIds.includes(sceneObject.id)) {
                 miraSupplierData = sceneObject.getSupplierData()
             }
         }
-        // All else fails, present default options.
+
         if (!miraSupplierData) {
             miraSupplierData = { title: "The Scene", items: [] }
             miraSupplierData.items.push({

@@ -13,17 +13,22 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import {
+    GAMEPIECE_SUFFIX,
+    GROUNDED_JOINT_ID,
+    type RigidNodeId,
+    type RigidNodeReadOnly,
+} from "@/mirabuf/MirabufParser.ts"
 import { WHEEL_SEPARATOR_JOINT_PREFIX } from "@/mirabuf/WheelJointBuilder.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import type { Message } from "../multiplayer/types"
+import type { Message } from "../multiplayer/MultiplayerTypes.ts"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
 import type { CurrentContactData, OnContactValidateData } from "./ContactEvents"
 import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import {
     inferURDFAutoWheelBasis,
@@ -46,8 +51,11 @@ import {
     setAxes,
 } from "./ConstraintSettingsUtilities"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import type { PhysicsBodyData, UpdatePhysicsBodyData } from "../multiplayer/MultiplayerMessageTypes.ts"
 
 const DEBUG_COLLIDER_WARNINGS = false
+
+const MULTIPLAYER_FREQUENCY = 2 // Send update packets every n frames
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -61,7 +69,7 @@ const ROBOT_LAYERS: number[] = [
 ]
 
 // Layer for ghost objects used in constraint systems, interacts with nothing
-const LAYER_GHOST = 10
+export const LAYER_GHOST = 10
 
 // Please update this accordingly.
 const COUNT_OBJECT_LAYERS = 11
@@ -279,21 +287,30 @@ class PhysicsSystem extends WorldSystem {
     public disablePhysicsForBody(bodyId: Jolt.BodyID) {
         if (!this.isBodyAdded(bodyId)) return
 
-        this._joltBodyInterface.DeactivateBody(bodyId)
+        this._joltBodyInterface.SetObjectLayer(bodyId, LAYER_GHOST)
+        this._joltBodyInterface.SetGravityFactor(bodyId, 0)
 
-        this.getBody(bodyId)!.SetIsSensor(true)
+        const zero = new JOLT.Vec3(0, 0, 0)
+        this._joltBodyInterface.SetLinearVelocity(bodyId, zero)
+        this._joltBodyInterface.SetAngularVelocity(bodyId, zero)
+        JOLT.destroy(zero)
     }
 
     /**
      * Enables physics for a single body
      *
+     * @param [layer=LAYER_GENERAL_DYNAMIC] the original layer of the body
      * @param bodyId
      */
-    public enablePhysicsForBody(bodyId: Jolt.BodyID) {
+    public enablePhysicsForBody(bodyId: Jolt.BodyID, layer: number = LAYER_GENERAL_DYNAMIC) {
         if (!this.isBodyAdded(bodyId)) return
 
-        this._joltBodyInterface.ActivateBody(bodyId)
-        this.getBody(bodyId)!.SetIsSensor(false)
+        this._joltBodyInterface.SetObjectLayer(bodyId, layer)
+
+        this._joltBodyInterface.SetGravityFactor(bodyId, 1)
+        // this._joltBodyInterface.ActivateBody(bodyId)
+
+        // this.getBody(bodyId)!.SetIsSensor(false)
     }
 
     /**
@@ -1503,6 +1520,14 @@ class PhysicsSystem extends WorldSystem {
         keys.forEach(key => this.releaseBodyShapeByKey(key))
     }
 
+    public removeStepListeners(listeners: Jolt.PhysicsStepListener[]) {
+        listeners.forEach(x => this._joltPhysSystem.RemoveStepListener(x))
+    }
+
+    public addStepListeners(listeners: Jolt.PhysicsStepListener[]) {
+        listeners.forEach(x => this._joltPhysSystem.AddStepListener(x))
+    }
+
     public destroyMechanism(mech: Mechanism) {
         // `RemoveConstraint` frees the constraint; do not `destroy()` it afterward. Prune
         // `this._constraints` so later cleanup does not remove the same freed constraint again.
@@ -1590,41 +1615,52 @@ class PhysicsSystem extends WorldSystem {
         this.applySphereGamePieceStiction()
 
         if (World.multiplayerSystem != null) {
-            const interObjectCollisions = this._physicsEventQueue
-                .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
-                .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
+            if (World.multiplayerSystem.sinceLastUpdate == 0) {
+                const interObjectCollisions = this._physicsEventQueue
+                    .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
+                    .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
 
-            World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
-                const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)
+                if (interObjectCollisions.length > 0) {
+                    // If there's a collision, we send over every scene object we have.
+                    // That way whichever client happens to catch the collision first (tracked by timestamp)
+                    // will act as the authority for every mirabuf scene object's state
+                    const message: Message = {
+                        type: "collision",
+                        data: World.sceneRenderer.mirabufSceneObjects.getAll().map(object => object.getUpdateData()),
+                    }
 
-                if (clientSceneObject == null || !(clientSceneObject instanceof MirabufSceneObject)) {
-                    console.warn("Could not find multiplayer robot") // happens when you delete
-                    World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
-                    return
+                    World.multiplayerSystem.broadcast(message)
+                } else {
+                    // If there's no collision, then we can just deal with our own scene objects and send their positions over
+                    World.multiplayerSystem.getOwnRobots().forEach(clientSceneObject => {
+                        const clientSceneObjectId = clientSceneObject.id
+
+                        if (!(clientSceneObject instanceof MirabufSceneObject)) {
+                            console.warn("Could not find multiplayer robot") // happens when you delete
+                            World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
+                            return
+                        }
+
+                        const touchedObjects = clientSceneObject.mechanism.touchedBodies
+
+                        const message: Message = {
+                            type: "update",
+                            data: {
+                                sceneObject: clientSceneObject.getUpdateData(),
+                                touchedBodies: touchedObjects.map(data => this.getRNUpdateData(...data)),
+                            },
+                        }
+                        World.multiplayerSystem?.broadcast(message)
+
+                        if (clientSceneObjectId != null) {
+                            clientSceneObject.mechanism.touchedBodies = []
+                        }
+                    })
                 }
-                const touchedBodies = clientSceneObject.mechanism.touchedObjects
+            }
 
-                const message: Message =
-                    interObjectCollisions.length > 0
-                        ? {
-                              type: "collision",
-                              data: World.sceneRenderer.mirabufSceneObjects
-                                  .getAll()
-                                  .map(object => object.getUpdateData())
-                                  .filter(n => n != null),
-                          }
-                        : {
-                              type: "update",
-                              data: [clientSceneObject, ...touchedBodies]
-                                  .map(object => object.getUpdateData())
-                                  .filter(n => n != null),
-                          }
-                World.multiplayerSystem?.broadcast(message)
-
-                if (clientSceneObjectId != null) {
-                    clientSceneObject.mechanism.touchedObjects = []
-                }
-            })
+            World.multiplayerSystem.sinceLastUpdate =
+                (World.multiplayerSystem.sinceLastUpdate + 1) % MULTIPLAYER_FREQUENCY
         }
 
         this._physicsEventQueue.forEach(x => {
@@ -1632,6 +1668,41 @@ class PhysicsSystem extends WorldSystem {
             this.releaseContactEventPayload(x)
         })
         this._physicsEventQueue = []
+    }
+
+    public getRNUpdateData(sceneObjectId: SceneObjectId, rigidNodeId: RigidNodeId): UpdatePhysicsBodyData {
+        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectId) as MirabufSceneObject
+        const body = this.getBody(sceneObject.mechanism.nodeToBody.get(rigidNodeId) as Jolt.BodyID)!
+
+        const linearVelocity = body.GetLinearVelocity()
+        const angularVelocity = body.GetAngularVelocity()
+        const position = body.GetPosition()
+        const rotation = body.GetRotation()
+
+        return {
+            sceneObjectId,
+            rigidNodeId,
+            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
+            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
+            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
+            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+        }
+    }
+
+    public getBodyUpdateData(body: Jolt.Body): PhysicsBodyData {
+        const rigidNodeId = (<RigidNodeAssociate>World.physicsSystem.getBodyAssociation(body.GetID())).rigidNodeId
+        const linearVelocity = body.GetLinearVelocity()
+        const angularVelocity = body.GetAngularVelocity()
+        const position = body.GetPosition()
+        const rotation = body.GetRotation()
+
+        return {
+            rigidNodeId,
+            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
+            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
+            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
+            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+        }
     }
 
     /**
@@ -1922,14 +1993,16 @@ class PhysicsSystem extends WorldSystem {
      * Records the robot body as having touched another body
      * This is used for tracking which bodies the client needs to send the state of to peers
      */
-    private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body) {
+    private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body): void {
         if (other == null || robot == null) return
 
         const robotSceneObject = this.bodyToMiraSceneObject(robot)
         const otherSceneObject = this.bodyToMiraSceneObject(other)
         if (robotSceneObject == null || otherSceneObject == null) return
 
-        robotSceneObject.mechanism.touchedObjects.push(otherSceneObject)
+        const rigidNodeId = (<RigidNodeAssociate>this.getBodyAssociation(other.GetID())).rigidNodeId
+
+        robotSceneObject.mechanism.touchedBodies.push([otherSceneObject.id, rigidNodeId])
     }
 
     /**

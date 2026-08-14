@@ -1,6 +1,6 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest"
 import type IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import type MirabufInstance from "../../mirabuf/MirabufInstance"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { defaultRobotPreferences } from "@/systems/preferences/PreferenceTypes.ts"

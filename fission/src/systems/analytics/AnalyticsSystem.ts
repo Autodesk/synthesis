@@ -1,14 +1,22 @@
 import { consent, event, exception, init, setUserId, setUserProperty } from "@haensl/google-analytics"
 import APS from "@/aps/APS"
 import PreferencesSystem from "../preferences/PreferencesSystem"
-import World from "../World"
-import WorldSystem from "../WorldSystem"
+import World from "@/systems/World"
+import WorldSystem from "@/systems/WorldSystem"
+import { consolePrefixer } from "console-prefixer"
 
 const SAMPLE_INTERVAL = 60000 // 1 minute
 const BETA_CODE_COOKIE_REGEX = /access_code=.*(;|$)/
 const MOBILE_USER_AGENT_REGEX = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
 
 declare const GIT_COMMIT: string
+
+const console = consolePrefixer({
+    defaultPrefix: {
+        text: "[Analytics]",
+        style: "background: linear-gradient(90deg,rgba(149, 121, 171, 1) 0%, rgba(179, 55, 94, 1) 100%); color: white;font-weight:bold; padding:2px; border-radius:2px;",
+    },
+})
 
 export interface AccumTimes {
     frames: number
