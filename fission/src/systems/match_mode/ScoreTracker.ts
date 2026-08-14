@@ -48,14 +48,30 @@ export default class ScoreTracker {
         EventSystem.dispatch("ScoreChangedEvent", { red: this.redScore, blue: this.blueScore })
     }
 
+    /**
+     * In order for this function to work with match mode, the caller must adhere to either of the following contracts, but not both:
+     * 1. The parameter `broadcastPenalty` should be set to `false`
+     * 2. This function should only be called to penalize robots owned by the client
+     *
+     * Basically, every client is responsible for broadcasting penalties committed by their robot
+     */
     public robotPenalty(
         robot: MirabufSceneObject,
         penaltyPoints: number,
         penaltyInfo: string,
         broadcastPenalty: boolean = true
     ): void {
-        if (broadcastPenalty) {
+        if (broadcastPenalty && World.multiplayerSystem) {
+            World.multiplayerSystem.broadcast({
+                type: "matchModePenalty",
+                data: {
+                    objectId: robot.id,
+                    points: penaltyPoints,
+                    description: penaltyInfo,
+                },
+            })
         }
+
         // Display a toast showing that a penalty was committed
         globalAddToast(
             "warning",

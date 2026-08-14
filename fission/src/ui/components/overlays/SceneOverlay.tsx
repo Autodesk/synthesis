@@ -1,0 +1,105 @@
+import { Stack } from "@mui/material"
+import { useEffect, useReducer, useState } from "react"
+import EventSystem from "@/systems/EventSystem.ts"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
+import Label from "../Label.tsx"
+import { SynthesisIcons } from "@/components/StyledComponents.tsx"
+import type { SceneOverlayTag } from "./SceneOverlayEvents.ts"
+import ViewCube from "../ViewCube.tsx"
+
+const tagMap = new Map<number, SceneOverlayTag>()
+
+const SceneOverlay: React.FC = () => {
+    /* State to determine if the overlay is disabled */
+    const [isDisabled, setIsDisabled] = useState(false)
+
+    /* State to determine if the ViewCube should be shown */
+    const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getUserPreference("ShowViewCube"))
+
+    /* h1 text for each tagMap tag */
+    const [components, updateComponents] = useReducer(() => {
+        if (isDisabled) return null
+
+        return [...tagMap.values()].map(x => (
+            <Stack
+                className={"sceneOverlayTag"}
+                direction="row"
+                alignItems={"center"}
+                gap={1}
+                key={x.id}
+                style={{
+                    position: "absolute",
+                    left: x.position[0],
+                    top: x.position[1],
+                    backgroundColor: x.getCSSColor(),
+                    borderRadius: "8px",
+                    padding: "8px",
+                    whiteSpace: "nowrap",
+                    transform: "translate(-50%, -100%)",
+                    color: "white",
+                }}
+            >
+                {!x.isOwn() && <SynthesisIcons.PEOPLE size={"1.25rem"} />}
+                <Label size="md">{x.text()}</Label>
+            </Stack>
+        ))
+    }, [])
+
+    /* Creating listener for tag events to update tagMap and rerender overlay */
+    useEffect(() => {
+        const unsubscribers: (() => void)[] = []
+
+        // listening for tags being added and removed
+        unsubscribers.push(EventSystem.listen("SceneOverlayTagAddEvent", tag => tagMap.set(tag.id, tag)))
+        unsubscribers.push(EventSystem.listen("SceneOverlayTagRemoveEvent", tag => tagMap.delete(tag.id)))
+
+        // listening for updates to the overlay every frame
+        unsubscribers.push(EventSystem.listen("SceneOverlayUpdateEvent", () => updateComponents()))
+
+        // listening for disabling and enabling scene tags
+        unsubscribers.push(
+            PreferencesSystem.addPreferenceEventListener("RenderSceneTags", e => {
+                setIsDisabled(!e.prefValue)
+                updateComponents()
+            })
+        )
+
+        // disposing all the tags and listeners when the scene is destroyed
+        return () => {
+            unsubscribers.forEach(func => func())
+            tagMap.clear()
+        }
+    }, [])
+
+    /* Update ViewCube visibility when preferences change */
+    useEffect(() => {
+        const removeListener = PreferencesSystem.addPreferenceEventListener("ShowViewCube", e =>
+            setShowViewCube(e.prefValue)
+        )
+
+        return () => {
+            removeListener()
+        }
+    }, [])
+
+    /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
+    return (
+        <Stack
+            direction="row"
+            sx={{
+                position: "fixed",
+                left: "0pt",
+                top: "0pt",
+                width: "100vw",
+                height: "100vh",
+                overflow: "hidden",
+                pointerEvents: "none",
+            }}
+        >
+            {components}
+            {showViewCube && <ViewCube position={{ top: "calc(20px + var(--top-bar-height, 0px))", right: 20 }} />}
+        </Stack>
+    )
+}
+
+export default SceneOverlay
