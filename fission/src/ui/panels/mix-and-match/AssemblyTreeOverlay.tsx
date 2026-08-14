@@ -6,6 +6,7 @@ import type { ComponentState } from "@/mix-and-match/MixAndMatchTimeline"
 import type { ComponentId } from "@/mix-and-match/MixAndMatchTypes"
 import PartLibrary from "@/mix-and-match/PartLibrary"
 import EventSystem from "@/systems/EventSystem"
+import { getTargetControls } from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import Label from "@/ui/components/Label"
 import { Button, NegativeButton } from "@/ui/components/StyledComponents"
@@ -83,6 +84,12 @@ const AssemblyTreeOverlay: React.FC = () => {
     const nodes = useMemo(() => (components ? buildNodes(components) : []), [components])
     const scene = MixAndMatchMode.scene
     const selectedComponent = selected ? scene?.get(selected) : undefined
+
+    // Selecting a part in the tree re-centers the camera's orbit target on it.
+    useEffect(() => {
+        if (!selectedComponent) return
+        getTargetControls()?.settleOntoFocus(selectedComponent)
+    }, [selectedComponent])
 
     // The transform gizmo has no drag-end callback, so the placement is recorded when dragging stops.
     useEffect(() => {
