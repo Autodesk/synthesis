@@ -61,6 +61,13 @@ describe("tour reconciler", () => {
         expect(run(stepOf("setup-assembly"), [done]).stepIndex).toBe(stepOf("select-assembly"))
     })
 
+    test("skips every spawn pair whose asset already exists", () => {
+        expect(settle(stepOf("add-field"), snapshot({ fieldCount: 1, robotCount: 1 })).stepIndex).toBe(
+            stepOf("select-assembly")
+        )
+        expect(settle(stepOf("add-field"), snapshot({ fieldCount: 1 })).stepIndex).toBe(stepOf("add-robot"))
+    })
+
     test("rewinds to the step that reopens a screen the user closed", () => {
         const result = run(stepOf("spawn-robot"), [snapshot({ fieldCount: 1 })])
         expect(result.stepIndex).toBe(stepOf("add-robot"))
@@ -126,5 +133,21 @@ describe("tour reconciler", () => {
             configured,
         ])
         expect(result.stepIndex).toBe(stepOf("pick-config"))
+    })
+
+    test("settles from every step, whatever the world already looks like", () => {
+        for (let world = 0; world < 64; world++) {
+            const s = snapshot({
+                modal: world & 1 ? "LibraryModal" : undefined,
+                fieldCount: world & 2 ? 1 : 0,
+                robotCount: world & 4 ? 1 : 0,
+                appMode: world & 8 ? "Gameplay" : "Configure",
+                panels: [
+                    ...(world & 16 ? [{ id: "InitialConfigPanel" as const }] : []),
+                    ...(world & 32 ? [{ id: "ConfigurePanel" as const, configMode: ConfigMode.INTAKE }] : []),
+                ],
+            })
+            TOUR_STEPS.forEach((_, index) => expect(() => settle(index, s)).not.toThrow())
+        }
     })
 })

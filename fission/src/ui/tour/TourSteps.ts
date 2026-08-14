@@ -55,6 +55,7 @@ export interface TourStep {
     placement: PopperPlacementType
     screenPosition?: ScreenPosition
     advanceOn?: { condition: TourCondition; state?: boolean }
+    skipIf?: TourCondition
     requires?: TourCondition[]
     focus?: TourFocus
 }
@@ -68,6 +69,7 @@ export const TOUR_STEPS: TourStep[] = [
         placement: "bottom-start",
         focus: "anchor",
         advanceOn: { condition: "libraryOpen" },
+        skipIf: "field",
     },
     {
         id: "spawn-field",
@@ -87,6 +89,7 @@ export const TOUR_STEPS: TourStep[] = [
         placement: "bottom-start",
         focus: "anchor",
         advanceOn: { condition: "libraryOpen" },
+        skipIf: "robot",
         requires: ["field"],
     },
     {

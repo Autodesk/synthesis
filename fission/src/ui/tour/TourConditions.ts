@@ -68,9 +68,11 @@ export interface TourResult {
  *
  * This is used specifically when rewinding steps after a condition was not met.
  */
-function producerOf(condition: TourCondition, before: number): number | undefined {
+function producerOf(condition: TourCondition, before: number, snapshot: TourSnapshot): number | undefined {
     for (let i = before - 1; i >= 0; i--) {
-        const advanceOn = TOUR_STEPS[i].advanceOn
+        const step = TOUR_STEPS[i]
+        if (step.skipIf !== undefined && CONDITIONS[step.skipIf].holds(snapshot)) continue
+        const advanceOn = step.advanceOn
         if (advanceOn?.condition === condition && (advanceOn.state ?? true)) return i
     }
     return undefined
@@ -86,7 +88,8 @@ export function reconcile(stepIndex: number, snapshot: TourSnapshot, previous: T
 
     const runtime: TourRuntime = previous.step !== stepIndex ? { step: stepIndex } : { ...previous }
 
-    if (step.advanceOn && advanceConditionMet(step, snapshot)) {
+    const goalAlreadyMet = step.skipIf !== undefined && CONDITIONS[step.skipIf].holds(snapshot)
+    if (goalAlreadyMet || (step.advanceOn && advanceConditionMet(step, snapshot))) {
         return { stepIndex: stepIndex + 1, runtime: { step: stepIndex + 1 } }
     }
 
@@ -96,7 +99,7 @@ export function reconcile(stepIndex: number, snapshot: TourSnapshot, previous: T
     if (!unmet) return { stepIndex, runtime: { ...runtime, reported: undefined } }
     if (unmet === runtime.reported) return { stepIndex, runtime }
 
-    const target = producerOf(unmet, stepIndex) ?? stepIndex
+    const target = producerOf(unmet, stepIndex, snapshot) ?? stepIndex
     return {
         stepIndex: target,
         runtime: { step: target, reported: unmet },
