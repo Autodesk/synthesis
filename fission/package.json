@@ -12,6 +12,7 @@
     "dev": "vite --open",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
+    "bench": "vitest bench --mode test",
     "build": "tsc && vite build",
     "build:prod": "tsc && vite build --base=/fission/ --outDir dist/prod",
     "build:dev": "tsc && vite build --base=/fission-closed/ --outDir dist/dev",

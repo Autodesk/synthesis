@@ -48,17 +48,20 @@ const localAssetsExist = await fs
 export default defineConfig(async ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
     process.env.VITE_MULTIPLAYER_PORT = mode === "test" ? "3001" : "9002"
-    const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
+    const useLocalAssets = localAssetsExist && mode !== "production"
 
-    if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")) {
+    if (!localAssetsExist && mode !== "production") {
         console.warn("Can't find local assets, do you need to run `npm run assetpack`?")
     }
     console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
 
     const proxies: Record<string, ProxyOptions> = {}
+    // In dev mode NODE_ENV is "development"; in vitest (test or bench) it is "test"
+    // regardless of what mode @vitest/browser uses when spawning the browser vite server.
+    const localAssetPort = process.env.NODE_ENV === "development" ? serverPort : 3001
     const assetProxy: ProxyOptions = useLocalAssets
         ? {
-              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
+              target: `http://localhost:${localAssetPort}`,
               changeOrigin: true,
               secure: false,
               rewrite: path => path.replace(/^\/api/, "/Downloadables"),
@@ -100,7 +103,7 @@ export default defineConfig(async ({ mode }) => {
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
-            environment: "jsdom",
+            environment: "node",
             reporters: process.env.GITHUB_ACTIONS
                 ? [
                       "github-actions",
