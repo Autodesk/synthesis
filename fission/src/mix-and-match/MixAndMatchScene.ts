@@ -222,6 +222,7 @@ class MixAndMatchScene {
         // Components are placed, not driven. A brain per part would hand out an input scheme per part
         // and fight the user for the keyboard while they build.
         component.brain = undefined
+        component.nameTag?.dispose()
 
         component.getAllBodyIds().forEach(bodyId => {
             World.physicsSystem.setBodyObjectLayer(bodyId, this._layerReserve.layer)
