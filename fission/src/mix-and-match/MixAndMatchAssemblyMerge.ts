@@ -23,10 +23,8 @@ import type { ComponentId } from "./MixAndMatchTypes"
  * up in a RigidNode, so a merged assembly's bodies get correct mass the next time it's parsed.
  */
 
-const WELD_NAMESPACE_SEPARATOR = ":"
-
 function namespaced(componentId: ComponentId, id: string): string {
-    return `${componentId}${WELD_NAMESPACE_SEPARATOR}${id}`
+    return `${componentId}:${id}`
 }
 
 function cloneAssembly(assembly: mirabuf.Assembly): mirabuf.Assembly {
