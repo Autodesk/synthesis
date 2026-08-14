@@ -58,13 +58,13 @@ const robotIONode: NodeKind = {
 const simInputNode: NodeKind = {
     id: NodeKindId.SIM_INPUT,
     component: SimInputNode,
-    makeReceiver: (handle, ctx) => ctx.simLayer.getDriver(handle.originId)
+    makeReceiver: (handle, ctx) => ctx.simLayer.getDriver(handle.originId),
 }
 
 const simOutputNode: NodeKind = {
     id: NodeKindId.SIM_OUTPUT,
     component: SimOutputNode,
-    makeSupplier: (handle, ctx) => ctx.simLayer.getStimuli(handle.originId)
+    makeSupplier: (handle, ctx) => ctx.simLayer.getStimuli(handle.originId),
 }
 
 const junctionNode: NodeKind = {
@@ -102,7 +102,7 @@ const deconstructorNode: NodeKind = {
             supplierType: [supplier.supplierType[handle.index]],
             getSupplierValue: () => [supplier.getSupplierValue()[handle.index!]],
         }
-    }
+    },
 }
 
 export const NODE_KINDS: Record<NodeKindId, NodeKind> = {

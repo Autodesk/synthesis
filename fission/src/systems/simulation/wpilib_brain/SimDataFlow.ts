@@ -55,8 +55,6 @@ const aggregateAverage: AggregateValuesFunc = <T extends NoraType>(type: T, vals
         }
     }
 
-    console.log("aggregate", ret)
-
     return ret as NoraValueOf<T>
 }
 

@@ -12,8 +12,7 @@
 /// of the various types
 
 // for node colors
-import { hashBufferSync } from "@/util/Utility"
-import * as THREE from "three"
+import { generatePalette } from "@/util/Colors";
 
 /// NOTE: the variant string values should match TypeScript types (i.e., possible as the result of `typeof`)
 export enum BaseType {
@@ -204,22 +203,27 @@ export function valueMatchesType(value: NoraValue, type: NoraType): boolean {
     )
 }
 
-// TODO: is there a better way to do this?
-export const noraTypeToColorStr = (type: NoraType): string => {
-    const allColors = type.map(t => hashBufferSync(serializeNoraBaseType(t)))
-    const hash = hashBufferSync(allColors.join(""))
+const NORA_TYPE_PALETTE = generatePalette({ size: 16, startHue: 140 })
+const NORA_BASE_TYPE_PALETTE = generatePalette({ size: 16, startHue: 200 })
 
-    const hue = (parseInt(hash.slice(0, 6), 16) % 360) / 360
-    const color = new THREE.Color().setHSL(hue, 0.5, 0.6).getHexString()
-    return `#${color}`
+const getStableIndex = (str: string, max: number): number => {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    return Math.abs(hash) % max
 }
 
-export const noraBaseTypeToColor = (baseType: NoraBaseType): THREE.Color => {
-    const hash = hashBufferSync(serializeNoraBaseType(baseType))
-    const hue = (parseInt(hash.slice(0, 6), 16) % 360) / 360
-    return new THREE.Color().setHSL(hue, 0.7, 0.6)
+export const noraTypeToColorStr = (type: NoraType): string => {
+    const serialized = type.map(t => serializeNoraBaseType(t)).join(",")
+    const paletteIndex = getStableIndex(serialized, NORA_TYPE_PALETTE.length)
+
+    return NORA_TYPE_PALETTE[paletteIndex]
 }
 
 export const noraBaseTypeToColorStr = (baseType: NoraBaseType): string => {
-    return `#${(noraBaseTypeToColor(baseType)).getHexString()}`
+    const serialized = serializeNoraBaseType(baseType)
+    const paletteIndex = getStableIndex(serialized, NORA_BASE_TYPE_PALETTE.length)
+
+    return NORA_BASE_TYPE_PALETTE[paletteIndex]
 }
