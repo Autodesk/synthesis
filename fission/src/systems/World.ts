@@ -119,6 +119,18 @@ class World {
         }
     }
 
+    public static reset(keepAssets: "all" | "own" | "none" = "none") {
+        if (keepAssets == "none") {
+            this._instance?._sceneRenderer.removeAllSceneObjects()
+        } else if (keepAssets == "own") {
+            this._instance?._sceneRenderer.mirabufSceneObjects
+                .getAll()
+                .filter(obj => !obj.isOwnObject)
+                .forEach(obj => World.sceneRenderer.removeSceneObject(obj.id))
+        }
+        this._instance?._scoreTracker.resetScores()
+    }
+
     public static initWorld() {
         if (this._instance == null) {
             this._instance = new World()

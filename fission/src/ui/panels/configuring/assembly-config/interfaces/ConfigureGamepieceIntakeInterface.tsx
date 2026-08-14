@@ -212,12 +212,16 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
     useEffect(() => {
         // Hide the visual indicator when entering configuration mode
         if (selectedAssembly) {
+            selectedAssembly.disablePhysics()
+            // Hide the visual indicator when entering configuration mode
             selectedAssembly.setIntakeVisualIndicatorVisible(false)
         }
 
         return () => {
             // Show the visual indicator when exiting configuration mode
             if (selectedAssembly) {
+                selectedAssembly.enablePhysics()
+                // Show the visual indicator when exiting configuration mode
                 selectedAssembly.setIntakeVisualIndicatorVisible(true)
             }
         }
