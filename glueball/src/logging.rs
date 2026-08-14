@@ -1,10 +1,7 @@
 use std::collections::{HashMap, VecDeque};
 
 use colored::{Color, ColoredString, Colorize};
-use ratatui::{
-    style::{Style, Stylize},
-    text::Line,
-};
+use ratatui::{style::Style, text::Line};
 use tokio::sync::mpsc::{self, Receiver};
 
 use crate::{LOG_TX, room::RoomId};
