@@ -341,8 +341,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             pendingDeletes={pendingDeletes}
                         />
 
-                        {configMode === undefined &&
-                            selectedAssembly !== undefined &&
+                        {selectedAssembly !== undefined &&
                             (!selectedAssembly.isOwnObject ? (
                                 <Label size={"sm"}>Cannot configure someone else's object</Label>
                             ) : (
@@ -360,13 +359,13 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                                     {ConfigSubPanel != null && (
                                         <ConfigSubPanel
                                             panel={panel!}
-                                            selectedAssembly={selectedAssembly!}
+                                            selectedAssembly={selectedAssembly}
                                             setDisableAccept={setDisableAccept}
                                             hasMadeChanges={hasMadeChanges}
                                             registerCleanupFunction={registerCleanupFunctions}
                                         />
                                     )}
-                                    {
+                                    {configMode === undefined && (
                                         <>
                                             <Spacer height={16} />
                                             <AssemblyExportButton selectedAssembly={selectedAssembly} />
@@ -388,7 +387,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                                                 <FaArrowsRotate />
                                             </Button>
                                         </>
-                                    }
+                                    )}
                                 </>
                             ))}
                     </>
