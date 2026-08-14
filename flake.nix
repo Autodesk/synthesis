@@ -78,7 +78,17 @@
 
       formatter = forEachSystem ({ pkgs, ... }: pkgs.nixfmt-tree);
 
-      # Build all devShells, instead of just verifying they are derivations
-      checks = forEachSystem ({ system, ... }: self.devShells.${system});
+      # Build all devShells and packages, instead of just verifying they are
+      # derivations
+      checks = forEachSystem (
+        { system, ... }:
+        let
+          prefixAttrs = prefix: lib.mapAttrs' (n: lib.nameValuePair "${prefix}-${n}");
+        in
+        lib.foldr lib.attrsets.unionOfDisjoint { } [
+          (prefixAttrs "dev-shell" self.devShells.${system})
+          (prefixAttrs "package" self.packages.${system} )
+        ]
+      );
     };
 }
