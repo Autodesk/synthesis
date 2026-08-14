@@ -2,18 +2,22 @@
 # https://wiki.nixos.org/wiki/Flakes#Setup
 {
   description = "Synthesis' Web-Based Robotics Simulator";
-  
+
   nixConfig = {
     commit-lock-file-summary = "chore: update flake.lock";
   };
 
-  inputs= {
+  inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/triplet";
   };
 
   outputs =
-    { self, nixpkgs, systems }:
+    {
+      self,
+      nixpkgs,
+      systems,
+    }:
     let
       inherit (nixpkgs) lib;
 
