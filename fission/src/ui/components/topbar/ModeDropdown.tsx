@@ -36,6 +36,10 @@ const ModeLabel: React.FC<{ mode: AppMode }> = ({ mode }) => (
     </Stack>
 )
 
+// TRANSITION: SYNTH-30
+// Mix and Match mode is unfinished, only expose it outside of dev builds once it's ready to be shipped.
+const VISIBLE_MODES = import.meta.env.DEV ? APP_MODES : APP_MODES.filter(mode => mode !== "MixAndMatch")
+
 const ModeDropdown: React.FC<{ onOpenChange?: (open: boolean) => void }> = ({ onOpenChange }) => {
     const { appMode, setAppMode } = useStateContext()
 
@@ -50,7 +54,7 @@ const ModeDropdown: React.FC<{ onOpenChange?: (open: boolean) => void }> = ({ on
             MenuProps={DROPDOWN_MENU_PROPS}
             sx={{ ...DROPDOWN_SELECT_SX, borderRadius: 1, height: 34, minWidth: 135, fontSize: 13 }}
         >
-            {APP_MODES.map(mode => (
+            {VISIBLE_MODES.map(mode => (
                 <MenuItem key={mode} value={mode}>
                     <ModeLabel mode={mode} />
                 </MenuItem>
