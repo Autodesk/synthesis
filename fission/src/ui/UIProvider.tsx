@@ -2,6 +2,7 @@ import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
+import { useRef } from "react"
 import { useMemo } from "react"
 import type { FunctionComponent, ReactNode } from "react"
 import { Fragment, useCallback, useEffect, useReducer, useState } from "react"
@@ -99,6 +100,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         }
     }, [refreshDep, panels])
 
+    const blockStateRef = useRef<UIBlockState>(blockState)
+    blockStateRef.current = blockState
+
     const openModal: OpenModalFn = useCallback(
         <T, P>(
             content: FunctionComponent<ModalImplProps<T, P>>,
@@ -107,8 +111,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             props: Omit<ModalProps<P>, "type" | "configured" | "custom"> &
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PROPS
         ) => {
-            if (blockState.blocked) {
-                addToast("warning", blockState.blockMessage)
+            if (blockStateRef.current.blocked) {
+                addToast("warning", blockStateRef.current.blockMessage)
                 return null
             }
 
@@ -142,7 +146,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setModal(newModal as Modal<any, any>)
             return id
         },
-        [modal, blockState]
+        [modal]
     )
 
     const snackbarAction = useCallback(
@@ -194,8 +198,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             }
 
             // if any (generic) open panel declares itself as blocking, prevent opening a new one
-            if (blockState.blocked) {
-                addToast("warning", blockState.blockMessage)
+            if (blockStateRef.current.blocked) {
+                addToast("warning", blockStateRef.current.blockMessage)
                 return null
             }
 
@@ -231,7 +235,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             })
             return id
         },
-        [panels, addToast, blockState]
+        [panels, addToast]
     )
 
     const closeModal = useCallback(
@@ -310,15 +314,18 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             if ("exclusiveGroup" in screen.props) {
                 const exclusiveGroup = screen.props.exclusiveGroup
                 if (exclusiveGroup != null) {
-                    const existing = panels.find(p => p.props.exclusiveGroup == exclusiveGroup && p !== screen)
-                    if (existing) {
-                        closePanel(existing.id, CloseType.OVERWRITE)
-                    }
+                    setPanels(panels => {
+                        const existing = panels.find(p => p.props.exclusiveGroup == exclusiveGroup && p !== screen)
+                        if (existing) {
+                            closePanel(existing.id, CloseType.OVERWRITE)
+                        }
+                        return panels
+                    })
                 }
             }
             refresh()
         },
-        [closePanel, panels]
+        [closePanel]
     )
 
     return (
