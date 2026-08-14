@@ -53,6 +53,9 @@ export type UIInteractionType =
 
 export type DrivetrainConfigSource = "Assembly Setup" | "Drivetrain Config"
 
+/** Whether the client created the room or joined an existing one */
+export type MultiplayerRole = "Host" | "Client"
+
 export type MatchEvent = {
     matchName: string
     isDefault?: boolean
@@ -137,11 +140,23 @@ export interface AnalyticsEvents {
         robotCentric: boolean
         source: DrivetrainConfigSource
     }
+
+    // Multiplayer Events
+    "Multiplayer Session Start": {
+        role: MultiplayerRole
+        outcome: "Success" | "Failure"
+    }
+    // Doesn't get called when the user closes the tab
+    "Multiplayer Session End": {
+        outcome: "User Exit" | "Disconnected"
+        durationSeconds: number
+        /** Most people in the room at once, including this client */
+        peakPlayers: number
+        /** Mean one way latency across the session's pings, -1 when no ping ever completed */
+        avgLatencyMS: number
+    }
 }
 
-/**
- * Reports a UI interaction, ignored when the world (and with it the analytics system) isn't alive.
- */
 export function reportUIInteraction(interactionType: UIInteractionType, interactionName: string) {
     World.analyticsSystem?.event("UI Interaction", {
         interactionType: interactionType,
