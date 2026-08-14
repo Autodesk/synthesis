@@ -64,7 +64,12 @@ vi.mock("@/ui/components/SceneOverlayEvents", () => ({
 }))
 
 vi.mock("@/systems/simulation/synthesis_brain/SynthesisBrain", () => ({
-    default: vi.fn(() => ({ inputSchemeName: "TestScheme", clearControls: vi.fn() })),
+    default: vi.fn(() => ({
+        inputSchemeName: "TestScheme",
+        clearControls: vi.fn(),
+        isSynthesis: () => true,
+        isWPILib: () => false,
+    })),
 }))
 
 const STEP = 1 / 60

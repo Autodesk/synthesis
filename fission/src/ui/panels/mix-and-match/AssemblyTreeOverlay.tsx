@@ -11,6 +11,7 @@ import Label from "@/ui/components/Label"
 import { Button, NegativeButton } from "@/ui/components/StyledComponents"
 import Tree, { type TreeNode } from "@/ui/components/Tree"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
 import NameBuildModal from "@/ui/modals/mix-and-match/NameBuildModal"
@@ -65,6 +66,7 @@ function buildNodes(components: ReadonlyMap<ComponentId, ComponentState>): TreeN
  */
 const AssemblyTreeOverlay: React.FC = () => {
     const { openModal } = useUIContext()
+    const { setAppMode } = useStateContext()
     const [, bumpRevision] = useState(0)
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
@@ -116,9 +118,16 @@ const AssemblyTreeOverlay: React.FC = () => {
             NameBuildModal,
             { title: "Finish Build", acceptText: "Finish", defaultName: DEFAULT_BUILD_NAME },
             undefined,
-            { onAccept: (name: string) => MixAndMatchMode.finish(name).catch(console.error) }
+            {
+                onAccept: (name: string) =>
+                    MixAndMatchMode.finish(name)
+                        .then(finished => {
+                            if (finished) setAppMode("Configure")
+                        })
+                        .catch(console.error),
+            }
         )
-    }, [openModal])
+    }, [openModal, setAppMode])
 
     return (
         <Box

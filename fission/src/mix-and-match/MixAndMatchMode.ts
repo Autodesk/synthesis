@@ -4,6 +4,7 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import EventSystem from "@/systems/EventSystem"
 import { PAUSE_REF_MIX_AND_MATCH } from "@/systems/physics/PhysicsTypes"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer"
 import World from "@/systems/World"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { convertThreeMatrix4ToArray } from "@/util/TypeConversions"
@@ -30,6 +31,9 @@ class MixAndMatchMode {
     private static _build: MixAndMatchBuild | undefined
     private static _scene: MixAndMatchScene | undefined
     private static _selected: ComponentId | undefined
+    private static _lastSession: MixAndMatchSession | undefined
+    /** Scene objects `finish` spawned for the current `_lastSession`, cleared away on the next `enter`. */
+    private static _lastFinishedSceneObjectIds: SceneObjectId[] = []
 
     public static get build(): MixAndMatchBuild | undefined {
         return this._build
@@ -56,14 +60,21 @@ class MixAndMatchMode {
     /**
      * Enters build mode.
      *
-     * @param   session Existing session to resume, e.g. one read off a saved mira. Omit for a new build.
+     * @param   session Existing session to resume, e.g. one read off a saved mira. Omit to resume
+     *                   whatever document was last left (e.g. by finishing a build or switching
+     *                   modes away and back), or to start a fresh one if nothing was left.
      * @returns The active build. Re-entering while already active returns the current one untouched.
      */
     public static async enter(session?: MixAndMatchSession): Promise<MixAndMatchBuild> {
         if (this._build) return this._build
 
+        // The robot(s) `finish` spawned in place of the build-time scene would otherwise sit in the
+        // scene as stray duplicates alongside the reopened, editable parts.
+        this._lastFinishedSceneObjectIds.forEach(id => World.sceneRenderer.removeSceneObject(id))
+        this._lastFinishedSceneObjectIds = []
+
         World.physicsSystem.holdPause(PAUSE_REF_MIX_AND_MATCH)
-        this._build = new MixAndMatchBuild(session)
+        this._build = new MixAndMatchBuild(session ?? this._lastSession)
         this._scene = new MixAndMatchScene()
 
         // Resuming replays the whole timeline rather than reconstructing an equivalent arrangement.
@@ -77,6 +88,7 @@ class MixAndMatchMode {
     public static exit() {
         if (!this._build) return
 
+        this._lastSession = this._build.session
         this._scene?.dispose()
         this._scene = undefined
         this._build = undefined
@@ -233,10 +245,11 @@ class MixAndMatchMode {
         })
 
         this.exit()
+        this._lastFinishedSceneObjectIds = []
 
         for (const assembly of merged) {
             const sceneObject = await createMirabuf(assembly.info?.GUID ?? "mix-and-match-build", assembly)
-            if (sceneObject) World.sceneRenderer.registerSceneObject(sceneObject)
+            if (sceneObject) this._lastFinishedSceneObjectIds.push(World.sceneRenderer.registerSceneObject(sceneObject))
 
             await MirabufCachingService.storeAssemblyInCache(assembly, {
                 miraType: MiraType.ROBOT,
