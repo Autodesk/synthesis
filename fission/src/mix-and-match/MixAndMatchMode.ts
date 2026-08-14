@@ -132,6 +132,7 @@ class MixAndMatchMode {
         const componentId = build.spawn(libraryPartRef, staged.transform)
         scene.bind(componentId, staged.component)
         await this.sync()
+        this.setSelected(componentId)
 
         return componentId
     }
