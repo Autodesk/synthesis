@@ -17,8 +17,6 @@ import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import PartLibraryPanel from "@/ui/panels/mix-and-match/PartLibraryPanel"
-import SnapToFacePanel from "@/ui/panels/mix-and-match/SnapToFacePanel"
-import WeldPanel from "@/ui/panels/mix-and-match/WeldPanel"
 import { setAddToast, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { AssemblySelect } from "@/ui/components/topbar/AssemblySelect"
@@ -26,6 +24,7 @@ import CodesimControls from "@/ui/components/topbar/CodesimControls"
 import CodeConnectionIndicator from "@/ui/components/topbar/CodeConnectionIndicator"
 import ConfigureControls from "@/ui/components/topbar/ConfigureControls"
 import GameplayControls from "@/ui/components/topbar/GameplayControls"
+import MixAndMatchControls from "@/ui/components/topbar/MixAndMatchControls"
 import ModeDropdown from "@/ui/components/topbar/ModeDropdown"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
 import { TOP_BAR_DIVIDER_SX, TOP_BAR_GLYPH_SX, TOP_BAR_HEIGHT } from "@/ui/components/topbar/TopBarConfig"
@@ -138,29 +137,7 @@ const TopBar: React.FC = () => {
                     }
                 />
 
-                {appMode === "MixAndMatch" && (
-                    <TopBarButton
-                        label="Snap to Face"
-                        icon={
-                            <Box sx={TOP_BAR_GLYPH_SX}>
-                                <SynthesisIcons.CONNECT />
-                            </Box>
-                        }
-                        onClick={() => togglePanel(SnapToFacePanel, undefined)}
-                    />
-                )}
-
-                {appMode === "MixAndMatch" && (
-                    <TopBarButton
-                        label="Weld"
-                        icon={
-                            <Box sx={TOP_BAR_GLYPH_SX}>
-                                <SynthesisIcons.SCREWDRIVER_WRENCH />
-                            </Box>
-                        }
-                        onClick={() => togglePanel(WeldPanel, undefined)}
-                    />
-                )}
+                {appMode === "MixAndMatch" && <MixAndMatchControls />}
 
                 <Box sx={TOP_BAR_DIVIDER_SX} />
 

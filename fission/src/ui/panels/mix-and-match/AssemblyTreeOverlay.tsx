@@ -120,15 +120,6 @@ const AssemblyTreeOverlay: React.FC = () => {
         )
     }, [openModal])
 
-    const exportBuild = useCallback(() => {
-        openModal(
-            NameBuildModal,
-            { title: "Export as Mira", acceptText: "Export", defaultName: DEFAULT_BUILD_NAME },
-            undefined,
-            { onAccept: (name: string) => MixAndMatchMode.exportBuild(name).catch(console.error) }
-        )
-    }, [openModal])
-
     return (
         <Box
             sx={{
@@ -187,14 +178,9 @@ const AssemblyTreeOverlay: React.FC = () => {
                 </Box>
             )}
             <Box sx={{ px: 1, py: 1, borderTop: 1, borderColor: "divider" }}>
-                <Stack direction="row" gap={1}>
-                    <Button disabled={!components?.size} onClick={finishBuild} fullWidth>
-                        Finish Build
-                    </Button>
-                    <Button disabled={!components?.size} onClick={exportBuild} fullWidth>
-                        Export as Mira
-                    </Button>
-                </Stack>
+                <Button disabled={!components?.size} onClick={finishBuild} fullWidth>
+                    Finish Build
+                </Button>
             </Box>
         </Box>
     )
