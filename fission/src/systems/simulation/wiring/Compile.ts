@@ -36,23 +36,27 @@ export function compileSuppliersFor(ctx: CompileCtx, targetHandleId: HandleIdAli
     }
 }
 
-export function compile(config: SimConfigData, assembly: MirabufSceneObject): SimFlow[] | undefined {
+export type CompileResult = { flows: SimFlow[]; error?: undefined } | { flows?: undefined; error: string }
+
+export function compile(config: SimConfigData, assembly: MirabufSceneObject): CompileResult {
     const simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)
-    if (!simLayer) return undefined
+    if (!simLayer) return { error: "No simulation layer found for the selected robot" }
 
     const ctx: CompileCtx = { config, simLayer, encountered: new Set() }
     try {
-        return Object.values(config.handles)
+        const flows = Object.values(config.handles)
             .filter(h => !h.isSource && h.enabled && edgesOf(config, h.id).length > 0)
             .filter(h => NODE_KINDS[config.nodes[h.nodeId]!.kind].makeReceiver !== undefined)
             .map(h => {
                 const receiver = NODE_KINDS[config.nodes[h.nodeId]!.kind].makeReceiver!(h, ctx)
                 const supplier = compileSuppliersFor(ctx, h.id)
-                if (!receiver || !supplier) throw new Error(`Failed to compile flow for handle ${h.id}`)
+                if (!receiver) throw new Error(`Could not create a receiver for '${h.displayName}'`)
+                if (!supplier) throw new Error(`Could not create a supplier for '${h.displayName}'`)
                 return { supplier, receiver }
             })
+        return { flows }
     } catch (error) {
         console.error("Compilation failed", error)
-        return undefined
+        return { error: error instanceof Error ? error.message : String(error) }
     }
 }

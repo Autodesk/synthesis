@@ -24,12 +24,12 @@ class GamepieceManipBehavior extends Behavior {
         const ejectPressed = InputSystem.getInput("eject", this._brainIndex) === 1
 
         if (ejectPressed && !this._prevEjectPressed)
-            this._ejector.setReceiverValue([{ value: 1, baseType: EJECTOR_TYPE[0] }])
-        else this._ejector.setReceiverValue([{ value: 0, baseType: EJECTOR_TYPE[0] }])
+            this._ejector.setReceiverValue([{ value: true, baseType: EJECTOR_TYPE[0] }])
+        else this._ejector.setReceiverValue([{ value: false, baseType: EJECTOR_TYPE[0] }])
 
         this._prevEjectPressed = ejectPressed
 
-        this._intake.value = InputSystem.getInput("intake", this._brainIndex)
+        this._intake.value = InputSystem.getInput("intake", this._brainIndex) === 1
     }
 }
 

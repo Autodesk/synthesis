@@ -450,18 +450,18 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     const save = useCallback(() => {
         if (simConfig && selectedAssembly) {
-            const flows = compile(simConfig, selectedAssembly)
-            if (!flows) {
-                console.error("Compilation Failed")
-                return
+            const { flows, error } = compile(simConfig, selectedAssembly)
+            if (flows) {
+                console.debug(`${flows.length} Flows Successfully Compiled!`)
+            } else {
+                addToast("error", "Compilation Failed", error)
             }
-            console.debug(`${flows.length} Flows Successfully Compiled!`)
 
             selectedAssembly.updateSimConfig(simConfig)
         } else {
             console.warn("Failed to save SimConfig", simConfig, selectedAssembly)
         }
-    }, [selectedAssembly, simConfig])
+    }, [addToast, selectedAssembly, simConfig])
 
     const reset = useCallback(() => {
         if (selectedAssembly) {
