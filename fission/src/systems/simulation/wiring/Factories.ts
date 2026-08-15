@@ -143,7 +143,7 @@ export function syncSimIOHandles(config: SimConfigData, assembly: MirabufSceneOb
         .filter(x => x.info?.GUID)
         .map(
             (x): HandleInfo => ({
-                id: `${NODE_ID_SIM_IN}:${x.idStr}`,
+                id: `${NODE_ID_SIM_IN}:${x.id.type}:${x.id.guid}`,
                 nodeId: NODE_ID_SIM_IN,
                 noraType: x.receiverType,
                 originType: x.id.type,
@@ -160,7 +160,7 @@ export function syncSimIOHandles(config: SimConfigData, assembly: MirabufSceneOb
         .filter(x => x.info?.GUID)
         .map(
             (x): HandleInfo => ({
-                id: `${NODE_ID_SIM_OUT}:${x.idStr}`,
+                id: `${NODE_ID_SIM_OUT}:${x.id.type}:${x.id.guid}`,
                 nodeId: NODE_ID_SIM_OUT,
                 noraType: x.supplierType,
                 originType: x.id.type,
