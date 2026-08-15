@@ -38,7 +38,14 @@ import { NODE_ID_ROBOT_IO } from "@/systems/simulation/wiring/nodes/RobotIONode"
 import { NODE_ID_SIM_IN } from "@/systems/simulation/wiring/nodes/SimInputNode"
 import { NODE_ID_SIM_OUT } from "@/systems/simulation/wiring/nodes/SimOutputNode"
 import { nodeTypes } from "@/systems/simulation/wiring/NodeKinds"
-import { addConstructorNode, addDeconstructorNode, addJunctionNode, defaultConfig, syncRobotIOHandles, syncSimIOHandles } from "@/systems/simulation/wiring/Factories"
+import {
+    addConstructorNode,
+    addDeconstructorNode,
+    addJunctionNode,
+    defaultConfig,
+    syncRobotIOHandles,
+    syncSimIOHandles,
+} from "@/systems/simulation/wiring/Factories"
 import { titleCase } from "@/util/Utility"
 
 export type ConfigState = "wiring" | "simIO" | "robotIO"
@@ -413,7 +420,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         >
             {/* <Controls /> */}
             <FlowControls onCreateJunction={onCreateJunction} />
-            <FlowInfo reset={reset ?? (() => { })} />
+            <FlowInfo reset={reset ?? (() => {})} />
         </ReactFlow>
     )
 }

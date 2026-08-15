@@ -13,7 +13,7 @@ import {
     NodeKindId,
     removeHandle,
     type SimConfigData,
-    HandleIdAlias,
+    type HandleIdAlias,
 } from "./SimGraph"
 import { NODE_ID_ROBOT_IO } from "./nodes/RobotIONode"
 import { NODE_ID_SIM_IN } from "./nodes/SimInputNode"
@@ -26,7 +26,7 @@ import { ACCEL_TYPE } from "../stimulus/AccelStimulus"
 import { GYRO_TYPE } from "../stimulus/GyroStimulus"
 import { random } from "@/util/Random"
 import { AggregateStrategy } from "../wpilib_brain/SimDataFlow"
-import { XYPosition } from "@xyflow/react"
+import type { XYPosition } from "@xyflow/react"
 
 export function getDriverSignals(assembly: MirabufSceneObject): Driver[] {
     return World.simulationSystem.getSimulationLayer(assembly.mechanism)?.drivers ?? []

@@ -18,9 +18,9 @@ export function clamp(num: number, min: number, max: number): number {
 export function deobf(s: string) {
     return decodeURIComponent(
         "%" +
-        atob(s)
-            .match(/.{1,2}/g)!
-            .join("%")
+            atob(s)
+                .match(/.{1,2}/g)!
+                .join("%")
     )
 }
 
@@ -119,8 +119,8 @@ export const yieldToMain = () => new Promise<void>(resolve => setTimeout(resolve
 
 export type RecursivePartial<T> = {
     [P in keyof T]?: T[P] extends (infer U)[]
-    ? RecursivePartial<U>[]
-    : T[P] extends object | undefined
-    ? RecursivePartial<T[P]>
-    : T[P]
+        ? RecursivePartial<U>[]
+        : T[P] extends object | undefined
+          ? RecursivePartial<T[P]>
+          : T[P]
 }

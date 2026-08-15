@@ -64,16 +64,16 @@ type SerializedNoraBaseType<T extends NoraBaseType> = T extends {
 }
     ? `${BaseType.NUMBER}:${U}:${O}:${A}`
     : T extends { type: BaseType.NUMBER; unit: infer U extends BaseUnit; order: infer O extends DerivativeOrder }
-    ? `${BaseType.NUMBER}:${U}:${O}`
-    : `${BaseType.BOOLEAN}`
+      ? `${BaseType.NUMBER}:${U}:${O}`
+      : `${BaseType.BOOLEAN}`
 
 /// Ends up expanding to a comma separated string containing all serialized Nora base types from the array provided
 /// Resolves to `never` for empty or non-tuple types
 type SerializedNoraType<T extends readonly NoraBaseType[]> = T extends readonly [infer H extends NoraBaseType]
     ? SerializedNoraBaseType<H>
     : T extends readonly [infer H extends NoraBaseType, ...infer R extends readonly NoraBaseType[]]
-    ? `${SerializedNoraBaseType<H>},${SerializedNoraType<R>}`
-    : never
+      ? `${SerializedNoraBaseType<H>},${SerializedNoraType<R>}`
+      : never
 
 /**
  * Enforces that T be const and satisfy `NoraType`, meaning we have better type safety when using `NoraTypeOf`

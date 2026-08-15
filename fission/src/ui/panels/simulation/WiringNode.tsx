@@ -1,11 +1,7 @@
 import { Box } from "@mui/material"
 import { type Connection, type Edge, Handle, type NodeProps, Position } from "@xyflow/react"
 import { useCallback, useMemo } from "react"
-import {
-    type HandleInfo,
-    handleInfoDisplayCompare,
-    type SimConfigData,
-} from "@/systems/simulation/wiring/SimGraph"
+import { type HandleInfo, handleInfoDisplayCompare, type SimConfigData } from "@/systems/simulation/wiring/SimGraph"
 import { validateConnection as validateConfigConnection } from "@/systems/simulation/wiring/Typing"
 import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
 import { noraTypeToColorStr } from "@/systems/simulation/Nora"

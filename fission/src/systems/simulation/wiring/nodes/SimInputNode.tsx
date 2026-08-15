@@ -1,4 +1,4 @@
-import type { NodeProps, } from "@xyflow/react"
+import type { NodeProps } from "@xyflow/react"
 import { memo } from "react"
 import { handleInfoDisplayCompare, handlesOf, type SimConfigData } from "@/systems/simulation/wiring/SimGraph"
 import { HandleRow, WiringNodeShell } from "../NodeKinds"
