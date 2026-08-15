@@ -12,7 +12,7 @@
 /// of the various types
 
 // for node colors
-import { generatePalette } from "@/util/Colors";
+import { generatePalette } from "@/util/Colors"
 
 /// NOTE: the variant string values should match TypeScript types (i.e., possible as the result of `typeof`)
 export enum BaseType {
@@ -39,9 +39,10 @@ export enum BaseAxis {
 }
 
 /// A NoraBaseType represents a single unit of data within this type system. E.g., a single axis angle from a gyroscope
-export type NoraBaseType =
+export type NoraBaseType = { displayName?: string } & (
     | { type: BaseType.NUMBER; unit: BaseUnit; order: DerivativeOrder; axis?: BaseAxis }
     | { type: BaseType.BOOLEAN }
+)
 
 export type NoraBaseValue = NoraBaseValueOf<NoraBaseType>
 export type NoraBaseValueOf<T extends NoraBaseType> = T extends { type: BaseType.BOOLEAN }
@@ -84,8 +85,12 @@ export function noraType<const T extends NoraType>(t: T): T {
 /**
  * Utility function for defining a number in a `NoraType` definition
  */
-export function num<const U extends BaseUnit, const O extends DerivativeOrder>(unit: U, order: O) {
-    return { type: BaseType.NUMBER, unit, order } as const
+export function num<const U extends BaseUnit, const O extends DerivativeOrder>(
+    unit: U,
+    order: O,
+    displayName?: string
+): { type: BaseType.NUMBER; unit: U; order: O; displayName?: string } {
+    return { type: BaseType.NUMBER, unit, order, displayName }
 }
 
 /**
@@ -94,16 +99,17 @@ export function num<const U extends BaseUnit, const O extends DerivativeOrder>(u
 export function numAxis<const U extends BaseUnit, const O extends DerivativeOrder, const A extends BaseAxis>(
     unit: U,
     order: O,
-    axis?: A
-) {
-    return { type: BaseType.NUMBER, unit, order, axis } as const
+    axis: A,
+    displayName?: string
+): { type: BaseType.NUMBER; unit: U; order: O; axis: A; displayName?: string } {
+    return { type: BaseType.NUMBER, unit, order, axis, displayName }
 }
 
 /**
  * Utility function for defining a boolean in a `NoraType` definition
  */
-export function bool() {
-    return { type: BaseType.BOOLEAN } as const
+export function bool(displayName?: string): { type: BaseType.BOOLEAN; displayName?: string } {
+    return { type: BaseType.BOOLEAN, displayName }
 }
 
 const UNITS = new Set<string>(Object.values(BaseUnit))

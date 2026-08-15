@@ -241,7 +241,7 @@ export function addConstructorNode(
             noraType: [componentType],
             originId: nodeId,
             index: i,
-            displayName: `In ${i + 1}`,
+            displayName: componentType.displayName ?? `In ${i + 1}`,
             enabled: true,
             many: false, // TODO: is this right?
             isSource: false,
@@ -278,13 +278,14 @@ export function addDeconstructorNode(
     addHandle(config, targetHandle)
 
     targetNoraType.forEach((componentType, i) => {
+        console.log(JSON.stringify(componentType))
         addHandle(config, {
             id: "",
             nodeId,
             noraType: [componentType],
             originId: nodeId,
             index: i,
-            displayName: `Out ${i + 1}`,
+            displayName: componentType.displayName ?? `Out ${i + 1}`,
             enabled: true,
             many: true,
             isSource: true,

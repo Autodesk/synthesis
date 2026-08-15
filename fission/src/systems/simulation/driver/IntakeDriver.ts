@@ -1,12 +1,12 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { mirabuf } from "@/proto/mirabuf"
 import Driver, { type DriverID } from "./Driver"
-import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../Nora"
+import { noraType, type NoraValueOf, bool } from "../Nora"
 
-const INTAKE_TYPE = noraType([num(BaseUnit.ANGLE, DerivativeOrder.ZERO)])
+const INTAKE_TYPE = noraType([bool("Intake")])
 
 class IntakeDriver extends Driver<typeof INTAKE_TYPE> {
-    public value: number
+    public value: boolean
 
     private _assembly: MirabufSceneObject
 
@@ -14,11 +14,11 @@ class IntakeDriver extends Driver<typeof INTAKE_TYPE> {
         super(id, info)
 
         this._assembly = assembly
-        this.value = 0.0
+        this.value = false
     }
 
     public update(_deltaT: number): void {
-        this._assembly.intakeActive = this.value > 0.5
+        this._assembly.intakeActive = this.value
     }
 
     protected receiveValue([val]: NoraValueOf<typeof INTAKE_TYPE>): void {

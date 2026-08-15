@@ -22,7 +22,7 @@ function shortestAngleDelta(from: number, to: number): number {
     return d
 }
 
-const HINGE_TYPE = [num(BaseUnit.ANGLE, DerivativeOrder.ZERO)] as const satisfies NoraType
+const HINGE_TYPE = [num(BaseUnit.ANGLE, DerivativeOrder.ZERO, "Angle")] as const satisfies NoraType
 
 class HingeDriver extends Driver<typeof HINGE_TYPE> {
     private _constraint: Jolt.HingeConstraint

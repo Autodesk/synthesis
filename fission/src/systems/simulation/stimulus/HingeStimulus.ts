@@ -4,7 +4,10 @@ import { BaseUnit, DerivativeOrder, noraType, num, type NoraValueOf } from "../N
 import EncoderStimulus from "./EncoderStimulus"
 import type { StimulusID } from "./Stimulus"
 
-const HINGE_TYPE = noraType([num(BaseUnit.ANGLE, DerivativeOrder.ZERO), num(BaseUnit.ANGLE, DerivativeOrder.ONE)])
+const HINGE_TYPE = noraType([
+    num(BaseUnit.ANGLE, DerivativeOrder.ZERO, "Angle"),
+    num(BaseUnit.ANGLE, DerivativeOrder.ONE, "Velocity"),
+])
 
 class HingeStimulus extends EncoderStimulus<typeof HINGE_TYPE> {
     private _accum: boolean = false

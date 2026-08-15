@@ -11,12 +11,12 @@ import Stimulus, { type StimulusID } from "./Stimulus"
 import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, BaseAxis, numAxis } from "../Nora"
 
 export const ACCEL_TYPE = noraType([
-    numAxis(BaseUnit.POSITION, DerivativeOrder.TWO, BaseAxis.X),
-    numAxis(BaseUnit.POSITION, DerivativeOrder.TWO, BaseAxis.Y),
-    numAxis(BaseUnit.POSITION, DerivativeOrder.TWO, BaseAxis.Z),
-    numAxis(BaseUnit.POSITION, DerivativeOrder.ONE, BaseAxis.X),
-    numAxis(BaseUnit.POSITION, DerivativeOrder.ONE, BaseAxis.Y),
-    numAxis(BaseUnit.POSITION, DerivativeOrder.ONE, BaseAxis.Z),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.TWO, BaseAxis.X, "Accel X"),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.TWO, BaseAxis.Y, "Accel Y"),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.TWO, BaseAxis.Z, "Accel Z"),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.ONE, BaseAxis.X, "Vel X"),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.ONE, BaseAxis.Y, "Vel Y"),
+    numAxis(BaseUnit.POSITION, DerivativeOrder.ONE, BaseAxis.Z, "Vel Z"),
 ])
 
 class AccelStimulus extends Stimulus<typeof ACCEL_TYPE> {

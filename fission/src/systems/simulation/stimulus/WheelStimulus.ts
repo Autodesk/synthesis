@@ -5,8 +5,8 @@ import EncoderStimulus from "./EncoderStimulus"
 import type { StimulusID } from "./Stimulus"
 
 export const WHEEL_STIMULUS_TYPE = noraType([
-    num(BaseUnit.ANGLE, DerivativeOrder.ZERO),
-    num(BaseUnit.ANGLE, DerivativeOrder.ONE),
+    num(BaseUnit.ANGLE, DerivativeOrder.ZERO, "Angle"),
+    num(BaseUnit.ANGLE, DerivativeOrder.ONE, "Velocity"),
 ])
 
 class WheelRotationStimulus extends EncoderStimulus<typeof WHEEL_STIMULUS_TYPE> {

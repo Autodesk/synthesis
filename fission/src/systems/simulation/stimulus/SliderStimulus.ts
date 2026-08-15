@@ -5,8 +5,8 @@ import type { StimulusID } from "./Stimulus"
 import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../Nora"
 
 const SLIDER_TYPE = noraType([
-    num(BaseUnit.POSITION, DerivativeOrder.ZERO),
-    num(BaseUnit.POSITION, DerivativeOrder.ONE),
+    num(BaseUnit.POSITION, DerivativeOrder.ZERO, "Position"),
+    num(BaseUnit.POSITION, DerivativeOrder.ONE, "Velocity"),
 ])
 
 class SliderStimulus extends EncoderStimulus<typeof SLIDER_TYPE> {

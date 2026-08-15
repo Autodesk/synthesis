@@ -13,12 +13,12 @@ import SimGeneric from "../wpilib_brain/sim/SimGeneric"
 import Stimulus, { type StimulusID } from "./Stimulus"
 
 export const GYRO_TYPE = noraType([
-    numAxis(BaseUnit.ANGLE, DerivativeOrder.ZERO, BaseAxis.X),
-    numAxis(BaseUnit.ANGLE, DerivativeOrder.ZERO, BaseAxis.Y),
-    numAxis(BaseUnit.ANGLE, DerivativeOrder.ZERO, BaseAxis.Z),
-    numAxis(BaseUnit.ANGLE, DerivativeOrder.ONE, BaseAxis.X),
-    numAxis(BaseUnit.ANGLE, DerivativeOrder.ONE, BaseAxis.Y),
-    numAxis(BaseUnit.ANGLE, DerivativeOrder.ONE, BaseAxis.Z),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ZERO, BaseAxis.X, "Angle X"), // TODO: yaw/pitch/roll?
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ZERO, BaseAxis.Y, "Angle Y"),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ZERO, BaseAxis.Z, "Angle Z"),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ONE, BaseAxis.X, "Vel X"),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ONE, BaseAxis.Y, "Vel Y"),
+    numAxis(BaseUnit.ANGLE, DerivativeOrder.ONE, BaseAxis.Z, "Vel Z"),
 ])
 
 class GyroStimulus extends Stimulus<typeof GYRO_TYPE> {

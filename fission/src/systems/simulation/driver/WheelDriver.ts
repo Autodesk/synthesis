@@ -61,7 +61,7 @@ export function mecanumSuspensionTravel(radii: number[]): number {
     return MECANUM_SUSPENSION_TRAVEL + 2 * spread
 }
 
-export const WHEEL_DRIVER_TYPE = noraType([num(BaseUnit.POSITION, DerivativeOrder.ZERO)])
+export const WHEEL_DRIVER_TYPE = noraType([num(BaseUnit.POSITION, DerivativeOrder.ZERO, "Position")])
 
 class WheelDriver extends Driver<typeof WHEEL_DRIVER_TYPE> {
     private _constraint: Jolt.VehicleConstraint

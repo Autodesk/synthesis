@@ -8,7 +8,7 @@ import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../N
 
 const MAX_FORCE_WITHOUT_GRAV = 500
 
-const SLIDER_TYPE = noraType([num(BaseUnit.POSITION, DerivativeOrder.ZERO)])
+const SLIDER_TYPE = noraType([num(BaseUnit.POSITION, DerivativeOrder.ZERO, "Position")])
 
 class SliderDriver extends Driver<typeof SLIDER_TYPE> {
     private _constraint: Jolt.SliderConstraint
