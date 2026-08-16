@@ -12,10 +12,14 @@ describe("Mesh Creation Tests", () => {
         expect(shapeResult).toBeDefined()
         shapeResult.computeBoundingSphere()
         expect(shapeResult.boundingSphere?.radius).toBeCloseTo(4.0, 2)
+
+        JOLT.destroy(sphereShape)
     })
 
     test("Box Mesh Creation", () => {
-        const boxShape = new JOLT.BoxShape(new JOLT.Vec3(0.5, 2, 4.5))
+        const halfExtent = new JOLT.Vec3(0.5, 2, 4.5)
+        const boxShape = new JOLT.BoxShape(halfExtent)
+        JOLT.destroy(halfExtent)
         const shapeResult = createMeshForShape(boxShape)
 
         expect(shapeResult).toBeDefined()
@@ -25,6 +29,8 @@ describe("Mesh Creation Tests", () => {
         expect(boxSize.x).toBeCloseTo(1.0, 2)
         expect(boxSize.y).toBeCloseTo(4.0, 2)
         expect(boxSize.z).toBeCloseTo(9.0, 2)
+
+        JOLT.destroy(boxShape)
     })
 })
 

@@ -127,6 +127,13 @@ describe("ScoringZoneSceneObject", () => {
     })
 
     describe("checkObjectsInZone", () => {
+        let zoneUnderTest: ScoringZoneSceneObject | undefined
+
+        afterEach(() => {
+            if (zoneUnderTest?.bounding) JOLT.destroy(zoneUnderTest.bounding)
+            zoneUnderTest = undefined
+        })
+
         const createZoneWithBounding = (alliance: "red" | "blue", points: number) => {
             const parent = {} as unknown as MirabufSceneObject
             Reflect.set(parent, "fieldPreferences", {
@@ -142,10 +149,15 @@ describe("ScoringZoneSceneObject", () => {
                 ],
             })
             const zone = new ScoringZoneSceneObject(parent, 0)
-            zone.bounding = new JOLT.OrientedBox(
-                new JOLT.Mat44().sTranslation(new JOLT.Vec3(0, 0, 0)),
-                new JOLT.Vec3(1, 1, 1)
-            )
+
+            const translation = new JOLT.Vec3(0, 0, 0)
+            const transform = JOLT.Mat44.prototype.sTranslation(translation) // STATIC_ALIAS
+            JOLT.destroy(translation)
+            const halfExtent = new JOLT.Vec3(1, 1, 1)
+            zone.bounding = new JOLT.OrientedBox(transform, halfExtent)
+            JOLT.destroy(halfExtent)
+
+            zoneUnderTest = zone
             return zone
         }
 

@@ -373,6 +373,159 @@ const MANUAL_CLASS_CLASSIFICATION: Record<string, ClassClassification> = {
             "wrapPointer/construction cache-identity question the tool doesn't model.",
     },
 
+    BodyIDMemRef: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "ArrayBodyID.data() is INTERNAL_REF in generated glue.cpp (`return self->data();`, glue.cpp: " +
+            "ArrayBodyID's data() binding) -- a raw pointer into the array's own backing storage, not a " +
+            "heap allocation. PhysicsSystem.ts's createBodiesFromParser calls `newBodies.data()` / " +
+            "`newInactiveBodies.data()` right before AddBodiesPrepare/AddBodiesFinalize and never " +
+            "destroy()s the result (correct -- the array itself is destroy()'d instead, right after). NOT " +
+            "machine-classified: `jolt-ownership:generate`'s call-site scanner doesn't resolve `.data()` " +
+            "back to this specific class today (confirmed via `bun run jolt-ownership:generate`'s own " +
+            "'not seen by the ownership tool at all' hint), same class of scanner gap as the [Value] " +
+            "attribute reads above, just for a plain method return instead of a field read.",
+    },
+    // biome-ignore lint/style/useNamingConvention: matches the Jolt-generated class name verbatim
+    BodyInterface_AddState: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "BodyInterface.AddBodiesPrepare() is INTERNAL_REF in generated glue.cpp (confirmed via " +
+            "`jolt-ownership:generate`'s function-ownership.json: category INTERNAL_REF) -- Jolt's real " +
+            "`BodyInterface::AddState` is an opaque handle into the body array being added, not a caller-" +
+            "owned heap allocation. PhysicsSystem.ts's createBodiesFromParser passes the result straight " +
+            "into AddBodiesFinalize and never destroy()s it, which is correct: there is nothing to free. " +
+            "NOT machine-classified: emitted by the tool as a fresh, unseen class (no prior JS-side " +
+            "wrapper existed for it to disqualify), so it never reaches the generated-safe table; same " +
+            "category as BodyIDMemRef above.",
+    },
+    MassProperties: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "BodyCreationSettings.mMassPropertiesOverride is a `[Value] attribute MassProperties` " +
+            "(jolt/JoltJS.idl:2726). PhysicsSystem.ts reads it 3 times (createBodiesFromParser, " +
+            "createBallGamePiece-style overrides, and the ejectable-mass-override path) to set `.mMass`. " +
+            "Same INTERNAL_REF struct-member-accessor pattern as SpringSettings/ArrayFloat above: each read " +
+            "hands back a fresh wrapper over the parent settings' own embedded member, never destroy()'d " +
+            "by convention. NOT YET covered by the codegen pipeline (plain property read, see SpringSettings " +
+            "above).",
+    },
+    VehicleEngineSettings: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "VehicleConstraintSettings.mEngine is a `[Value] attribute VehicleEngineSettings` " +
+            "(jolt/JoltJS.idl:3669). ConstraintSettingsUtilities.ts's createVehicleController reads " +
+            "`controllerSettings.mEngine.mMaxTorque = maxAcc` once per wheeled-vehicle constraint. Same " +
+            "INTERNAL_REF struct-member-accessor pattern as SpringSettings/MassProperties above. NOT YET " +
+            "covered by the codegen pipeline (plain property read).",
+    },
+    VehicleTransmissionSettings: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "VehicleConstraintSettings.mTransmission is a `[Value] attribute VehicleTransmissionSettings` " +
+            "(jolt/JoltJS.idl:3670). ConstraintSettingsUtilities.ts's createVehicleController reads " +
+            "`controllerSettings.mTransmission` 4 times (mClutchStrength, mGearRatios.clear/push_back, " +
+            "mMode) per wheeled-vehicle constraint -- each read is a fresh accessor call. Same INTERNAL_REF " +
+            "struct-member-accessor pattern as VehicleEngineSettings above. NOT YET covered by the codegen " +
+            "pipeline (plain property read).",
+    },
+    Vec4: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "`Mat44.GetColumn4()` and `RMat44.GetColumn4()` are each independently STATIC_ALIAS in " +
+            "generated glue.cpp (`static Vec4 temp; return (temp = self->GetColumn4(inCol), &temp);`, two " +
+            "distinct static locals, one per class). TypeConversions.test.ts's two `compareMat` helpers " +
+            "(one per describe block) each call `jM.GetColumn4(c)` in a loop and never destroy() the " +
+            "result -- correct, since destroy()ing a static scratch corrupts it for every later call. Same " +
+            "fixed '+1 the first time this exact static address is ever touched, never grows again' " +
+            "pattern already established for RMat44/Mat44/AABox above; two distinct call sites (Mat44's " +
+            "and RMat44's overloads) means two distinct +1s, matching the observed delta of exactly 2 " +
+            "across the whole TypeConversions.test.ts run. NOT machine-classified: `new JOLT.Vec4(...)` " +
+            "also genuinely appears at src/util/TypeConversions.ts:54 (a correctly construct-and-destroy'd " +
+            "column temp, see convertThreeMatrix4ToJoltMat44), so the tool correctly refuses to call the " +
+            "whole class safe -- same class-level-granularity limitation as Vec3/Quat/Mat44/RVec3 above.",
+    },
+    MeshShapeSettings: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "PhysicsSystem.ts's createConcaveShapeSettingsFromPart builds a `new JOLT.MeshShapeSettings()` " +
+            "per concave part and hands it to `compoundShapeSettings.AddShape(...)`, which AddRefs it (same " +
+            "confirmed pattern as the ConvexHullShapeSettings entry above) and holds that reference until " +
+            "the compound settings object itself is destroyed. Correctly never raw-destroy()'d at the " +
+            "per-part call site -- doing so would double-free the same way ConvexHullShapeSettings would. " +
+            "Same RefTarget cache-aliasing blind spot as Shape/ConvexHullShapeSettings above, confirmed via " +
+            "`jolt-ownership:generate`'s hint (`isRefTarget: true`).",
+    },
+    VertexList: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "MeshShapeSettings.mTriangleVertices is a `[Value] attribute VertexList` (jolt/JoltJS.idl:1174). " +
+            "createConcaveShapeSettingsFromPart's per-vertex loop calls `settings.mTriangleVertices." +
+            "push_back(vert)` once per vertex (plus a few more reads for `.size()`), each a fresh accessor " +
+            "call over the settings' own embedded member -- same INTERNAL_REF struct-member-accessor " +
+            "pattern as ArrayVec3/ArrayFloat above, which is why the delta scales with vertex count instead " +
+            "of staying fixed. The separate `settings.mTriangleVertices = new JOLT.VertexList()` assignment " +
+            "at the top of the function is a genuine CLONED-argument temp (glue.cpp's setter does " +
+            "`self->mTriangleVertices = *arg0`) that is never destroy()'d -- a real, small (one wrapper per " +
+            "call), currently-unfixed leak layered on top of the much larger INTERNAL_REF signal; left as-is " +
+            "here since fixing it does not change this class's classification (still has genuine INTERNAL_REF " +
+            "contributors that can never return to baseline).",
+    },
+    IndexedTriangleList: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "MeshShapeSettings.mIndexedTriangles is a `[Value] attribute IndexedTriangleList` " +
+            "(jolt/JoltJS.idl:1175). Same INTERNAL_REF struct-member-accessor pattern as VertexList above: " +
+            "createConcaveShapeSettingsFromPart's per-triangle loop and `.size()` reads dominate the delta. " +
+            "Same unfixed-but-immaterial CLONED-temp leak at the initial `settings.mIndexedTriangles = new " +
+            "JOLT.IndexedTriangleList()` assignment as VertexList above.",
+    },
+    PhysicsMaterialList: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "MeshShapeSettings.mMaterials is a `[Value] attribute PhysicsMaterialList` (jolt/JoltJS.idl:1176). " +
+            "Same INTERNAL_REF struct-member-accessor pattern as VertexList/IndexedTriangleList above, via " +
+            "the `settings.mMaterials.push_back(material)` accessor call. Same unfixed-but-immaterial " +
+            "CLONED-temp leak at the initial `settings.mMaterials = new JOLT.PhysicsMaterialList()` " +
+            "assignment as VertexList above.",
+    },
+    PhysicsMaterial: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "PhysicsMaterialList.push_back(inMaterial) AddRefs its argument (`self->push_back(inMaterial)` " +
+            "onto an `Array<RefConst<PhysicsMaterial>>`, confirmed via `isRefTarget: true` in the ownership " +
+            "hints). createConcaveShapeSettingsFromPart's single `new JOLT.PhysicsMaterial()` per part is " +
+            "handed to `settings.mMaterials.push_back(material)` and correctly never destroy()'d afterward " +
+            "-- same RefTarget cache-aliasing blind spot as WheelSettingsWV/ConvexHullShapeSettings above, " +
+            "freed via refcounting once the owning MeshShapeSettings (and in turn the compound shape) is " +
+            "torn down.",
+    },
+    SphereShape: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "IntakeSensorSceneObject.ts/PhysicsSystem.ts's `new JOLT.SphereShapeSettings(radius)` is handed " +
+            "to `createSensor`, which calls `shapeSettings.Create()` (STATIC_ALIAS ShapeResult) then " +
+            "`.Get()` to obtain the live Shape (cached here under its concrete subtype, SphereShape, same " +
+            "binder polymorphic-return-caching quirk as BoxShape above) and passes it into `createBody`, " +
+            "which hands it to BodyCreationSettings (AddRefs it). Correctly never raw-destroy()'d; freed via " +
+            "refcounting once the sensor body is destroyed. Same RefTarget cache-aliasing blind spot as " +
+            "Shape/BoxShape above.",
+    },
+    SphereShapeSettings: {
+        bucket: "INTERNAL_REF_UNPROVABLE",
+        reason:
+            "PhysicsSystem.ts's createBodiesFromParser builds a `new JOLT.SphereShapeSettings(radius)` for " +
+            "the sphericity-collapse path and hands it straight to `new JOLT.RotatedTranslatedShapeSettings" +
+            "(center, identityRotation, sphereSettings)` (glue.cpp: `return new " +
+            "RotatedTranslatedShapeSettings(*inPosition, *inRotation, inShape);` -- `inShape` passed as a " +
+            "raw pointer, not dereferenced, i.e. AddRef'd/held, not copied). `offsetSettings` (the " +
+            "RotatedTranslatedShapeSettings) is destroy()'d right after `.Create()`, which correctly frees " +
+            "`sphereSettings` via refcounting as its sole remaining owner -- `sphereSettings` itself is " +
+            "correctly never raw-destroy()'d directly (would double-free). Same RefTarget cache-aliasing " +
+            "blind spot as ConvexHullShapeSettings/WheelSettingsWV above, confirmed via " +
+            "`jolt-ownership:generate`'s hint (`isRefTarget: true`).",
+    },
+
     // --- Investigated but deliberately left unclassified (real candidates, not blind spots) ---
     // - RRayCast: PhysicsSystem.ts's rayCast() does `const ray = new JOLT.RRayCast(rayVec, dir)` and
     //   never destroy()s it -- not on the miss path (dropped on return undefined), and no caller of
@@ -394,6 +547,17 @@ const MANUAL_CLASS_CLASSIFICATION: Record<string, ClassClassification> = {
     // - RotatedTranslatedShapeSettings: not documented anywhere in docs/JOLT_FUNCTIONS_OWNERSHIP_
     //   INVARIANTS.md at all, and memory-audit's table predates whatever call site in this branch
     //   constructs it. No evidence either way yet.
+    // - VehicleConstraintStepListener: production code IS correct -- PhysicsSystem.ts's destroyMechanism
+    //   calls `RemoveStepListener` then `JOLT.destroy()` on every listener in `mech.stepListeners`
+    //   (see the comment directly above that call), and Mechanism.ts pushes every
+    //   `createVehicleListeners` result into that array, so a real dispose() cycle returns this class to
+    //   baseline. The nonzero deltas seen in this branch's leak run (MirabufSceneObject.test.ts,
+    //   ContactEvent.test.ts, Mechanism.test.ts) all come from integration tests that build a wheeled-
+    //   vehicle mechanism/scene object and never call `.dispose()` on it before the test ends -- a test-
+    //   teardown gap in those test files, not a call-site bug. Left unclassified so the check keeps
+    //   surfacing it as a prompt to add teardown, rather than silently accepting a real future leak in
+    //   this class. Same underlying pattern likely explains a chunk of ContactManifold/RVec3/OrientedBox-
+    //   adjacent deltas seen in other undisposed integration tests -- not audited exhaustively here.
 }
 
 export const CLASS_CLASSIFICATION: Record<string, ClassClassification> = {
