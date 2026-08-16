@@ -13,6 +13,8 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:asan": "sh ./scripts/test-asan.sh",
+    "test:leak": "JOLT_LEAK_CHECK=1 vitest run --project fission-leak",
+    "jolt-ownership:generate": "sh scripts/jolt-ownership/generate-glue.sh && node scripts/jolt-ownership/parse-glue.mjs && node scripts/jolt-ownership/scan-callsites.mjs && node scripts/jolt-ownership/generate-classification.mjs && node scripts/jolt-ownership/emit-classification.mjs && node scripts/jolt-ownership/emit-hints.mjs",
     "test:multiplayer": "VITE_RUN_MULTIPLAYER_TEST=true vitest src/test/multiplayer",
     "build": "tsc && vite build",
     "build:prod": "tsc && vite build --base=/fission/ --outDir dist/prod",

@@ -158,6 +158,47 @@ export default defineConfig(({ mode }): ViteUserConfig => {
         },
     }
 
+    // `bun run test:leak` -- reruns the same tests with `JoltLeakDetection.checkForLeaks` calls
+    // active (see that file). `JOLT_LEAK_DIST` optionally points the run at a different
+    // `@synthesis.adsk/jolt-physics` build (e.g. a local dist) instead of the installed npm
+    // package, the same way `JOLT_ASAN_DIST` does for the asan project.
+    const fissionLeakProject = {
+        extends: true,
+        ...(process.env.JOLT_LEAK_DIST
+            ? {
+                  resolve: {
+                      alias: [
+                          ...baseAliases,
+                          {
+                              find: /^@synthesis\.adsk\/jolt-physics(\/wasm-compat)?$/,
+                              replacement: process.env.JOLT_LEAK_DIST,
+                          },
+                      ],
+                  },
+              }
+            : {}),
+        test: {
+            name: "fission-leak",
+            setupFiles: ["src/test/TestSetup.browser.ts", "src/test/JoltLeakDetectionSetup.ts"],
+            globalSetup: ["src/test/TestSetup.server.ts"],
+            testTimeout: 10000,
+            globals: true,
+            environment: "jsdom",
+            env: { VITE_JOLT_LEAK_CHECK: "1" },
+            browser: {
+                enabled: true,
+                provider: "playwright",
+                instances: [
+                    {
+                        name: "chromium",
+                        browser: "chromium",
+                        headless: true,
+                    },
+                ],
+            },
+        },
+    }
+
     return {
         plugins: plugins as ViteUserConfig["plugins"],
         publicDir: "./public",
@@ -212,6 +253,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
             projects: [
                 fissionProject,
                 ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject as TestProjectConfiguration] : []),
+                ...(process.env.JOLT_LEAK_CHECK ? [fissionLeakProject as TestProjectConfiguration] : []),
             ],
         },
         build: {

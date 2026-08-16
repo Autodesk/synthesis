@@ -34,3 +34,5 @@ coverage
 src/test/**/__screenshots__
 
 tsconfig.tsbuildinfo
+
+scripts/jolt-ownership/.generated/
