@@ -120,6 +120,10 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo.setSpace("local")
         this._gizmo.attach(this._obj)
 
+        if (this._parentObject) {
+            this._parentObject.disablePhysics()
+        }
+
         this._gizmo.addEventListener("dragging-changed", (event: { target: TransformControls; value: unknown }) => {
             // disable target controls when dragging the transform gizmo
             const gizmoDragging = World.sceneRenderer.isAnyGizmoDragging()
@@ -200,7 +204,6 @@ class GizmoSceneObject extends SceneObject {
 
         /** Translating the obj changes to the mirabuf scene object */
         if (this._parentObject) {
-            this._parentObject.disablePhysics()
             if (this.isDragging || this._forceUpdate) {
                 this._forceUpdate = false
                 this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
