@@ -60,7 +60,7 @@ vi.mock("@/systems/preferences/PreferencesSystem", () => ({
     },
 }))
 
-vi.mock("@/ui/components/SceneOverlayEvents", () => ({
+vi.mock("@/components/overlays/SceneOverlayEvents.ts", () => ({
     SceneOverlayTag: vi.fn(() => ({ dispose: vi.fn() })),
 }))
 
