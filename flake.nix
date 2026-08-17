@@ -2,18 +2,22 @@
 # https://wiki.nixos.org/wiki/Flakes#Setup
 {
   description = "Synthesis' Web-Based Robotics Simulator";
-  
+
   nixConfig = {
     commit-lock-file-summary = "chore: update flake.lock";
   };
 
-  inputs= {
+  inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     systems.url = "github:nix-systems/triplet";
   };
 
   outputs =
-    { self, nixpkgs, systems }:
+    {
+      self,
+      nixpkgs,
+      systems,
+    }:
     let
       inherit (nixpkgs) lib;
 
@@ -55,17 +59,36 @@
               bun
             ];
           };
-          multiplayer = pkgs.mkShell {
+          glueball = pkgs.mkShell {
             packages = with pkgs; [
-              bun
+              cargo
+              clippy
+              rustfmt
+              rust-analyzer
             ];
           };
         }
       );
 
+      packages = forEachSystem (
+        { pkgs, ... }: {
+          glueball = pkgs.callPackage ./glueball/package.nix { };
+        }
+      );
+
       formatter = forEachSystem ({ pkgs, ... }: pkgs.nixfmt-tree);
 
-      # Build all devShells, instead of just verifying they are derivations
-      checks = forEachSystem ({ system, ... }: self.devShells.${system});
+      # Build all devShells and packages, instead of just verifying they are
+      # derivations
+      checks = forEachSystem (
+        { system, ... }:
+        let
+          prefixAttrs = prefix: lib.mapAttrs' (n: lib.nameValuePair "${prefix}-${n}");
+        in
+        lib.foldr lib.attrsets.unionOfDisjoint { } [
+          (prefixAttrs "dev-shell" self.devShells.${system})
+          (prefixAttrs "package" self.packages.${system} )
+        ]
+      );
     };
 }

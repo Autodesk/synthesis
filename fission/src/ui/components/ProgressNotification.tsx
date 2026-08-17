@@ -3,8 +3,8 @@ import { Box } from "@mui/system"
 import type React from "react"
 import { useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
-import { easeOutQuad } from "@/util/EasingFunctions"
-import { type ProgressHandle, ProgressHandleStatus } from "./ProgressNotificationData"
+import { easeOutQuad } from "@/util/EasingFunctions.ts"
+import { type ProgressHandle, ProgressHandleStatus } from "./ProgressNotificationData.ts"
 
 interface ProgressData {
     lastValue: number

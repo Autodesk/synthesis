@@ -21,11 +21,10 @@ const CODESIM_BUTTONS: CodesimButton[] = [
 ]
 
 const CodesimControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
-    const { isField, isWpilibBrain, openConfig } = useConfigureAssembly(selectedAssembly)
+    const { isField, isWpilibBrain, openConfig, disabledMessage } = useConfigureAssembly(selectedAssembly)
 
     // codesim is robot only
     const disabledTooltip = ({ requiresWpilibBrain }: CodesimButton) => {
-        if (!selectedAssembly) return "Spawn an assembly first"
         if (isField) return "Select a robot to configure"
         if (requiresWpilibBrain && !isWpilibBrain) return "Set this robot's brain to WPILib first"
         return undefined
@@ -38,14 +37,14 @@ const CodesimControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ 
                     key={button.label}
                     label={button.label}
                     icon={<Box sx={TOP_BAR_GLYPH_SX}>{button.icon}</Box>}
-                    disabledTooltip={disabledTooltip(button)}
+                    disabledTooltip={disabledMessage ?? disabledTooltip(button)}
                     onClick={() => openConfig(button.mode)}
                 />
             ))}
 
             <Box sx={TOP_BAR_DIVIDER_SX} />
 
-            <ConfigureSplitDropdown selectedAssembly={selectedAssembly} />
+            <ConfigureSplitDropdown disabledMessage={disabledMessage} selectedAssembly={selectedAssembly} />
         </Stack>
     )
 }

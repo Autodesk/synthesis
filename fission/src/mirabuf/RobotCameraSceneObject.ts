@@ -1,4 +1,3 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type { CameraPreferences } from "@/systems/preferences/PreferenceTypes"
 import SceneObject from "@/systems/scene/SceneObject"
@@ -7,6 +6,7 @@ import SimCamera from "@/systems/simulation/wpilib_brain/sim/SimCamera"
 import World from "@/systems/World"
 import { convertArrayToThreeMatrix4, convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
 import type MirabufSceneObject from "./MirabufSceneObject"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 
 const MAX_DIMENSION = 1280
 const MIN_DIMENSION = 16
