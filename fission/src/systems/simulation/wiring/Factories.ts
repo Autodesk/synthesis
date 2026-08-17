@@ -278,7 +278,6 @@ export function addDeconstructorNode(
     addHandle(config, targetHandle)
 
     targetNoraType.forEach((componentType, i) => {
-        console.log(JSON.stringify(componentType))
         addHandle(config, {
             id: "",
             nodeId,

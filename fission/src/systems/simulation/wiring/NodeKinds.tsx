@@ -72,7 +72,6 @@ const junctionNode: NodeKind = {
     component: JunctionNode,
     makeSupplier: (handle, ctx) => {
         const [input] = nodeTargets(ctx.config, handle.nodeId)
-        console.log(input)
         return input && compileSuppliersFor(ctx, input.id)
     },
 }

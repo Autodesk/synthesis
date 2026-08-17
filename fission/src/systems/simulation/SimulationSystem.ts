@@ -130,7 +130,7 @@ class SimulationLayer {
                 console.warn(`Skipping sensor '${sensor.name}': parent node ${sensor.parentNode} not found`)
                 return
             }
-            const guid = `SENSOR_${sensor.name}_GUID`
+            const guid = `SENSOR_${sensor.name}-${sensor.device}_GUID`
             const info = { GUID: guid, name: sensor.name }
             let stim: Stimulus
             switch (sensor.sensorType) {

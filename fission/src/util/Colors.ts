@@ -8,7 +8,7 @@ interface PaletteConfig {
 /**
  * Generates a palette deterministically so that it's the same on every startup.
  *
- * @return array of colors of form `hsl(h, s, v)`
+ * @return array of colors of form `hsl(h, s, l)` - h: [0,360], s: [0,100], l: [0,100]
  */
 export const generatePalette = (config: PaletteConfig): string[] => {
     const { size, startHue = 0, saturation = 65, lightness = 55 } = config
