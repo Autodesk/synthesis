@@ -2,7 +2,7 @@ import * as THREE from "three"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
+import EventSystem from "@/systems/EventSystem.ts"
 import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import { CameraMode, CustomTargetControls } from "@/systems/scene/CameraControls"
 import DragModeSystem from "@/systems/scene/DragModeSystem"
@@ -91,36 +91,25 @@ describe("DragModeSystem Integration Tests", () => {
     })
 
     describe("Event Handling", () => {
-        test("calls dispatchEvent when toggling drag mode", () => {
-            const dispatchEventSpy = vi.fn<SynthesisEventListener<"DragModeToggled">>()
-            EventSystem.listen("DragModeToggled", dispatchEventSpy)
-            dragModeSystem.enabled = true
-            expect(dispatchEventSpy).toHaveBeenLastCalledWith(expect.objectContaining({ enabled: true }))
+        test("takes its enabled state from the command event", () => {
+            EventSystem.dispatch("SetDragModeEvent", { enabled: true })
+            expect(dragModeSystem.enabled).toBe(true)
 
-            dragModeSystem.enabled = false
-            expect(dispatchEventSpy).toHaveBeenLastCalledWith(expect.objectContaining({ enabled: false }))
-        })
-
-        test("should handle disable drag mode event", () => {
-            dragModeSystem.enabled = true
-
-            EventSystem.dispatch("DragModeToggled", { enabled: false })
-
+            EventSystem.dispatch("SetDragModeEvent", { enabled: false })
             expect(dragModeSystem.enabled).toBe(false)
         })
     })
 
     describe("Cleanup", () => {
-        test("should cleanup properly on destroy", () => {
-            const removeEventListenerSpy = vi.spyOn(window, "removeEventListener")
+        test("stops responding to the command once destroyed", () => {
+            EventSystem.dispatch("SetDragModeEvent", { enabled: true })
 
-            dragModeSystem.enabled = true
             dragModeSystem.destroy()
+            expect(dragModeSystem.enabled).toBe(false)
+
+            EventSystem.dispatch("SetDragModeEvent", { enabled: true })
 
             expect(dragModeSystem.enabled).toBe(false)
-            expect(removeEventListenerSpy).toHaveBeenCalledWith("DragModeToggled", expect.any(Function))
-
-            removeEventListenerSpy.mockRestore()
         })
     })
 

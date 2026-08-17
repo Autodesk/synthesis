@@ -1,12 +1,11 @@
 import { Box, Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import { Button, DeleteButton, EditButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 import type { BaseZonePreferences } from "./ZoneConfigBase"
-import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 export type ZoneListItem = {
     name: string
@@ -60,10 +59,7 @@ export default function ManageZonesBase<TZone extends BaseZonePreferences>(props
         saveZonesGeneric(zones, selectedField, persistZones)
     }, [zones, selectedField, persistZones])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
-
+    useConfigurationSavedListener(saveEvent)
     useHoldPhysicsPause()
 
     useEffect(() => {

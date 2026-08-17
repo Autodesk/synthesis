@@ -6,7 +6,6 @@ import SelectButton from "@/components/SelectButton"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import StatefulSlider from "@/ui/components/StatefulSlider"
@@ -19,7 +18,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import { useConfigurationSavedListener } from "@/util/ReactHooks.ts"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -109,9 +108,7 @@ const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({
         })
     }, [registerCleanupFunction, selectedAssembly])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useConfigurationSavedListener(saveEvent)
 
     const placeholderMesh = useMemo(() => {
         return new THREE.Mesh(
@@ -183,7 +180,14 @@ const ConfigureGamepieceEjectorInterface: ConfigurationSubpanelComponent = ({
         }
     }, [selectedAssembly])
 
-    useHoldPhysicsPause()
+    // We don't want to pause physics here, we just want the robot being moved to have its physics disabled
+    useEffect(() => {
+        if (selectedAssembly) selectedAssembly.disablePhysics()
+
+        return () => {
+            if (selectedAssembly) selectedAssembly.enablePhysics()
+        }
+    }, [selectedAssembly])
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {
