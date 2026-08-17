@@ -1,7 +1,8 @@
 import { Stack, styled } from "@mui/material"
-import { type ChangeEvent, useEffect, useState } from "react"
+import { type ChangeEvent, useCallback, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
@@ -19,8 +20,9 @@ import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialCo
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { getTargetControls } from "@/systems/scene/CameraControls"
 import { hashBuffer, hexStringToUint8Array } from "@/util/Utility.ts"
-import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import { ProgressHandle, URDFImportProgressBar } from "@/components/ProgressNotificationData.ts"
 import { v4 as uuidV4 } from "uuid"
+import ModelConfigPanel from "@/components/UserModelConfig/ModelConfigPanel.tsx"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -44,7 +46,7 @@ function isURDFFile(filename: string): boolean {
 }
 
 const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufProps>> = ({ modal }) => {
-    const { openPanel, closeModal, configureScreen } = useUIContext()
+    const { openPanel, closeModal, configureScreen, openModal, addToast } = useUIContext()
 
     const { configurationType, errorMessage } = modal!.props.custom
 
@@ -53,7 +55,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
     const [isUrdf, setIsUrdf] = useState(false)
     const [importError, setImportError] = useState<string | undefined>(errorMessage)
 
-    const onInputChanged = (e: ChangeEvent<HTMLInputElement>) => {
+    const onInputChanged = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const file = e.target.files[0]
             const ext = file.name.split(".").pop()?.toLowerCase()
@@ -74,88 +76,117 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 setIsUrdf(false)
             }
         }
-    }
+    }, [])
+    const onCancel = useCallback(() => {
+        openPanel(ImportMirabufPanel, { configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT) })
+    }, [openPanel, miraType])
 
-    useEffect(() => {
-        const onCancel = () => {
-            openPanel(ImportMirabufPanel, { configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT) })
-        }
+    const finalizeSceneObject = useCallback(
+        (mirabufSceneObject: MirabufSceneObject) => {
+            World.sceneRenderer.registerSceneObject(mirabufSceneObject)
+            const targetControls = getTargetControls()
+            if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
+                targetControls.focusProvider = mirabufSceneObject
+            }
+            closeModal(CloseType.OVERWRITE)
+        },
+        [closeModal, miraType]
+    )
+    const onBeforeAccept = useCallback(async () => {
+        if (!selectedFile || miraType === undefined) return
 
-        const onBeforeAccept = async () => {
-            if (!selectedFile || miraType === undefined) return
+        const buffer = await selectedFile.arrayBuffer()
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
 
-            const buffer = await selectedFile.arrayBuffer()
-            World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
+        const progressHandle = new ProgressHandle(`Importing ${selectedFile.name}`)
+        try {
+            let mirabufSceneObject: MirabufSceneObject | undefined
+            const isURDF = isURDFFile(selectedFile.name)
+            if (isURDF) {
+                const inputHash = await hashBuffer(buffer)
+                const uuid = uuidV4({ random: hexStringToUint8Array(inputHash).slice(0, 16) })
+                const { assembly, foundDrivetrain } = await loadURDF(buffer, selectedFile.name, progressHandle)
+                // Default is the assembly name, which is often Assembly 1 or something else similarly non-descriptive. People will (likely) name the files something useful
+                assembly.info!.name = selectedFile.name.split(".")[0]
+                assembly.info!.GUID = uuid
 
-            const progressHandle = new ProgressHandle(`Importing ${selectedFile.name}`)
-            try {
-                let mirabufSceneObject
+                progressHandle.update("Configuring wheels", URDFImportProgressBar.CONFIG)
 
-                if (isURDFFile(selectedFile.name)) {
-                    const inputHash = await hashBuffer(buffer)
-                    const uuid = uuidV4({ random: hexStringToUint8Array(inputHash).slice(0, 16) })
-                    const assembly = await loadURDF(buffer, selectedFile.name, progressHandle)
-                    // Default is the assembly name, which is often Assembly 1 or something else similarly non-descriptive. People will (likely) name the files something useful
-                    assembly.info!.name = selectedFile.name.split(".")[0]
-                    assembly.info!.GUID = uuid
+                mirabufSceneObject = await createMirabuf(inputHash, assembly, progressHandle)
+                if (mirabufSceneObject) {
+                    finalizeSceneObject(mirabufSceneObject)
 
-                    let hash: string = inputHash
+                    addToast("info", "Drivetrain not detected", "please select wheels manually!")
+                    World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING)
 
+                    const success = await new Promise<boolean>(resolve => {
+                        openPanel(
+                            ModelConfigPanel,
+                            { sceneObject: mirabufSceneObject!, hasDrivetrain: foundDrivetrain },
+                            modal,
+                            {
+                                onClose: closeType => {
+                                    resolve(closeType == CloseType.ACCEPT)
+                                },
+                            }
+                        )
+                    }).finally(() => World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING))
+                    if (!success) {
+                        addToast("warning", "Import aborted")
+                        progressHandle.fail("Import aborted")
+                        return
+                    }
                     const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
 
                     if (res == null) {
                         console.warn("Caching URDF failed!")
-                    } else {
-                        hash = res.hash
                     }
 
-                    mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
-                    progressHandle.done("Import complete!")
-                } else {
-                    const result = await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
-                    if (!result) {
-                        globalOpenModal(ImportLocalMirabufModal, {
-                            configurationType: miraTypeToConfigType(miraType),
-                        })
-                        return
-                    }
-                    mirabufSceneObject = await createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
+                    openPanel(InitialConfigPanel, undefined, modal)
                 }
 
-                if (mirabufSceneObject) {
-                    World.sceneRenderer.registerSceneObject(mirabufSceneObject)
-
-                    if (mirabufSceneObject.miraType == MiraType.ROBOT) {
-                        openPanel(InitialConfigPanel, undefined, modal)
-                    }
-                    const targetControls = getTargetControls()
-                    if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
-                        targetControls.focusProvider = mirabufSceneObject
-                    }
-                    closeModal(CloseType.OVERWRITE)
-                } else {
+                progressHandle.done("Import complete!")
+            } else {
+                const result = await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
+                if (!result) {
                     globalOpenModal(ImportLocalMirabufModal, {
                         configurationType: miraTypeToConfigType(miraType),
                     })
+                    return
                 }
-            } catch (e) {
-                console.error("[Import]", e)
-                progressHandle.fail("Import failed!")
+                mirabufSceneObject = await createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
+                if (mirabufSceneObject) {
+                    finalizeSceneObject(mirabufSceneObject)
+                    if (mirabufSceneObject.miraType == MiraType.ROBOT) {
+                        openPanel(InitialConfigPanel, undefined, modal)
+                    }
+                }
+            }
+
+            if (!mirabufSceneObject) {
                 globalOpenModal(ImportLocalMirabufModal, {
                     configurationType: miraTypeToConfigType(miraType),
-                    errorMessage: e instanceof Error ? e.message : "An unknown error occurred during import.",
                 })
-            } finally {
-                setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
             }
+        } catch (e) {
+            console.error("[Import]", e)
+            progressHandle.fail("Import failed!")
+            openModal(ImportLocalMirabufModal, {
+                configurationType: miraTypeToConfigType(miraType),
+                errorMessage: e instanceof Error ? e.message : "An unknown error occurred during import.",
+            })
+        } finally {
+            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
         }
+    }, [openPanel, openModal, miraType, modal, selectedFile, finalizeSceneObject, addToast])
 
+    useEffect(() => {
         configureScreen(
             modal!,
             { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedFile, miraType, openPanel, modal, closeModal, configureScreen])
+    }, [configureScreen, selectedFile, miraType, modal, onBeforeAccept, onCancel])
 
     useEffect(() => {
         setSelectedType(configTypeToMiraType(configurationType))

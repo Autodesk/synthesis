@@ -11,6 +11,8 @@ export interface WheelAssignment {
     wheelPartGuid: string
     /** Part-instance GUID of the occurrence the user picked as the wheel's parent/chassis. */
     parentPartGuid: string
+
+    name: string
     /** World-space (assembly rest-pose) axis fit — center in metres, axis normalized. */
     axisFit: WheelAxis
 }
@@ -91,7 +93,16 @@ function addWheelSeparatorJoints(assembly: mirabuf.Assembly, assignments: WheelA
         }
     }
 }
-
+/** Sets the "reversed" attribute for all wheels in the assembly */
+export function setWheelReversal(assembly: mirabuf.Assembly, reversed: boolean): void {
+    const jointDefs = assembly.data?.joints?.jointDefinitions
+    if (!jointDefs) throw new Error("Assembly has no joints container")
+    Object.values(jointDefs).forEach(joint => {
+        if (joint.userData?.data?.wheel === "true") {
+            joint.userData.data.reversed = reversed ? "true" : "false"
+        }
+    })
+}
 /** Mutates assembly in place: adds a REVOLUTE wheel joint per assignment and unbandages its rigid-node subtree. */
 export function applyWheelAssignments(assembly: mirabuf.Assembly, assignments: WheelAssignment[]): void {
     const joints = assembly.data?.joints

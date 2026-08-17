@@ -26,8 +26,6 @@ class Mechanism {
     public ghostBodies: Jolt.BodyID[] = []
     public touchedBodies: [SceneObjectId, RigidNodeId][] = []
 
-    public urdfWheelForward?: { x: number; y: number; z: number }
-
     public constructor(
         rootBody: string,
         bodyMap: Map<string, Jolt.BodyID>,

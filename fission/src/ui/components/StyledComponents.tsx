@@ -1,5 +1,5 @@
 import InfoIcon from "@mui/icons-material/Info"
-import { forwardRef } from "react"
+import { forwardRef, useCallback, useState } from "react"
 import {
     Box,
     type ButtonProps,
@@ -22,7 +22,7 @@ import {
     Tooltip,
 } from "@mui/material"
 import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle, AiOutlineClose } from "react-icons/ai"
-import { BiRefresh } from "react-icons/bi"
+import { BiRefresh, BiRotateLeft } from "react-icons/bi"
 import { BsCodeSquare } from "react-icons/bs"
 import {
     FaAngleRight,
@@ -48,6 +48,7 @@ import {
     FaTags,
     FaWrench,
     FaXmark,
+    FaArrowRight,
 } from "react-icons/fa6"
 import { FaHandPaper, FaUnlink } from "react-icons/fa"
 import { GiPerspectiveDiceSixFacesOne, GiSteeringWheel } from "react-icons/gi"
@@ -109,6 +110,7 @@ export class SynthesisIcons {
     public static readonly CODE_CONNECTION = MdCode
     public static readonly NO_CODE_CONNECTION = MdCodeOff
     public static readonly REFRESH = BiRefresh
+    public static readonly UNDO = BiRotateLeft
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })
@@ -119,6 +121,7 @@ export class SynthesisIcons {
     public static readonly SELECT_LARGE = withDefaultProps(IoCheckmark, { size: "1.25rem" })
     public static readonly EDIT_LARGE = withDefaultProps(IoPencil, { size: "1.25rem" })
     public static readonly LEFT_ARROW_LARGE = withDefaultProps(FaArrowLeft, { size: "1.25rem" })
+    public static readonly RIGHT_ARROW_LARGE = withDefaultProps(FaArrowRight, { size: "1.25rem" })
     public static readonly BUG_LARGE = withDefaultProps(FaBug, { size: "1.25rem" })
     public static readonly XMARK_LARGE = withDefaultProps(FaXmark, { size: "1.25rem" })
     public static readonly XMARK_LARGE_HUD = withDefaultProps(FaXmark, { size: 23 })
@@ -157,6 +160,23 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )
     }
 )
+
+export const ProgressButton: React.FC<
+    ButtonProps & { onClick: () => Promise<void>; refreshLabel: React.ReactNode }
+> = ({ children, refreshLabel, onClick, disabled, ...props }) => {
+    const [inProgress, setInProgress] = useState(false)
+
+    const onClickReal = useCallback(async () => {
+        setInProgress(true)
+        await onClick()
+        setInProgress(false)
+    }, [onClick])
+    return (
+        <Button onClick={onClickReal} {...props} disabled={disabled || inProgress}>
+            {inProgress ? refreshLabel : children}
+        </Button>
+    )
+}
 
 export type IconButtonSound = "button" | "dropdown"
 
@@ -343,6 +363,18 @@ export const TooltipToggleButton = React.forwardRef<HTMLButtonElement, TooltipTo
         )
     }
 )
+
+interface TooltipButtonProps extends ButtonProps {
+    tooltip?: string
+}
+
+export const TooltipButton = React.forwardRef<HTMLButtonElement, TooltipButtonProps>(({ tooltip, ...props }, ref) => {
+    return (
+        <Tooltip title={tooltip}>
+            <MuiButton ref={ref} {...props} />
+        </Tooltip>
+    )
+})
 
 interface LabelWithTooltipProps {
     labelText: string

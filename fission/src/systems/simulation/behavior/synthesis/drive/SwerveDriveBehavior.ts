@@ -199,7 +199,7 @@ class SwerveDriveBehavior extends DriveBehavior {
     }
 
     public update(dt: number): void {
-        const forwardInput = InputSystem.getInput("swerveForward", this._brainIndex)
+        const forwardInput = this._testingForwardSpeed ?? InputSystem.getInput("swerveForward", this._brainIndex)
         const strafeInput = InputSystem.getInput("swerveStrafe", this._brainIndex)
         const turnInput = InputSystem.getInput("swerveTurn", this._brainIndex)
 

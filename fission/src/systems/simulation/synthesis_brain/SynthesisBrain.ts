@@ -3,7 +3,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
-import type { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
+import { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
 import MecanumDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/MecanumDriveBehavior.ts"
 import { applyMecanumTires, resolveMecanumLayout } from "@/systems/simulation/behavior/synthesis/drive/MecanumLayout.ts"
 import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
@@ -167,6 +167,10 @@ class SynthesisBrain extends Brain {
         } else {
             this.configureField()
         }
+    }
+
+    public getDriveBehavior(): DriveBehavior | undefined {
+        return this.behaviors.find(behavior => behavior instanceof DriveBehavior)
     }
 
     public constructor(assembly: MirabufSceneObject) {
