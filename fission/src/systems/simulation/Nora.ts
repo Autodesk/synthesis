@@ -209,10 +209,10 @@ export function valueMatchesType(value: NoraValue, type: NoraType): boolean {
     )
 }
 
-const NORA_TYPE_PALETTE = generatePalette({ size: 16, startHue: 140 })
-const NORA_BASE_TYPE_PALETTE = generatePalette({ size: 16, startHue: 200 })
+const NORA_TYPE_PALETTE = generatePalette({ size: 16, startHue: 160, saturation: 50, lightness: 45 })
+const NORA_BASE_TYPE_PALETTE = generatePalette({ size: 16, startHue: 140, saturation: 100, lightness: 60 })
 
-const getStableIndex = (str: string, max: number): number => {
+const getIndexFromHash = (str: string, max: number): number => {
     let hash = 0
     for (let i = 0; i < str.length; i++) {
         hash = str.charCodeAt(i) + ((hash << 5) - hash)
@@ -221,15 +221,17 @@ const getStableIndex = (str: string, max: number): number => {
 }
 
 export const noraTypeToColorStr = (type: NoraType): string => {
+    if (type.length === 1) return noraBaseTypeToColorStr(type[0])
+
     const serialized = type.map(t => serializeNoraBaseType(t)).join(",")
-    const paletteIndex = getStableIndex(serialized, NORA_TYPE_PALETTE.length)
+    const paletteIndex = getIndexFromHash(serialized, NORA_TYPE_PALETTE.length)
 
     return NORA_TYPE_PALETTE[paletteIndex]
 }
 
 export const noraBaseTypeToColorStr = (baseType: NoraBaseType): string => {
     const serialized = serializeNoraBaseType(baseType)
-    const paletteIndex = getStableIndex(serialized, NORA_BASE_TYPE_PALETTE.length)
+    const paletteIndex = getIndexFromHash(serialized, NORA_BASE_TYPE_PALETTE.length)
 
     return NORA_BASE_TYPE_PALETTE[paletteIndex]
 }

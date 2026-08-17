@@ -125,7 +125,11 @@ class SimulationLayer {
 
     private buildSensorStimuli(assembly: MirabufSceneObject) {
         assembly.robotPreferences.sensors.forEach((sensor, _i) => {
-            const body = this._mechanism.nodeToBody.get(sensor.parentNode ?? this._mechanism.rootBody)!
+            const body = this._mechanism.nodeToBody.get(sensor.parentNode ?? this._mechanism.rootBody)
+            if (!body) {
+                console.warn(`Skipping sensor '${sensor.name}': parent node ${sensor.parentNode} not found`)
+                return
+            }
             const guid = `SENSOR_${sensor.name}_GUID`
             const info = { GUID: guid, name: sensor.name }
             let stim: Stimulus
