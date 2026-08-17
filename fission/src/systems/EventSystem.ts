@@ -49,8 +49,9 @@ interface EventDataMap {
     SetPlaceAssetButtonVisibleEvent: boolean
     ToggleTouchControlsVisibilityEvent: never
     SetTouchControlsVisibilityEvent: boolean
+    TouchControlsVisibilityChangedEvent: { visible: boolean }
 
-    DragModeToggled: { enabled: boolean }
+    SetDragModeEvent: { enabled: boolean }
 
     CameraModeChangedEvent: { mode: string }
     CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }

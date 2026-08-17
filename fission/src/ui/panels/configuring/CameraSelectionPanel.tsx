@@ -174,17 +174,18 @@ const FieldViewSettings: React.FC = () => {
                 <div className="flex flex-col gap-1 w-full">
                     <span className="text-xs opacity-70 select-none">Focus Robot</span>
                     <Select
-                        value={focusedRobotId}
+                        value={focusedRobotId ?? ""}
                         onChange={e => {
-                            const id = e.target.value as SceneObjectId
+                            const id = (e.target.value || null) as SceneObjectId | null
                             const robot = id == null ? undefined : robots.find(r => r.id === id)
                             setFocusedRobotId(id)
                             getFieldViewControls()?.focusRobot(robot)
                         }}
                         size="small"
                         fullWidth
+                        displayEmpty
                     >
-                        <MenuItem value={undefined}>None</MenuItem>
+                        <MenuItem value="">None</MenuItem>
                         {robots.map(r => (
                             <MenuItem key={r.id} value={r.id}>
                                 {r.descriptiveName}
@@ -273,12 +274,13 @@ const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
             <div className="flex flex-col gap-1 w-full">
                 <span className="text-xs opacity-70 select-none">Focus Target</span>
                 <Select
-                    value={focusedId}
-                    onChange={e => onFocusChange((e.target.value ?? null) as SceneObjectId | null)}
+                    value={focusedId ?? ""}
+                    onChange={e => onFocusChange((e.target.value || null) as SceneObjectId | null)}
                     size="small"
                     fullWidth
+                    displayEmpty
                 >
-                    <MenuItem value={undefined}>None</MenuItem>
+                    <MenuItem value="">None</MenuItem>
                     {sceneObjects.map(t => (
                         <MenuItem key={t.id} value={t.id}>
                             {t.miraType === MiraType.ROBOT ? t.descriptiveName : t.assemblyName}

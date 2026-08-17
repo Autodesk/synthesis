@@ -40,9 +40,9 @@ static LOG_TX: OnceLock<Sender<LogRequest>> = OnceLock::new();
 async fn main() -> Result<()> {
     let _cleanup_trigger = Cleanup;
 
-    let config = retrieve_config()?;
-
     let logging_rx = create_logging_channel();
+
+    let config = retrieve_config()?;
 
     let state = Arc::new(State::new());
 
@@ -53,7 +53,7 @@ async fn main() -> Result<()> {
     }
 
     if let Some(ref room_id) = config.permanent_room {
-        state.new_permanent_room(&room_id);
+        state.new_permanent_room(room_id);
     }
 
     // `listener` will be used regardless of the security level specified
@@ -121,7 +121,7 @@ async fn run_secure_server(
 }
 
 fn setup_cli_logging(logging_rx: mpsc::Receiver<LogRequest>) {
-    // Read the logging channel and immediantly print result
+    // Read the logging channel and immediately print result
     let print_to_terminal =
         move |message: String, kind: EventType, log_destination: LogDestination| {
             match log_destination {
