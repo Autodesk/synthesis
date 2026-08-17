@@ -8,8 +8,17 @@ import InitialConfigPanel from "@/panels/configuring/initial-config/InitialConfi
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes.ts"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject.ts"
 import { getTargetControls } from "@/systems/scene/CameraControls.ts"
-import type { EncodedAssembly, LocalSceneObjectId, Message, RemoteSceneObjectId } from "@/systems/multiplayer/types.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import type { EncodedAssembly, Message } from "@/systems/multiplayer/MultiplayerTypes"
+import { consolePrefixer } from "console-prefixer"
+import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
+
+const console = consolePrefixer({
+    defaultPrefix: {
+        text: "[MirabufLoader]",
+        style: "background: linear-gradient(90deg,rgba(121, 171, 162, 1) 0%, rgba(100, 55, 179, 1) 100%); color: white;font-weight:bold; padding:2px; border-radius:2px;",
+    },
+})
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
@@ -271,6 +280,10 @@ class MirabufCachingService {
             return
         }
 
+        if (assembly.dynamic) {
+            detectAndTagWheels(assembly)
+        }
+
         const info = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
         if (!info) return
 
@@ -463,6 +476,11 @@ export async function spawnCachedMira(
 ) {
     // If spawning a field, then remove all other fields
     if (info.miraType === MiraType.FIELD) {
+        if (World.multiplayerSystem != null && World.sceneRenderer.mirabufSceneObjects.getField() != null) {
+            globalAddToast("warning", "Cannot spawn a second field!")
+            progressHandle.fail("Cannot spawn a second field")
+            return
+        }
         World.sceneRenderer.removeAllFields()
     }
 
@@ -496,16 +514,15 @@ export async function spawnCachedMira(
                         type: "newObject",
                         timestamp: Date.now(),
                         data: {
-                            sceneObjectKey: mirabufSceneObject.id as RemoteSceneObjectId,
+                            sceneObjectId: mirabufSceneObject.id,
                             assembly: encodedAssembly,
                             assemblyHash: info.hash,
                             miraType: info.miraType,
                             initialPreferences: mirabufSceneObject.getPreferenceData(),
-                            bodyIds: mirabufSceneObject.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
                         },
                     }
-                    await World.multiplayerSystem?.broadcast(message)
-                    World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id as LocalSceneObjectId)
+                    World.multiplayerSystem?.broadcast(message)
+                    World.multiplayerSystem?.registerOwnSceneObject(mirabufSceneObject.id)
                 }
 
                 if (targetControls && (info.miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
@@ -513,7 +530,7 @@ export async function spawnCachedMira(
                 }
 
                 progressHandle.done()
-
+                World.physicsSystem.deactivateGamepieces()
                 if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                     globalOpenPanel(InitialConfigPanel, undefined)
                 }

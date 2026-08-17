@@ -8,6 +8,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
 import EventSystem from "@/systems/EventSystem.ts"
+import { v4 as uuidv4 } from "uuid"
 import {
     type CameraControls,
     type CameraControlsType,
@@ -16,7 +17,7 @@ import {
 } from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
+import type { PixelSpaceCoord } from "@/components/overlays/SceneOverlayEvents.ts"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { rayCastForRigidBody } from "@/util/RaycastUtils"
@@ -27,18 +28,18 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
-import type { LocalSceneObjectId, RemoteSceneObjectId } from "@/systems/multiplayer/types.ts"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
+
+// biome-ignore lint/style/useNamingConvention: Prevent type bad
+export type SceneObjectId = string & { __: "sceneObjectId" }
 
 const STANDARD_ASPECT = 16.0 / 9.0
 export const STANDARD_CAMERA_FOV_X = 110.0
 export const STANDARD_CAMERA_FOV_Y = STANDARD_CAMERA_FOV_X / STANDARD_ASPECT
 
 const textureLoader = new THREE.TextureLoader()
-
-let nextSceneObjectId = 1
 
 class SceneRenderer extends WorldSystem {
     private _mainCamera: THREE.PerspectiveCamera
@@ -47,14 +48,21 @@ class SceneRenderer extends WorldSystem {
     private _skybox: THREE.Mesh
     private _composer: EffectComposer
 
-    private _sceneObjects: Map<number, SceneObject>
+    private _sceneObjects: Map<SceneObjectId, SceneObject>
 
     // Maps of all the gizmos that are attached to a mirabuf scene object
-    private _gizmosOnMirabuf: Map<number, GizmoSceneObject>
+    private _gizmosOnMirabuf: Map<SceneObjectId, GizmoSceneObject>
 
     private _cameraControls: CameraControls
 
     private _isPlacingAssembly: boolean = false
+
+    /**
+     * Vertical space (px) reserved at the top of the viewport, e.g. for the desktop top bar.
+     * Defaults to 0 so the scene fills the whole viewport (mobile, tests). The top bar sets
+     * this while mounted; everything below derives canvas size and pointer math from it.
+     */
+    private _topOffset: number = 0
 
     private _light: THREE.DirectionalLight | CSM | undefined
     private _screenInteractionHandler: ScreenInteractionHandler
@@ -77,6 +85,24 @@ class SceneRenderer extends WorldSystem {
 
     public get mainCamera() {
         return this._mainCamera
+    }
+
+    /** Pixels reserved at the top of the viewport (e.g. the desktop top bar). */
+    public get sceneTopOffset() {
+        return this._topOffset
+    }
+
+    public set sceneTopOffset(px: number) {
+        this._topOffset = Math.max(0, px)
+        this.updateCanvasSize()
+    }
+
+    private get _viewportWidth() {
+        return window.innerWidth
+    }
+
+    private get _viewportHeight() {
+        return Math.max(1, window.innerHeight - this._topOffset)
     }
 
     public get scene() {
@@ -226,12 +252,13 @@ class SceneRenderer extends WorldSystem {
     }
 
     public updateCanvasSize() {
-        this._renderer.setSize(window.innerWidth, window.innerHeight, true)
+        const width = this._viewportWidth
+        const height = this._viewportHeight
+        this._renderer.setSize(width, height, true)
+        this._composer.setSize(width, height)
+        this._renderer.domElement.style.top = `${this._topOffset}px`
 
-        const vec = new THREE.Vector2(0, 0)
-        this._renderer.getSize(vec)
-        // No idea why height would be zero, but just incase.
-        this._mainCamera.aspect = window.innerHeight > 0 ? window.innerWidth / window.innerHeight : 1.0
+        this._mainCamera.aspect = width / height
 
         if (this._mainCamera.aspect < STANDARD_ASPECT) {
             this._mainCamera.fov = STANDARD_CAMERA_FOV_Y
@@ -376,27 +403,19 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public registerSceneObject<T extends SceneObject>(obj: T, idOverride?: number): LocalSceneObjectId {
-        const id = idOverride ?? nextSceneObjectId++
-        if (nextSceneObjectId <= id) {
-            nextSceneObjectId = id + 1
-        }
-
-        if (this._sceneObjects.has(id)) {
-            console.error("Trying to add with existing ID!", obj, idOverride)
-            return -1 as LocalSceneObjectId
-        }
+    public registerSceneObject<T extends SceneObject>(obj: T, id?: SceneObjectId): SceneObjectId {
+        id ??= uuidv4() as SceneObjectId
 
         obj.id = id
         this._sceneObjects.set(id, obj)
 
         obj.setup()
 
-        return id as LocalSceneObjectId
+        return id
     }
 
     /** Registers gizmos that are attached to a parent `MirabufSceneObject`  */
-    public registerGizmoSceneObject(obj: GizmoSceneObject): number {
+    public registerGizmoSceneObject(obj: GizmoSceneObject): SceneObjectId {
         if (obj.hasParent()) this._gizmosOnMirabuf.set(obj.parentObjectId!, obj)
         return this.registerSceneObject(obj)
     }
@@ -408,19 +427,21 @@ class SceneRenderer extends WorldSystem {
         this._sceneObjects.clear()
     }
 
-    public removeSceneObject(id: number) {
+    public removeSceneObject(id: SceneObjectId) {
         const obj = this._sceneObjects.get(id)
-
         if (!obj) return
 
         // If the object is a mirabuf object, remove the gizmo as well
         if (obj instanceof MirabufSceneObject) {
             const objGizmo = this._gizmosOnMirabuf.get(id)
-            if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
+            if (this._gizmosOnMirabuf.delete(id)) {
+                this._sceneObjects.delete(objGizmo!.id)
+                objGizmo!.dispose()
+            }
 
             World?.multiplayerSystem?.broadcast({
                 type: "deleteObject",
-                data: id as RemoteSceneObjectId,
+                data: id,
             })
         } else if (obj instanceof GizmoSceneObject && obj.hasParent()) {
             this._gizmosOnMirabuf.delete(obj.parentObjectId!)
@@ -487,9 +508,11 @@ class SceneRenderer extends WorldSystem {
      * @returns World space point within the frustum given the parameters.
      */
     public pixelToWorldSpace(mouseX: number, mouseY: number, z: number = 0.5): THREE.Vector3 {
+        const width = this._viewportWidth
+        const height = this._viewportHeight
         const screenSpace = new THREE.Vector3(
-            (mouseX / window.innerWidth) * 2 - 1,
-            ((window.innerHeight - mouseY) / window.innerHeight) * 2 - 1,
+            (mouseX / width) * 2 - 1,
+            ((height - (mouseY - this._topOffset)) / height) * 2 - 1,
             Math.min(1.0, Math.max(0.0, z))
         )
 
@@ -505,8 +528,10 @@ class SceneRenderer extends WorldSystem {
     public worldToPixelSpace(worldPosition: THREE.Vector3): PixelSpaceCoord {
         this._mainCamera.updateMatrixWorld()
         const screenSpace = worldPosition.project(this._mainCamera)
-
-        return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
+        return [
+            (this._viewportWidth * (screenSpace.x + 1.0)) / 2.0,
+            this._topOffset + (this._viewportHeight * (1.0 - screenSpace.y)) / 2.0,
+        ]
     }
 
     /**
@@ -566,18 +591,15 @@ class SceneRenderer extends WorldSystem {
         const hit = rayCastForRigidBody(e.position)
         if (hit) {
             const sceneObject = hit.association.sceneObject
-            if (
-                !World.multiplayerSystem ||
-                (sceneObject.miraType === MiraType.ROBOT &&
-                    World.multiplayerSystem
-                        ?.getOwnRobots()
-                        .map(obj => obj.id)
-                        .includes(sceneObject.id))
-            ) {
+
+            const configurableObjectIds = World.getOwnRobots().map(obj => obj?.id)
+            const isField = sceneObject.miraType === MiraType.FIELD
+
+            if ((isField && sceneObject.isOwnObject) || configurableObjectIds.includes(sceneObject.id)) {
                 miraSupplierData = sceneObject.getSupplierData()
             }
         }
-        // All else fails, present default options.
+
         if (!miraSupplierData) {
             miraSupplierData = { title: "The Scene", items: [] }
             miraSupplierData.items.push({

@@ -2,35 +2,36 @@ import { AnimatePresence } from "framer-motion"
 import { SnackbarProvider } from "notistack"
 import Slide from "@mui/material/Slide"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import MainHUD from "@/components/MainHUD"
-import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
+import MainHUD from "@/components/overlays/MainHUD.tsx"
+import MultiplayerHUD from "@/components/overlays/MultiplayerHUD.tsx"
 import Scene from "@/components/Scene.tsx"
-import MultiplayerStartModal from "@/modals/MultiplayerStartModal.tsx"
-import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
+import MultiplayerStartModal from "@/modals/multiplayer/MultiplayerStartModal.tsx"
 import World from "@/systems/World.ts"
 import { UIRenderer } from "@/ui/UIRenderer.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
-import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
-import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
-import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
-import SceneOverlay from "./ui/components/SceneOverlay.tsx"
+import DragModeIndicator from "@/components/overlays/DragModeIndicator.tsx"
+import ProgressNotifications from "@/components/ProgressNotification.tsx"
+import SceneOverlay from "@/components/overlays/SceneOverlay.tsx"
+import PortraitOverlay from "@/components/overlays/PortraitOverlay.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
-import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
-import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
+import SessionStorage, { applyAutoToast } from "@/util/SessionStorage.ts"
+import { globalOpenModal } from "@/components/GlobalUIControls.ts"
+import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld.ts"
+import { Stack } from "@mui/material"
+import { MultiplayerWorker } from "@/systems/multiplayer/MultiplayerWorkerWrapper.ts"
 
-function Synthesis() {
+const Synthesis = () => {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
 
     const mainLoopHandle = useRef(0)
-    const startMainLoop = async () => {
-        await World.initWorld()
+    const startMainLoop = useCallback(async () => {
+        World.initWorld()
         if (!PreferencesSystem.getUserPreference("ReportAnalytics") && !import.meta.env.DEV) {
             setConsentPopupDisable(false)
         }
@@ -41,7 +42,8 @@ function Synthesis() {
         }
 
         mainLoop()
-    }
+    }, [])
+
     useEffect(() => {
         const urlParams = new URLSearchParams(document.location.search)
         if (urlParams.has("code")) {
@@ -49,31 +51,25 @@ function Synthesis() {
             window.close()
             return
         }
+        if (urlParams.has("autojoin")) {
+            const room = urlParams.get("autojoin")!
+            const name = PreferencesSystem.getUserPreference("MultiplayerUsername") ?? "TestUser"
+            const ws = new MultiplayerWorker(
+                `ws${PreferencesSystem.getUserPreference("MultiplayerSecure") ? "s" : ""}://${PreferencesSystem.getUserPreference("MultiplayerHost") || "127.0.0.1"}:${PreferencesSystem.getUserPreference("MultiplayerPort")}`
+            )
+            ws.init(room || null, name)
+            setTimeout(() => startMultiplayerWorld({ displayName: name, ws, keepAssets: false, isHost: false }))
+        }
 
-        globalOpenModal(MainMenuModal, {
-            startSingleplayerCallback: async () => await startMainLoop(),
-            startMultiplayerCallback: () => {
-                globalOpenModal(MultiplayerStartModal, {
-                    startWorldCallback: async (name, room) => {
-                        const isHost = room == null
-                        if (room == null) {
-                            room = Math.random().toString(10).substring(2, 8)
-                        }
-                        PreferencesSystem.setUserPreference("MultiplayerUsername", name)
-                        PreferencesSystem.savePreferences()
-                        const success = await MultiplayerSystem.setup(room, name, isHost)
-                        if (success) {
-                            if (isHost) {
-                                globalAddToast("info", "Room Code", room)
-                            }
-                            await startMainLoop()
-                            return true
-                        }
-                        return false
-                    },
-                })
-            },
-        })
+        applyAutoToast()
+        const autoOpenMultiplayer = SessionStorage.load("autoOpenMultiplayer")
+
+        if (autoOpenMultiplayer) {
+            globalOpenModal(MultiplayerStartModal, undefined)
+        }
+
+        startMainLoop()
+
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
@@ -82,7 +78,7 @@ function Synthesis() {
             World.multiplayerSystem?.destroy()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
-    }, [])
+    }, [startMainLoop])
 
     const onConsent = useCallback(() => {
         setConsentPopupDisable(true)
@@ -108,13 +104,15 @@ function Synthesis() {
                             <TouchControls />
                             <SceneOverlay />
                             <ContextMenu />
-                            <MultiplayerHUD />
                             <MainHUD key={"main-hud"} />
                             <UIRenderer />
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
-                            <WPILibConnectionStatus />
-                            <DragModeIndicator />
+                            <Stack direction={"column"} gap={1} position={"absolute"} bottom={0} left={0}>
+                                <DragModeIndicator />
+                                <MultiplayerHUD />
+                            </Stack>
+                            <PortraitOverlay />
 
                             {!consentPopupDisable && (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />

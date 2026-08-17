@@ -1,4 +1,3 @@
-import JOLT from "@/util/loading/JoltSyncLoader"
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
 import * as Three from "three"
@@ -10,13 +9,13 @@ import type { RigidNodeAssociate } from "./MirabufSceneObject"
 import ZoneSceneObject from "./ZoneSceneObject"
 
 class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
-    public static readonly redMaterial = new Three.MeshPhongMaterial({
+    public static readonly RED_MATERIAL = new Three.MeshPhongMaterial({
         color: 0xed1c24,
         shininess: 0.0,
         opacity: 0.7,
         transparent: true,
     })
-    public static readonly blueMaterial = new Three.MeshPhongMaterial({
+    public static readonly BLUE_MATERIAL = new Three.MeshPhongMaterial({
         color: 0x0066b3,
         shininess: 0.0,
         opacity: 0.7,
@@ -25,8 +24,16 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
     private _prevGPs: Jolt.BodyID[] = []
 
+    public get prevGamePieces(): Jolt.BodyID[] {
+        return this._prevGPs
+    }
+
+    public set prevGamePieces(gps: Jolt.BodyID[]) {
+        this._prevGPs = gps
+    }
+
     public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
-        return { red: ScoringZoneSceneObject.redMaterial, blue: ScoringZoneSceneObject.blueMaterial }
+        return { red: ScoringZoneSceneObject.RED_MATERIAL, blue: ScoringZoneSceneObject.BLUE_MATERIAL }
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number) {
@@ -59,9 +66,8 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
             const gp = World.physicsSystem.getBody(gpID)
             if (!gp) return false
 
-            const gpBounding = gp.GetWorldSpaceBounds()
+            const gpBounding = gp.GetWorldSpaceBounds() // STATIC_ALIAS
             const overlaps = this.bounding?.OverlapsAABox(gpBounding)
-            JOLT.destroy(gpBounding)
 
             return overlaps
         })

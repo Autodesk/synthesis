@@ -1,4 +1,5 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
+import type { Message } from "@/systems/multiplayer/MultiplayerTypes"
 import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -17,6 +18,8 @@ import {
     type InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
+import type { RigidNodeId } from "@/mirabuf/MirabufParser"
+import type { SceneObjectId } from "./SceneRenderer"
 
 interface DragTarget {
     bodyId: Jolt.BodyID
@@ -25,6 +28,9 @@ interface DragTarget {
     mass: number
     dragDepth: number
     physicsDisabled: boolean
+    isGamePiece: boolean
+    rn: RigidNodeId
+    sceneObjectId: SceneObjectId
 }
 
 class DragModeSystem extends WorldSystem {
@@ -217,20 +223,49 @@ class DragModeSystem extends WorldSystem {
 
         const target = this.findDragTarget(interaction.position)
         if (target) {
-            this.startDragging(target.bodyId, interaction.position, target.hitPoint)
+            this.startDragging(
+                target.bodyId,
+                interaction.position,
+                target.hitPoint,
+                target.isGamePiece,
+                target.rn,
+                target.sceneObjectId
+            )
         } else {
             this._originalInteractionStart?.(interaction)
         }
     }
 
-    private findDragTarget(mousePos: [number, number]): { bodyId: Jolt.BodyID; hitPoint: THREE.Vector3 } | undefined {
+    private findDragTarget(mousePos: [number, number]):
+        | {
+              bodyId: Jolt.BodyID
+              hitPoint: THREE.Vector3
+              isGamePiece: boolean
+              rn: RigidNodeId
+              sceneObjectId: SceneObjectId
+          }
+        | undefined {
+        if (World.physicsSystem.isPaused) return undefined
+
         const result = rayCastForRigidBody(mousePos)
         if (!result || !this.isDraggable(result.association)) return undefined
-        return { bodyId: result.bodyId, hitPoint: result.hitPoint }
+        const isGamePiece = result.association.isGamePiece
+        const rn = result.association.rigidNodeId
+        return {
+            bodyId: result.bodyId,
+            hitPoint: result.hitPoint,
+            isGamePiece,
+            rn,
+            sceneObjectId: result.association.sceneObject.id,
+        }
     }
 
     private isDraggable(association: RigidNodeAssociate): boolean {
-        return association.sceneObject.miraType === MiraType.ROBOT || association.isGamePiece
+        // I think this is the fastest way of doing this, since we only do the linear search if there's a multiplayer system
+        const isRobot = association.sceneObject.miraType == MiraType.ROBOT
+        const isOwnRobot = association.sceneObject.multiplayerOwnerName == undefined
+
+        return association.isGamePiece || (isRobot && isOwnRobot)
     }
 
     private onInteractionMove(interaction: InteractionMove): void {
@@ -255,7 +290,14 @@ class DragModeSystem extends WorldSystem {
         }
     }
 
-    private startDragging(bodyId: Jolt.BodyID, mousePos: [number, number], hitPoint: THREE.Vector3): void {
+    private startDragging(
+        bodyId: Jolt.BodyID,
+        mousePos: [number, number],
+        hitPoint: THREE.Vector3,
+        isGamePiece: boolean,
+        rn: RigidNodeId,
+        sceneObjectId: SceneObjectId
+    ): void {
         const body = World.physicsSystem.getBody(bodyId)
         if (!body) return
 
@@ -291,6 +333,9 @@ class DragModeSystem extends WorldSystem {
             mass: mass,
             dragDepth: dragDepth,
             physicsDisabled: isRobot,
+            isGamePiece,
+            rn,
+            sceneObjectId,
         }
 
         this._isDragging = true
@@ -305,7 +350,7 @@ class DragModeSystem extends WorldSystem {
 
         // Face mode should keep the camera enabled tracking the target
         const targetControls = getTargetControls()
-        if (targetControls && targetControls.mode !== CameraMode.Face) {
+        if (targetControls && targetControls.mode !== CameraMode.FACE) {
             targetControls.enabled = false
         }
     }
@@ -370,11 +415,17 @@ class DragModeSystem extends WorldSystem {
 
     private updateDragForce(): void {
         if (!this._dragTarget) return
+        if (World.physicsSystem.isPaused) return
 
         const body = World.physicsSystem.getBody(this._dragTarget.bodyId)
         if (!body) {
             this.stopDragging()
             return
+        }
+
+        // keeping the dragged body awake so drag forces take effect even if body is sleeping
+        if (!this._dragTarget.physicsDisabled && !body.IsActive()) {
+            World.physicsSystem.activateBody(this._dragTarget.bodyId)
         }
 
         const currentPos = body.GetPosition()
@@ -470,9 +521,10 @@ class DragModeSystem extends WorldSystem {
             // Apply force at the center of mass and calculate the torque manually
             // to simulate applying force at the drag point
             const joltForce = convertThreeVector3ToJoltVec3(forceNeeded)
-            body.AddForce(joltForce)
+            body.AddForce(joltForce) // CLONE
+            JOLT.destroy(joltForce)
 
-            const inertia = body.GetMotionProperties().GetInverseInertiaDiagonal()
+            const inertia = body.GetMotionProperties().GetInverseInertiaDiagonal() // STATIC_ALIAS
             const moi = 1.0 / inertia.Length()
             const yawRotation = new JOLT.Vec3(
                 0,
@@ -488,8 +540,10 @@ class DragModeSystem extends WorldSystem {
                     (InputSystem.isKeyPressed("ArrowUp") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowDown") ? 1 : 0))
             )
 
-            body.AddTorque(yawRotation)
-            body.AddTorque(pitchRotation)
+            body.AddTorque(yawRotation) // CLONE
+            body.AddTorque(pitchRotation) // CLONE
+            JOLT.destroy(yawRotation)
+            JOLT.destroy(pitchRotation)
         } else {
             // When close to target, apply braking forces and gravity compensation
             const currentVel = body.GetLinearVelocity()
@@ -509,9 +563,25 @@ class DragModeSystem extends WorldSystem {
                 const gravityCompensationY = mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE
                 brakingForce.SetY(brakingForce.GetY() + gravityCompensationY)
             }
-            body.AddForce(brakingForce)
+            body.AddForce(brakingForce) // CLONE
+            JOLT.destroy(brakingForce)
         }
-        body.SetAngularVelocity(new JOLT.Vec3())
+
+        const zeroAngularVelocity = new JOLT.Vec3()
+        body.SetAngularVelocity(zeroAngularVelocity) // CLONE
+        JOLT.destroy(zeroAngularVelocity)
+
+        if (World.multiplayerSystem && this._dragTarget.isGamePiece) {
+            const message: Message = {
+                type: "updatePhysicsBody",
+                data: {
+                    sceneObjectId: this._dragTarget.sceneObjectId,
+                    ...World.physicsSystem.getBodyUpdateData(body),
+                    rigidNodeId: this._dragTarget.rn,
+                },
+            }
+            World.multiplayerSystem.broadcast(message)
+        }
     }
 
     private handleWheelDuringDrag(event: WheelEvent): void {

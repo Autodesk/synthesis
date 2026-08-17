@@ -100,14 +100,14 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     assembly.info!.GUID = uuid
 
                     let hash: string = inputHash
-                    //// TODO: Caching currently requires too much memory due to the size of URDF meshes. Can be re-enabled after simplifying
 
-                    // const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
+                    const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
 
-                    // if (res == null) {
-                    //     console.warn("Caching URDF failed!")
-                    //     hash = inputHash
-                    // }
+                    if (res == null) {
+                        console.warn("Caching URDF failed!")
+                    } else {
+                        hash = res.hash
+                    }
 
                     mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
                     progressHandle.done("Import complete!")
@@ -132,7 +132,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
                         targetControls.focusProvider = mirabufSceneObject
                     }
-                    closeModal(CloseType.Overwrite)
+                    closeModal(CloseType.OVERWRITE)
                 } else {
                     globalOpenModal(ImportLocalMirabufModal, {
                         configurationType: miraTypeToConfigType(miraType),
@@ -155,7 +155,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedFile, miraType, isUrdf, openPanel, modal, closeModal, configureScreen])
+    }, [selectedFile, miraType, openPanel, modal, closeModal, configureScreen])
 
     useEffect(() => {
         setSelectedType(configTypeToMiraType(configurationType))

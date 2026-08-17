@@ -13,7 +13,7 @@ import World from "@/systems/World.ts"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
-    destroyBodyIds: vi.fn(),
+    destroyBodiesById: vi.fn(),
     setBodyPosition: vi.fn(),
     setBodyRotation: vi.fn(),
     getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
@@ -162,7 +162,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 
@@ -220,7 +221,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 
@@ -237,7 +239,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 
@@ -254,7 +257,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 
@@ -271,7 +275,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 

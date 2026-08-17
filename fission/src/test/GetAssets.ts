@@ -3,13 +3,13 @@ import MirabufInstance from "@/mirabuf/MirabufInstance.ts"
 import MirabufParser from "@/mirabuf/MirabufParser.ts"
 
 export const ROBOT_MODELS = {
-    DOZER: "/api/mira/robots/Dozer v11.mira",
+    DOZER: "/api/mira/robots/Dozer v12.mira",
     MULTI_JOINT: "/api/mira/private/Multi-Joint Wheels v0.mira",
 } satisfies Record<string, string>
 
 export const FIELD_MODELS = {
     2018: "/api/mira/fields/FRC Field 2018 v13.mira",
-    2023: "/api/mira/fields/FRC Field 2023 v8.mira",
+    2023: "/api/mira/fields/FRC Field 2023 v10.mira",
 } satisfies Record<number, string>
 
 export async function getMiraAssembly(name: keyof typeof ROBOT_MODELS | keyof typeof FIELD_MODELS) {

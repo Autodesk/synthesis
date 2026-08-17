@@ -8,7 +8,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import {
     Accordion,
     AccordionDetails,
@@ -67,7 +67,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ name, primaryButtonNode, primaryOnC
                 {name.replace(/.mira$/, "")}
             </Label>
             <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
-                <PositiveIconButton children={primaryButtonNode} onClick={primaryOnClick} />
+                <PositiveIconButton onClick={primaryOnClick}>{primaryButtonNode}</PositiveIconButton>
                 {secondaryOnClick && <DeleteButton onClick={secondaryOnClick} />}
             </Stack>
         </Stack>
@@ -98,8 +98,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     const [files, setFiles] = useState<Data[] | undefined>(undefined)
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back" }, {})
-    }, [])
+        configureScreen(
+            panel!,
+            {
+                title: "Spawn Asset",
+                hideAccept: true,
+                cancelText: "Back",
+                exclusiveGroup: "assembly-init",
+            },
+            {}
+        )
+    }, [configureScreen, panel])
 
     useEffect(() => {
         const unsubscribeStatus = EventSystem.listen("MirabufFilesStatusUpdateEvent", v => setFilesStatus(v))
@@ -123,7 +132,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     const selectCache = useCallback(
         async (info: MirabufCacheInfo) => {
             await spawnCachedMira(info)
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -147,7 +156,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     status.fail()
                 })
 
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -170,7 +179,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     status.fail()
                 })
 
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -286,7 +295,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                     })
             })
 
-            if (panel) closePanel(panel.id, CloseType.Cancel)
+            if (panel) closePanel(panel.id, CloseType.CANCEL)
         },
         [closePanel, panel]
     )
@@ -445,7 +454,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
                         openModal(ImportLocalMirabufModal, {
                             configurationType: miraTypeToConfigType(viewType ?? MiraType.ROBOT),
                         })
-                        closePanel(panel!.id, CloseType.Overwrite)
+                        closePanel(panel!.id, CloseType.OVERWRITE)
                     }}
                 >
                     Import from File
