@@ -48,6 +48,10 @@ export interface ConfigurationSubpanelProps {
      * This determines not if any change has been made, but whether it is possible for any change to have been made (any cleanup callbacks have been registered). Therefore, it will have false positives, but will not report false negatives.
      */
     hasMadeChanges: boolean
+    /**
+     * Passed from ConfigurePanel, allows panels to forbid proceeding (e.g., if the config is invalid)
+     */
+    setDisableAccept: React.Dispatch<React.SetStateAction<boolean>>
     panel: UIScreen<void, ConfigurePanelCustomProps>
 }
 
@@ -61,12 +65,14 @@ export enum ConfigMode {
     SCORING_ZONES,
     PROTECTED_ZONES,
     CAMERA_POINTS,
+    SPAWN_POSITIONS,
     MOVE,
     SIM,
     BRAIN,
     DRIVETRAIN,
     ALLIANCE,
     METADATA,
+    CAMERA,
 }
 
 const baseRobotConfigModes = [
@@ -85,6 +91,12 @@ const baseRobotConfigModes = [
         "Ejector",
         ConfigMode.EJECTOR,
         "Configure the robot’s ejector mechanism, which controls the release or expulsion of game pieces."
+    ),
+
+    new ConfigModeSelectionOption(
+        "USB Cameras",
+        ConfigMode.CAMERA,
+        "Add USB cameras and configure their position, resolution, and field of view for code simulation."
     ),
 
     new ConfigModeSelectionOption(
@@ -125,6 +137,11 @@ export const fieldConfigModes = [
         "Protected Zones",
         ConfigMode.PROTECTED_ZONES,
         "Define and manage protected zones on the field where robots can not enter."
+    ),
+    new ConfigModeSelectionOption(
+        "Robot Spawn Positions",
+        ConfigMode.SPAWN_POSITIONS,
+        "Set where robots spawn for the default position and each alliance station."
     ),
     new ConfigModeSelectionOption(
         "Camera Positions",

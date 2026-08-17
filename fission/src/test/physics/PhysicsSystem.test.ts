@@ -1,6 +1,7 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import { afterEach, assert, beforeEach, describe, expect, test } from "vitest"
+import { GAMEPIECE_SUFFIX } from "@/mirabuf/MirabufParser"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem, { LayerReserve } from "../../systems/physics/PhysicsSystem"
@@ -320,16 +321,16 @@ describe("Physics Enable/Disable", () => {
     test("Disable Physics for Body", () => {
         system.disablePhysicsForBody(body.GetID())
 
-        expect(body.IsSensor()).toBe(true)
-        expect(body.IsActive()).toBe(false)
+        expect(body.GetObjectLayer()).toBe(10) // LAYER_GHOST
+        expect(body.GetLinearVelocity().Length()).toBeCloseTo(0)
+        expect(body.GetAngularVelocity().Length()).toBeCloseTo(0)
     })
 
     test("Enable Physics for Body", () => {
         system.disablePhysicsForBody(body.GetID())
         system.enablePhysicsForBody(body.GetID())
 
-        expect(body.IsSensor()).toBe(false)
-        expect(body.IsActive()).toBe(true)
+        expect(body.GetObjectLayer()).not.toBe(10) // no longer LAYER_GHOST
     })
 
     test("Disable Physics on Non-Added Body", () => {
@@ -602,7 +603,7 @@ describe("Body Cleanup", () => {
         const id1 = body1.GetID()
         const id2 = body2.GetID()
 
-        system.destroyBodyIds(id1, id2)
+        system.destroyBodiesById(id1, id2)
 
         expect(system.isBodyAdded(id1)).toBe(false)
         expect(system.isBodyAdded(id2)).toBe(false)
@@ -678,6 +679,9 @@ describe("Update Loop", () => {
 function makeMockParser(physicalData: { volume: number; area: number }, isGamePiece: boolean): MirabufParser {
     const tetraVerts = [0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0, 100]
 
+    // PhysicsSystem picks the collision layer off the node id suffix, not isGamePiece
+    const nodeId = isGamePiece ? `node-0${GAMEPIECE_SUFFIX}` : "node-0"
+
     return {
         assembly: {
             dynamic: false,
@@ -709,9 +713,9 @@ function makeMockParser(physicalData: { volume: number; area: number }, isGamePi
         },
         rigidNodes: new Map([
             [
-                "node-0",
+                nodeId,
                 {
-                    id: "node-0",
+                    id: nodeId,
                     parts: new Set(["part-0"]),
                     isDynamic: true,
                     isGamePiece,
@@ -762,5 +766,69 @@ describe("Sphere Game Piece Body Registration", () => {
         system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
         system.createBodiesFromParser(makeMockParser(SPHERE_DATA, true))
         expect(system.sphereGamePieceBodies.length).toBe(2)
+    })
+})
+
+describe("Game Piece Sleeping", () => {
+    let system: PhysicsSystem
+
+    const SPHERE_DATA = { volume: 1767.15, area: 706.86 } // 2026 game piece approximate values
+
+    function spawnFromParser(isGamePiece: boolean): Jolt.Body {
+        const bodyIds = system.createBodiesFromParser(makeMockParser(SPHERE_DATA, isGamePiece))
+        const bodyId = [...bodyIds.values()][0]
+        return system.getBody(bodyId)!
+    }
+
+    beforeEach(() => {
+        system = new PhysicsSystem()
+    })
+
+    afterEach(() => {
+        system.destroy()
+    })
+
+    /** Steps the system until `body` sleeps, returning the step it slept on, or -1 if it never did. */
+    function stepUntilAsleep(body: Jolt.Body, maxSteps: number): number {
+        for (let i = 0; i < maxSteps; i++) {
+            system.update(1 / 60)
+            if (!body.IsActive()) return i
+        }
+        return -1
+    }
+
+    test("Game piece is allowed to sleep", () => {
+        expect(spawnFromParser(true).GetAllowSleeping()).toBe(true)
+    })
+
+    test("Non game piece is not allowed to sleep", () => {
+        expect(spawnFromParser(false).GetAllowSleeping()).toBe(false)
+    })
+
+    test("Game piece spawns inactive", () => {
+        expect(spawnFromParser(true).IsActive()).toBe(false)
+    })
+
+    test("Non game piece spawns active", () => {
+        expect(spawnFromParser(false).IsActive()).toBe(true)
+    })
+
+    test("Game piece falls asleep once it settles", () => {
+        const body = spawnFromParser(true)
+
+        // Game pieces originally spawn inactive at origin and MirabufSceneobject is what moves
+        // them to their rightful place.
+        system.setBodyPosition(body.GetID(), new JOLT.RVec3(0, 1, 0))
+        expect(body.IsActive()).toBe(true)
+
+        // settling is pretty slow (sphere takes 300 steps to sleep; 5 seconds)
+        expect(stepUntilAsleep(body, 900)).toBeGreaterThanOrEqual(0)
+    })
+
+    test("Non game piece never sleeps even at rest", () => {
+        const body = spawnFromParser(false)
+        system.setBodyPosition(body.GetID(), new JOLT.RVec3(0, 1, 0))
+
+        expect(stepUntilAsleep(body, 900)).toBe(-1)
     })
 })

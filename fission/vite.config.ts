@@ -2,12 +2,17 @@ import fs from "node:fs/promises"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import react from "@vitejs/plugin-react-swc"
 import * as path from "path"
-import { loadEnv, type ProxyOptions } from "vite"
-import glsl from "vite-plugin-glsl"
-import { defineConfig } from "vitest/config"
-import type { TestRunEndReason } from "vitest/node"
 
-const basePath = "/fission/"
+import { loadEnv } from "vite"
+import glsl from "vite-plugin-glsl"
+
+import {
+    defineConfig,
+    type TestProjectConfiguration,
+    type TestProjectInlineConfiguration,
+    type ViteUserConfig,
+} from "vitest/config"
+
 const serverPort = 3000
 const dockerServerPort = 80
 
@@ -44,10 +49,14 @@ const localAssetsExist = await fs
     .then(() => true)
     .catch(() => false)
 
+const commitHash = await getCommitHash()
+
+type Proxies = Required<Required<ViteUserConfig>["server"]>["proxy"]
+type ProxyOptions = Proxies[string]
+
 // https://vitejs.dev/config/
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(({ mode }): ViteUserConfig => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
-    process.env.VITE_MULTIPLAYER_PORT = mode === "test" ? "3001" : "9002"
     const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
 
     if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")) {
@@ -55,7 +64,7 @@ export default defineConfig(async ({ mode }) => {
     }
     console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
 
-    const proxies: Record<string, ProxyOptions> = {}
+    const proxies: Proxies = {}
     const assetProxy: ProxyOptions = useLocalAssets
         ? {
               target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
@@ -88,7 +97,7 @@ export default defineConfig(async ({ mode }) => {
         { find: "@", replacement: path.resolve(__dirname, "src") },
     ]
 
-    const fissionProject = {
+    const fissionProject: TestProjectInlineConfiguration = {
         extends: true,
         test: {
             name: "fission",
@@ -150,13 +159,13 @@ export default defineConfig(async ({ mode }) => {
     }
 
     return {
-        plugins: plugins,
+        plugins: plugins as ViteUserConfig["plugins"],
         publicDir: "./public",
         resolve: {
             alias: baseAliases,
         },
         define: {
-            GIT_COMMIT: JSON.stringify(await getCommitHash()),
+            GIT_COMMIT: JSON.stringify(commitHash),
         },
         // Pre-bundle every react-icons subpath the app imports. Listing
         // them here bundles them up front so no reload happens once tests
@@ -182,7 +191,7 @@ export default defineConfig(async ({ mode }) => {
                       "github-actions",
                       "default",
                       {
-                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
+                          onTestRunEnd(_modules, unhandled, reason) {
                               if (reason === "passed" && unhandled.length === 0) {
                                   console.error("GH ACTIONS VITEST PASSED")
                               } else {
@@ -200,22 +209,18 @@ export default defineConfig(async ({ mode }) => {
                 exclude: ["src/test/**", "src/proto/**"],
                 reportOnFailure: true,
             },
-            projects: [fissionProject, ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject] : [])],
+            projects: [
+                fissionProject,
+                ...(process.env.JOLT_ASAN_DIST ? [fissionAsanProject as TestProjectConfiguration] : []),
+            ],
         },
         build: {
             target: "esnext",
         },
         server: {
-            // this ensures that the browser opens upon server start
-            // open: true,
-            // this sets a default port to 3000
             port: serverPort,
             cors: false,
             proxy: proxies,
-            build: {
-                target: "esnext",
-            },
-            base: basePath,
         },
     }
 })

@@ -2,12 +2,13 @@ import * as THREE from "three"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import EventSystem, { type SynthesisEventListener } from "@/systems/EventSystem.ts"
+import EventSystem from "@/systems/EventSystem.ts"
 import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import { CameraMode, CustomTargetControls } from "@/systems/scene/CameraControls"
 import DragModeSystem from "@/systems/scene/DragModeSystem"
 import { type InteractionType, PRIMARY_MOUSE_INTERACTION } from "@/systems/scene/ScreenInteractionHandler"
 import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -90,41 +91,30 @@ describe("DragModeSystem Integration Tests", () => {
     })
 
     describe("Event Handling", () => {
-        test("calls dispatchEvent when toggling drag mode", () => {
-            const dispatchEventSpy = vi.fn<SynthesisEventListener<"DragModeToggled">>()
-            EventSystem.listen("DragModeToggled", dispatchEventSpy)
-            dragModeSystem.enabled = true
-            expect(dispatchEventSpy).toHaveBeenLastCalledWith(expect.objectContaining({ enabled: true }))
+        test("takes its enabled state from the command event", () => {
+            EventSystem.dispatch("SetDragModeEvent", { enabled: true })
+            expect(dragModeSystem.enabled).toBe(true)
 
-            dragModeSystem.enabled = false
-            expect(dispatchEventSpy).toHaveBeenLastCalledWith(expect.objectContaining({ enabled: false }))
-        })
-
-        test("should handle disable drag mode event", () => {
-            dragModeSystem.enabled = true
-
-            EventSystem.dispatch("DragModeToggled", { enabled: false })
-
+            EventSystem.dispatch("SetDragModeEvent", { enabled: false })
             expect(dragModeSystem.enabled).toBe(false)
         })
     })
 
     describe("Cleanup", () => {
-        test("should cleanup properly on destroy", () => {
-            const removeEventListenerSpy = vi.spyOn(window, "removeEventListener")
+        test("stops responding to the command once destroyed", () => {
+            EventSystem.dispatch("SetDragModeEvent", { enabled: true })
 
-            dragModeSystem.enabled = true
             dragModeSystem.destroy()
+            expect(dragModeSystem.enabled).toBe(false)
+
+            EventSystem.dispatch("SetDragModeEvent", { enabled: true })
 
             expect(dragModeSystem.enabled).toBe(false)
-            expect(removeEventListenerSpy).toHaveBeenCalledWith("DragModeToggled", expect.any(Function))
-
-            removeEventListenerSpy.mockRestore()
         })
     })
 
     describe("Physics Integration", () => {
-        function setupDraggableCube() {
+        function setupDraggableCube(spawnActive: boolean = true) {
             // Create a physics cube which will then be a draggable game piece
             const vertices = new Float32Array([
                 -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
@@ -137,7 +127,7 @@ describe("DragModeSystem Integration Tests", () => {
             const shape = shapeResult.Get()
             const body = physicsSystem.createBody(shape, 1.0, new THREE.Vector3(0, 0, 0), new THREE.Quaternion())
             const bodyId = body.GetID()
-            physicsSystem.addBodyToSystem(bodyId, true)
+            physicsSystem.addBodyToSystem(bodyId, spawnActive)
 
             // Create a mock MirabufSceneObject that properly passes `instanceof` checks
             const mockSceneObject = Object.create(MirabufSceneObject.prototype)
@@ -152,11 +142,10 @@ describe("DragModeSystem Integration Tests", () => {
             physicsSystem.getBodyAssociation = vi.fn().mockReturnValue(mockAssociation)
 
             const originalRayCast = physicsSystem.rayCast
-            const mockRaycastResult = {
+            physicsSystem.rayCast = vi.fn().mockImplementation(() => ({
                 data: { mBodyID: bodyId },
-                point: { GetX: () => 0, GetY: () => 0, GetZ: () => 0 },
-            }
-            physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)
+                point: new JOLT.Vec3(0, 0, 0),
+            }))
 
             const physicsBody = physicsSystem.getBody(bodyId)!
             dragModeSystem.enabled = true
@@ -166,7 +155,7 @@ describe("DragModeSystem Integration Tests", () => {
                 cleanup: () => {
                     physicsSystem.getBodyAssociation = originalGetBodyAssociation
                     physicsSystem.rayCast = originalRayCast
-                    physicsSystem.destroyBodyIds(bodyId)
+                    physicsSystem.destroyBodiesById(bodyId)
                     shape.Release()
                 },
             }
@@ -218,6 +207,44 @@ describe("DragModeSystem Integration Tests", () => {
             }
 
             screenHandler.interactionEnd?.(endInteraction)
+
+            cleanup()
+        })
+
+        test("should wake and drag a sleeping game piece", () => {
+            const { physicsBody, cleanup } = setupDraggableCube(false)
+            expect(physicsBody.IsActive()).toBe(false)
+
+            const initialPos = physicsBody.GetPosition()
+            const initialPosition = { x: initialPos.GetX(), y: initialPos.GetY(), z: initialPos.GetZ() }
+
+            const screenHandler = World.sceneRenderer.screenInteractionHandler
+            screenHandler?.interactionStart?.({
+                interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
+                position: [400, 300] as [number, number],
+            })
+            screenHandler?.interactionMove?.({
+                interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
+                movement: [100, 0] as [number, number],
+            })
+
+            for (let i = 0; i < 10; i++) {
+                dragModeSystem.update(0.016)
+                physicsSystem.update(0.016)
+            }
+
+            expect(physicsBody.IsActive()).toBe(true)
+            const afterDragPos = physicsBody.GetPosition()
+            const moved =
+                Math.abs(afterDragPos.GetX() - initialPosition.x) > 0.2 ||
+                Math.abs(afterDragPos.GetY() - initialPosition.y) > 0.2 ||
+                Math.abs(afterDragPos.GetZ() - initialPosition.z) > 0.2
+            expect(moved).toBe(true)
+
+            screenHandler.interactionEnd?.({
+                interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
+                position: [400, 300] as [number, number],
+            })
 
             cleanup()
         })

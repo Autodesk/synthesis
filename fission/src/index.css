@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@config '../tailwind.config.mjs';
+@config "../tailwind.config.mjs";
 
 /*
   The default border color has changed to `currentcolor` in Tailwind CSS v4,
@@ -114,5 +114,14 @@ button:focus-visible {
     }
     button {
         background-color: #f9f9f9;
+    }
+}
+
+@keyframes continuous-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(-360deg);
     }
 }

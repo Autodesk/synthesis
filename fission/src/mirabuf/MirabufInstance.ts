@@ -1,6 +1,6 @@
 import * as THREE from "three"
 import World from "@/systems/World.ts"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
+import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import type { mirabuf } from "../proto/mirabuf"
 import type MirabufParser from "./MirabufParser.ts"
 import { ParseErrorSeverity } from "./MirabufParser.ts"
@@ -133,7 +133,9 @@ class MirabufInstance {
             ([appearanceId, appearance]) => {
                 const { A, B, G, R } = appearance.albedo ?? {}
                 const [hex, opacity] =
-                    A && B && G && R ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0] : [0xe32b50, 1.0]
+                    A != null && B != null && G != null && R != null
+                        ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0]
+                        : [0xe32b50, 1.0]
 
                 const material =
                     materialStyle === MaterialStyle.REGULAR

@@ -5,7 +5,7 @@ import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import EventSystem from "@/systems/EventSystem.ts"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
 import World from "@/systems/World.ts"
-import { globalOpenModal } from "@/ui/components/GlobalUIControls"
+import { globalCloseModal, globalOpenModal } from "@/ui/components/GlobalUIControls"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
 import type { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import { createMatchEventFromConfig } from "./MatchModeAnalyticsUtils"
@@ -14,6 +14,7 @@ import { MatchModeType } from "./MatchModeTypes"
 import RobotDimensionTracker from "./RobotDimensionTracker"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { CloseType } from "@/ui/helpers/UIProviderHelpers.ts"
 
 // Register command: Toggle Match Mode
 CommandRegistry.get().registerCommand({
@@ -23,8 +24,7 @@ CommandRegistry.get().registerCommand({
     keywords: ["match", "mode", "start", "play", "game", "simulate", "toggle"],
     perform: () => {
         if (MatchMode.getInstance().isMatchEnabled()) {
-            MatchMode.getInstance().sandboxModeStart()
-            globalAddToast("info", "Match Mode Cancelled")
+            MatchMode.getInstance().abort()
         } else {
             import("@/ui/panels/configuring/MatchModeConfigPanel").then(m => {
                 globalOpenPanel(m.default, undefined)
@@ -43,14 +43,21 @@ class MatchMode {
         EventSystem.dispatch("MatchStateChangedEvent", { mode: val })
     }
 
-    private _initialTime: number = 0
-    private _timeLeft: number = 0
+    private _startTime: number | null = null
+    private _timeUsed: number = 0
     private _intervalId: number | null = null
+    private _cancelHandler: (() => void) | null = null
+
+    private _resultsModalId: string | null = null
 
     // Match Mode Config
     private _matchModeConfig: MatchModeConfig = DefaultMatchModeConfigs.fallbackValues()
 
     private constructor() {}
+
+    get startTime() {
+        return this._startTime
+    }
 
     static getInstance(): MatchMode {
         MatchMode._instance ??= new MatchMode()
@@ -72,53 +79,73 @@ class MatchMode {
         return this._matchModeConfig
     }
 
-    async runTimer(duration: number, updateTimeLeft: boolean = true) {
-        this._initialTime = duration
-        this._timeLeft = duration
+    /**
+     * Waits for the specified duration in match time to pass, accounting for delays from prior loop cycles. Resolves when the time has elapsed, rejects if cancelled.
+     * @param duration The duration, in seconds, of the phase
+     * @param updateTimeLeft Whether to dispatch scoreboard update events
+     */
+    async runForNext(duration: number, updateTimeLeft: boolean = true) {
+        if (this._intervalId !== null) {
+            console.warn("Timer already running")
+            return
+        }
 
         // Dispatch an event to update the time left in the UI
-        if (updateTimeLeft) EventSystem.dispatch("TimeChangedEvent", { time: this._initialTime })
-        return new Promise<void>(res => {
-            this._intervalId = window.setInterval(() => {
-                this._timeLeft--
+        if (updateTimeLeft) EventSystem.dispatch("TimeChangedEvent", { time: duration })
+        this._intervalId = window.setInterval(() => {
+            const timeElapsed = (Date.now() - this._startTime! - this._timeUsed) / 1000
+            const timeLeft = duration - timeElapsed
 
-                if (this._timeLeft >= 0 && updateTimeLeft) {
-                    EventSystem.dispatch("TimeChangedEvent", { time: this._timeLeft })
-                }
+            if (timeLeft >= 0 && updateTimeLeft) {
+                EventSystem.dispatch("TimeChangedEvent", { time: timeLeft })
+            }
 
-                // Checks if endgame has started
-                if (
-                    this._matchModeType === MatchModeType.TELEOP &&
-                    this._timeLeft == this._matchModeConfig.endgameTime
-                ) {
-                    this.endgameStart()
-                }
+            // Checks if endgame has started
+            if (
+                this._matchModeType === MatchModeType.TELEOP &&
+                timeLeft <= this._matchModeConfig.endgameTime &&
+                !this._endgame
+            ) {
+                this.endgameStart()
+            }
+        }, 100)
 
-                if (this._timeLeft <= 0) {
-                    console.log("resolving")
-                    res()
-                }
-            }, 1000)
-        }).finally(() => {
-            clearInterval(this._intervalId as number)
+        const remainingTime = this._startTime! + this._timeUsed - Date.now() + duration * 1000
+
+        return new Promise((res, reject) => {
+            setTimeout(res, remainingTime)
+            this._cancelHandler = () => reject("Cancelled")
         })
+            .then(() => {
+                this._timeUsed += duration * 1000
+            })
+            .finally(() => {
+                clearInterval(this._intervalId as number)
+                this._intervalId = null
+            })
     }
 
     autonomousModeStart() {
         void SoundPlayer.getInstance().play(MatchStart)
         this.setMatchModeType(MatchModeType.AUTONOMOUS)
-        this.runTimer(this._matchModeConfig.autonomousTime).then(() => this.autonomousModeEnd())
+        this.runForNext(this._matchModeConfig.autonomousTime)
+            .then(() => this.autonomousModeEnd())
+            .catch(() => {})
     }
 
     autonomousModeEnd() {
         void SoundPlayer.getInstance().play(MatchEnd)
-        this.runTimer(3, false).then(() => this.teleopModeStart()) // Delay between autonomous and teleop modes
+        this.runForNext(3, false) // Delay between autonomous and teleop modes
+            .then(() => this.teleopModeStart())
+            .catch(() => {})
     }
 
     teleopModeStart() {
         void SoundPlayer.getInstance().play(MatchResume)
         this.setMatchModeType(MatchModeType.TELEOP)
-        this.runTimer(this._matchModeConfig.teleopTime).then(() => this.matchEnded())
+        this.runForNext(this._matchModeConfig.teleopTime)
+            .then(() => this.matchEnded())
+            .catch(() => {})
     }
 
     endgameStart() {
@@ -128,42 +155,89 @@ class MatchMode {
         this._endgame = true
     }
 
-    async start(broadcast = true, useSpawnPositions: boolean) {
-        if (broadcast) {
-            await World.multiplayerSystem?.broadcast({
-                type: "matchModeState",
-                data: { event: "start", config: this._matchModeConfig, moveRobots: useSpawnPositions },
-            })
-            console.log("sent multiplayer")
+    async start(startTime: number | null, broadcast: boolean, useSpawnPositions: boolean) {
+        startTime ??= Date.now() + 300 // Accounts for time it takes for robots to move to start positions and settle, and for multiplayer state to sync
+
+        if (this._resultsModalId) {
+            globalCloseModal(CloseType.ACCEPT, this._resultsModalId)
+            this._resultsModalId = null
         }
+
+        if (this._startTime !== null) {
+            globalAddToast("warning", "Match mode already active")
+            return
+        }
+
+        if (broadcast && World.multiplayerSystem) {
+            World.multiplayerSystem.broadcast({
+                type: "matchModeState",
+                data: {
+                    event: "start",
+                    config: this._matchModeConfig,
+                    moveRobots: useSpawnPositions,
+                    startTime: World.multiplayerSystem.toServerTime(startTime),
+                },
+            })
+        }
+
+        this._startTime = startTime
+
         if (useSpawnPositions) {
             World.getOwnRobots().forEach(obj => obj.moveToSpawnLocation())
         }
-        this.autonomousModeStart()
+
         World.scoreTracker.resetScores()
         RobotDimensionTracker.matchStart()
 
         const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
         World.analyticsSystem?.event("Match Start", matchEvent)
+
+        this.runForNext(0, false)
+            .then(() => this.autonomousModeStart())
+            .catch(() => {})
     }
 
     matchEnded() {
         void SoundPlayer.getInstance().play(MatchEnd)
-        clearInterval(this._intervalId as number)
         this.setMatchModeType(MatchModeType.MATCH_ENDED)
 
         const matchEvent = createMatchEventFromConfig(this._matchModeConfig)
         World.analyticsSystem?.event("Match End", matchEvent)
-        globalOpenModal(MatchResultsModal, undefined)
+        this._resultsModalId = globalOpenModal(MatchResultsModal, undefined)
     }
 
+    closeResultsModal() {
+        if (this._resultsModalId) {
+            globalCloseModal(CloseType.ACCEPT, this._resultsModalId)
+            this._resultsModalId = null
+        }
+    }
+
+    reset() {
+        clearInterval(this._intervalId as number)
+        this._startTime = null
+        this._timeUsed = 0
+        this._endgame = false
+        this._cancelHandler?.()
+        EventSystem.dispatch("TimeChangedEvent", { time: 0 })
+        World.scoreTracker.resetScores()
+    }
+
+    abort(broadcast: boolean = true) {
+        if (broadcast) {
+            World.multiplayerSystem?.broadcast({
+                type: "matchModeState",
+                data: {
+                    event: "cancel",
+                },
+            })
+        }
+        globalAddToast("info", "Match Mode Cancelled")
+        this.sandboxModeStart()
+    }
     sandboxModeStart() {
         this.setMatchModeType(MatchModeType.SANDBOX)
-        clearInterval(this._intervalId as number)
-        this._initialTime = 0
-        this._timeLeft = 0
-        EventSystem.dispatch("TimeChangedEvent", { time: this._timeLeft })
-        World.scoreTracker.resetScores()
+        this.reset()
     }
 
     isMatchEnabled(): boolean {

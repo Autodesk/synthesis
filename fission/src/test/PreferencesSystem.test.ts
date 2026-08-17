@@ -5,77 +5,76 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     defaultFieldPreferences,
     defaultUserPreferences,
+    MAX_UNSTICK_STRENGTH,
+    MIN_UNSTICK_STRENGTH,
     type FieldPreferences,
     type GraphicsPreferences,
     type RobotPreferences,
     type UserPreference,
-    type UserPreferences,
 } from "@/systems/preferences/PreferenceTypes"
 
-/**
- * Captures the full current user-preferences state by resolving every key
- * defined by defaultUserPreferences() through the public getter, so the whole
- * set can be asserted with toMatchSnapshot().
- */
-function captureUserPreferences(): UserPreferences {
-    const keys = Object.keys(defaultUserPreferences()) as UserPreference[]
-    return Object.fromEntries(keys.map(key => [key, PreferencesSystem.getUserPreference(key)])) as UserPreferences
+function expectDefaultPreferences() {
+    const defaults = defaultUserPreferences()
+    const keys = Object.keys(defaults) as UserPreference[]
+    keys.forEach(key => {
+        expect(PreferencesSystem.getUserPreference(key), `Mismatch in preference ${key}`).toEqual(defaults[key])
+    })
 }
 
 describe("Preferences System Global Values", () => {
     test("Setting values", () => {
-        PreferencesSystem.setUserPreference("ZoomSensitivity", 7)
+        PreferencesSystem.setUserPreference("SceneRotationSensitivity", 7)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
-        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(7)
+        expect(PreferencesSystem.getUserPreference("SceneRotationSensitivity")).toBe(7)
         expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(false)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
+        expect(PreferencesSystem.getUserPreference("ShowViewCube")).toBe(false)
     })
 
     test("Setting without saving", () => {
-        PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
+        PreferencesSystem.setUserPreference("SceneRotationSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("RenderScoreboard", true)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         window.localStorage.setItem("Preferences", "{}") // Clears local storage
         PreferencesSystem.loadPreferences()
 
-        expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
+        expectDefaultPreferences()
     })
 
     test("Reset to default if undefined", () => {
-        PreferencesSystem.setUserPreference("ZoomSensitivity", undefined as unknown as number)
+        PreferencesSystem.setUserPreference("SceneRotationSensitivity", undefined as unknown as number)
         PreferencesSystem.setUserPreference("RenderSceneTags", undefined as unknown as boolean)
-        PreferencesSystem.setUserPreference("RenderScoreboard", undefined as unknown as boolean)
+        PreferencesSystem.setUserPreference("ShowViewCube", undefined as unknown as boolean)
 
-        expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
+        expectDefaultPreferences()
     })
 
     test("Setting then saving", () => {
-        PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
+        PreferencesSystem.setUserPreference("SceneRotationSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", true)
-        PreferencesSystem.setUserPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         PreferencesSystem.savePreferences()
-        PreferencesSystem.setUserPreference("ZoomSensitivity", 20)
+        PreferencesSystem.setUserPreference("SceneRotationSensitivity", 20)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("RenderScoreboard", true)
+        PreferencesSystem.setUserPreference("ShowViewCube", true)
         PreferencesSystem.loadPreferences()
 
-        expect(PreferencesSystem.getUserPreference("ZoomSensitivity")).toBe(13)
+        expect(PreferencesSystem.getUserPreference("SceneRotationSensitivity")).toBe(13)
         expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
+        expect(PreferencesSystem.getUserPreference("ShowViewCube")).toBe(false)
     })
 
     test("Clearing preferences", () => {
-        PreferencesSystem.setUserPreference("ZoomSensitivity", 13)
+        PreferencesSystem.setUserPreference("SceneRotationSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", true)
-        PreferencesSystem.setUserPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         PreferencesSystem.clearPreferences()
 
-        expect(captureUserPreferences()).toMatchSnapshot("default user preferences")
+        expectDefaultPreferences()
     })
 
     test("Graphics preferences", () => {
@@ -125,9 +124,10 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 ejectOrder: "FIFO",
             },
+            cameras: [],
             driveVelocity: 3,
             driveAcceleration: 6,
-            unstickForce: 8000,
+            unstickStrength: MAX_UNSTICK_STRENGTH,
         }
         const robotPreferences2: RobotPreferences = {
             inputsSchemes: [],
@@ -146,9 +146,10 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 ejectOrder: "LIFO",
             },
+            cameras: [],
             driveVelocity: 1.5,
             driveAcceleration: 8,
-            unstickForce: 10000,
+            unstickStrength: MIN_UNSTICK_STRENGTH,
         }
 
         PreferencesSystem.setRobotPreferences("RobotPreferences1", robotPreferences1)
