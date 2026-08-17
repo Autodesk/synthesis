@@ -16,6 +16,7 @@ import ProgressNotifications from "@/components/ProgressNotification.tsx"
 import SceneOverlay from "@/components/overlays/SceneOverlay.tsx"
 import PortraitOverlay from "@/components/overlays/PortraitOverlay.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
+import WheelAssignmentDebugPanel from "./ui/components/WheelAssignmentDebugPanel.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
@@ -112,6 +113,7 @@ const Synthesis = () => {
                                 <DragModeIndicator />
                                 <MultiplayerHUD />
                             </Stack>
+                            <WheelAssignmentDebugPanel />
                             <PortraitOverlay />
 
                             {!consentPopupDisable && (

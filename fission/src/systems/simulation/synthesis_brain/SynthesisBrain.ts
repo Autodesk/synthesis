@@ -79,6 +79,10 @@ class SynthesisBrain extends Brain {
         return this._brainIndex
     }
 
+    public getWheelDrivers(): WheelDriver[] {
+        return this._simLayer.drivers.filter(driver => driver instanceof WheelDriver)
+    }
+
     /**
      * Applies the requested drive type and returns the drive type actually in effect afterwards.
      * These can differ when the requested type is swerve but swerve detection fails.

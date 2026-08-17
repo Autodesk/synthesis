@@ -34,6 +34,7 @@ class SkidSteerDriveBehavior extends DriveBehavior {
     protected driveSpeeds(leftInput: number, rightInput: number) {
         const leftDirection = clamp(leftInput, -1, 1)
         const rightDirection = clamp(rightInput, -1, 1)
+
         this._leftWheels.forEach(wheel => {
             wheel.accelerationDirection = leftDirection
         })

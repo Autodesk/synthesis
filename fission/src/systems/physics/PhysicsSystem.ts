@@ -19,6 +19,7 @@ import {
     type RigidNodeId,
     type RigidNodeReadOnly,
 } from "@/mirabuf/MirabufParser.ts"
+import { WHEEL_SEPARATOR_JOINT_PREFIX } from "@/mirabuf/WheelJointBuilder.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import type { Message } from "../multiplayer/MultiplayerTypes.ts"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -43,6 +44,8 @@ import {
     createDOFSpecs,
     createVehicleController,
     getAxis,
+    getExplicitWheelRadius,
+    getExplicitWheelWidth,
     getPerpendicular,
     isWheel,
     setAxes,
@@ -125,6 +128,9 @@ const DEFAULT_FRICTION = 0.7
 // Some robots still float slightly, assuming this is due to different export conditions.
 const SUSPENSION_MIN_FACTOR = 0.0001
 const SUSPENSION_MAX_FACTOR = 0.0001
+
+// Manually-assigned wheels need more suspension travel to tolerate circle-fit origin error.
+const MANUAL_WHEEL_SUSPENSION_MAX_FACTOR = 0.2
 
 // Wheels whose inferred radii fall within this relative tolerance of each other are treated as the
 // same size and snapped to a common radius. Sits well above mesh-tessellation noise (<1%) and well
@@ -478,6 +484,8 @@ class PhysicsSystem extends WorldSystem {
 
         joints.forEach(([jointGuid, jointInst]) => {
             if (jointGuid == GROUNDED_JOINT_ID) return
+            // Structural-only separator joint, not a real constraint.
+            if (jointGuid.startsWith(WHEEL_SEPARATOR_JOINT_PREFIX)) return
 
             const rnA = parser.partToNodeMap.get(jointInst.parentPart!)
             const rnB = parser.partToNodeMap.get(jointInst.childPart!)
@@ -832,21 +840,31 @@ class PhysicsSystem extends WorldSystem {
             wheelDimensions.radius = resolvedRadius
         }
 
+        // Manual wheels carry explicit width too; AABB width would read the whole shared rigid body.
+        const explicitWidth = getExplicitWheelWidth(jointDefinition)
+        if (explicitWidth !== undefined) {
+            wheelDimensions.width = explicitWidth
+        }
+
         const wheelPos = urdfWheelBasis
             ? convertJoltRVec3ToJoltVec3(anchorPoint)
             : convertJoltRVec3ToJoltVec3(anchorPoint.Add(axis))
 
         const wheelSettings = new JOLT.WheelSettingsWV()
 
+        const simulatedRadius = wheelDimensions.radius * 1.05
+
         wheelSettings.mPosition = wheelPos
         JOLT.destroy(wheelPos)
 
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
-        wheelSettings.mRadius = wheelDimensions.radius * 1.05
+        wheelSettings.mRadius = simulatedRadius
         wheelSettings.mWidth = wheelDimensions.width
+        const isManualWheel = getExplicitWheelRadius(jointDefinition) !== undefined
         wheelSettings.mSuspensionMinLength = wheelDimensions.radius * SUSPENSION_MIN_FACTOR
-        wheelSettings.mSuspensionMaxLength = wheelDimensions.radius * SUSPENSION_MAX_FACTOR
+        wheelSettings.mSuspensionMaxLength =
+            wheelDimensions.radius * (isManualWheel ? MANUAL_WHEEL_SUSPENSION_MAX_FACTOR : SUSPENSION_MAX_FACTOR)
         wheelSettings.mInertia = 1
 
         if (urdfWheelBasis) {
@@ -980,6 +998,7 @@ class PhysicsSystem extends WorldSystem {
         const maxBounds = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
 
         nonPhysicsNodes.forEach(rn => {
+            // Note: CompoundShapeSubShape.GetPositionCOM() is COM-relative, not assembly-space.
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
 
             let shapesAdded = 0

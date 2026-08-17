@@ -147,3 +147,19 @@ export function createDOFSpecs(dofs: mirabuf.joint.IDOF[]): DOFSpecs[] {
 export function isWheel(jDef: mirabuf.joint.Joint): boolean {
     return (jDef.info?.name !== "grounded" && (jDef.userData?.data?.wheel ?? "false") === "true") ?? false
 }
+
+/** Explicit radius set on a manually-assigned wheel's userData (centimetres); undefined falls back to AABB inference. */
+export function getExplicitWheelRadius(jDef: mirabuf.joint.Joint): number | undefined {
+    const raw = jDef.userData?.data?.wheelRadius
+    if (raw === undefined) return undefined
+    const radius = Number(raw) / 100.0
+    return Number.isFinite(radius) && radius > 0 ? radius : undefined
+}
+
+/** Same idea as getExplicitWheelRadius, but for axle-direction width. */
+export function getExplicitWheelWidth(jDef: mirabuf.joint.Joint): number | undefined {
+    const raw = jDef.userData?.data?.wheelWidth
+    if (raw === undefined) return undefined
+    const width = Number(raw) / 100.0
+    return Number.isFinite(width) && width > 0 ? width : undefined
+}

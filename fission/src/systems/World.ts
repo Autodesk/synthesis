@@ -8,6 +8,7 @@ import type MultiplayerSystem from "./multiplayer/MultiplayerSystem"
 import PhysicsSystem from "./physics/PhysicsSystem"
 import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
+import WheelAssignmentMode from "./scene/WheelAssignmentMode"
 import RobotPositionTracker from "./simulation/RobotPositionTracker"
 import SimulationSystem from "./simulation/SimulationSystem"
 
@@ -25,6 +26,7 @@ class World {
     private _multiplayerSystem?: MultiplayerSystem
     private _analyticsSystem: AnalyticsSystem | undefined = undefined
     private _dragModeSystem: DragModeSystem
+    private _wheelAssignmentMode: WheelAssignmentMode
     private _performanceMonitorSystem: PerformanceMonitoringSystem
     private _scoreTracker: ScoreTracker = new ScoreTracker()
 
@@ -71,6 +73,9 @@ class World {
     public static get scoreTracker() {
         return this._instance?._scoreTracker!
     }
+    public static get wheelAssignmentMode() {
+        return this._instance?._wheelAssignmentMode!
+    }
 
     public static getOwnRobots() {
         return World.multiplayerSystem?.getOwnRobots() ?? World.sceneRenderer.mirabufSceneObjects.getRobots()
@@ -104,6 +109,7 @@ class World {
         this._simulationSystem = new SimulationSystem()
         this._inputSystem = new InputSystem()
         this._dragModeSystem = new DragModeSystem()
+        this._wheelAssignmentMode = new WheelAssignmentMode()
         this._performanceMonitorSystem = new PerformanceMonitoringSystem()
 
         try {
@@ -146,6 +152,7 @@ class World {
         this._inputSystem.destroy()
         this._multiplayerSystem?.destroy()
         this._dragModeSystem.destroy()
+        this._wheelAssignmentMode.destroy()
 
         this._performanceMonitorSystem.destroy()
         this._analyticsSystem?.destroy()
@@ -167,6 +174,7 @@ class World {
             this._accumTimes.inputTime += this.time(() => this._inputSystem.update(this._currentDeltaT))
             this._accumTimes.sceneTime += this.time(() => this._sceneRenderer.update(this._currentDeltaT))
             this._dragModeSystem.update(this._currentDeltaT)
+            this._wheelAssignmentMode.update(this._currentDeltaT)
         })
 
         this._analyticsSystem?.update(this._currentDeltaT)

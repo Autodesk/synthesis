@@ -99,6 +99,14 @@ class WheelDriver extends Driver {
         return this._constraint
     }
 
+    public get reversed(): boolean {
+        return this._reversed
+    }
+
+    public set reversed(value: boolean) {
+        this._reversed = value
+    }
+
     public constructor(
         id: DriverID,
         constraint: Jolt.VehicleConstraint,
