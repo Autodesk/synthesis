@@ -77,6 +77,7 @@ const GameplayControls: React.FC = () => {
         <Stack direction="row" alignItems="center" gap={1.5}>
             <TopBarButton
                 label={isMatchRunning ? "Abort Match" : "Start Match"}
+                active={isMatchRunning}
                 icon={<TopBarIcon name={isMatchRunning ? "gp-match-mode-abort" : "gp-match-mode"} size={30} />}
                 onClick={isMatchRunning ? abortMatchMode : openMatchMode}
             />
