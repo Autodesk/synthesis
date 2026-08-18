@@ -130,38 +130,36 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         }
     }
 
-useEffect(() => {
-    let frameId: number
-    let wasPressedLastFrame = false
+    useEffect(() => {
+        let frameId: number
+        let wasPressedLastFrame = false
 
-    const checkGamepadState = () => {
-        const activeGamepads = InputSystem.getConnectedGamepads()
-        let currentlyPressedButton = -1
+        const checkGamepadState = () => {
+            const activeGamepads = InputSystem.getConnectedGamepads()
+            let currentlyPressedButton = -1
 
-        for (const gamepad of activeGamepads) {
-            const pressedIndex = gamepad.buttons.findIndex(button => button.pressed)
-            if (pressedIndex !== -1) {
-                currentlyPressedButton = pressedIndex
-                break
+            for (const gamepad of activeGamepads) {
+                const pressedIndex = gamepad.buttons.findIndex(button => button.pressed)
+                if (pressedIndex !== -1) {
+                    currentlyPressedButton = pressedIndex
+                    break
+                }
             }
-        }
-        if (currentlyPressedButton !== -1) {
-            if (!wasPressedLastFrame) {
-                setChosenButton(currentlyPressedButton)
-                wasPressedLastFrame = true
+            if (currentlyPressedButton !== -1) {
+                if (!wasPressedLastFrame) {
+                    setChosenButton(currentlyPressedButton)
+                    wasPressedLastFrame = true
+                }
+            } else {
+                wasPressedLastFrame = false
             }
-        } else {
-            wasPressedLastFrame = false
+
+            frameId = requestAnimationFrame(checkGamepadState)
         }
 
         frameId = requestAnimationFrame(checkGamepadState)
-    }
-
-    frameId = requestAnimationFrame(checkGamepadState)
-    return () => cancelAnimationFrame(frameId)
-}, [])
-
-
+        return () => cancelAnimationFrame(frameId)
+    }, [])
 
     /** Input detection for setting inputs */
     useEffect(() => {

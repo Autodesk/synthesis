@@ -284,11 +284,11 @@ class InputSystem extends WorldSystem {
     }
 
     /** @returns An array of all currently connected, active Gamepad objects. */
-public static getConnectedGamepads(): Gamepad[] {
-    return this._gpIndexes
-        .map(index => this.gamepads[index])
-        .filter((gamepad): gamepad is Gamepad => gamepad != null);
-}
+    public static getConnectedGamepads(): Gamepad[] {
+        return this._gpIndexes
+            .map(index => this.gamepads[index])
+            .filter((gamepad): gamepad is Gamepad => gamepad != null)
+    }
 
     /**
      * @param {number} playerSlot The logical player slot.
