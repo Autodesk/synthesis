@@ -43,12 +43,7 @@ for (let i = 0; i < 50; i++) {
 // Pass destroy=false on each rayCast call so the Vec3s survive across iterations.
 
 const raycastSystem = new PhysicsSystem()
-const rayTarget = raycastSystem.createBox(
-    new THREE.Vector3(1, 1, 1),
-    undefined,
-    new THREE.Vector3(0, 5, 0),
-    undefined
-)
+const rayTarget = raycastSystem.createBox(new THREE.Vector3(1, 1, 1), undefined, new THREE.Vector3(0, 5, 0), undefined)
 raycastSystem.addBodyToSystem(rayTarget.GetID(), false)
 const RAY_FROM = new JOLT.Vec3(0, 0, 0)
 const RAY_HIT_DIR = new JOLT.Vec3(0, 10, 0)
@@ -59,8 +54,8 @@ const RAY_MISS_DIR = new JOLT.Vec3(100, 0, 0)
 const creationSystem = new PhysicsSystem()
 const HALF_EXTENTS = new THREE.Vector3(0.5, 0.5, 0.5)
 const CUBE_HULL_POINTS = new Float32Array([
-    0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5,
-    0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
+    0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5,
+    0.5, 0.5, -0.5,
 ])
 
 // --- Assembly spawn systems (async: need real mirabuf assemblies) ---
