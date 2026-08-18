@@ -1,11 +1,11 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
-import type { FieldConfiguration, RobotConfiguration, UpdateObjectData } from "@/systems/multiplayer/types"
+import type { FieldConfiguration, RobotConfiguration } from "@/systems/multiplayer/MultiplayerTypes"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
-import type { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { LAYER_GHOST, type LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import {
@@ -37,8 +37,8 @@ import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import { type ProgressHandle, URDFImportProgressBar } from "@/ui/components/ProgressNotificationData"
-import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
+import { type ProgressHandle, URDFImportProgressBar } from "@/components/ProgressNotificationData.ts"
+import { SceneOverlayTag } from "@/components/overlays/SceneOverlayEvents.ts"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
@@ -63,6 +63,7 @@ import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { v4 as uuidV4 } from "uuid"
 import { copyVec3, hexStringToUint8Array, yieldToMain } from "@/util/Utility.ts"
+import type { UpdateObjectData } from "@/systems/multiplayer/MultiplayerMessageTypes.ts"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 const DEBUG_BODIES = false
@@ -173,7 +174,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public get multiplayerOwnerName(): string | undefined {
         if (this._multiplayerOwningClientId == null) return undefined
-        return World.multiplayerSystem?._clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
+        return World.multiplayerSystem?.clientToInfoMap?.get(this._multiplayerOwningClientId)?.displayName
     }
 
     get simConfigData() {
@@ -241,19 +242,22 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         if (this.miraType === MiraType.ROBOT) {
             // creating nametag for robots
-            this._nameTag = new SceneOverlayTag(() => {
-                const name =
-                    this.nameOverride ??
-                    (this._brain?.isSynthesis()
-                        ? this._brain.inputSchemeLabel
-                        : this._brain?.isWPILib()
-                          ? "Magic"
-                          : "Not Configured!")
-                if (World.multiplayerSystem != null) {
-                    return `${name} (${this.alliance === "red" ? "R" : this.alliance === "blue" ? "B" : "..."}${this.station ?? ""})`
-                }
-                return name
-            })
+            this._nameTag = new SceneOverlayTag(
+                () => {
+                    const name =
+                        this.nameOverride ??
+                        (this._brain?.isSynthesis()
+                            ? this._brain.inputSchemeName
+                            : this._brain?.isWPILib()
+                              ? "Magic"
+                              : "Not Configured!")
+                    if (World.multiplayerSystem != null) {
+                        return `${name} (${this.alliance === "red" ? "R" : this.alliance === "blue" ? "B" : "..."}${this.station ?? ""})`
+                    }
+                    return name
+                },
+                () => this.isOwnObject
+            )
 
             // Detects when something collides with the robot
             this._collisionUnsubscriber = EventSystem.listen("OnContactAddedEvent", data => {
@@ -378,7 +382,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 ? defaultFieldSpawnLocation()
                 : (this.robotSpawnPosition(referencePos) ?? defaultFieldSpawnLocation())
 
-        this.setObjectPosition(pos)
+        this.setObjectPosition(pos, referencePos)
     }
 
     private robotSpawnPosition(referencePos: THREE.Vector3): SpawnLocation | undefined {
@@ -390,8 +394,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 ? fieldLocations[this.alliance][this.station]
                 : fieldLocations?.default
 
-        // TODO
-        // Why are we calling this?
+        // Mutates referencePos in place (Box3.getCenter side effect) so setObjectPosition can offset
+        // this spawn location by the field's own transform instead of treating it as a world-space position.
         field?.getXZPositionTransform(referencePos)
 
         return pos
@@ -714,12 +718,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public updateScoringZones() {
+        const savedPrevGPs = this._scoringZones.map(z => [...z.prevGamePieces])
+
         this.removeSceneObjects(this._scoringZones)
 
         if (!this._fieldPreferences || !this._fieldPreferences.scoringZones) return
 
         for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
             const newZone = new ScoringZoneSceneObject(this, i)
+            if (i < savedPrevGPs.length) newZone.prevGamePieces = savedPrevGPs[i]
             this._scoringZones.push(newZone)
             World.sceneRenderer.registerSceneObject(newZone)
         }
@@ -1045,10 +1052,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public async sendPreferences() {
         if (!World.multiplayerSystem) return
         const data = this.getPreferenceData()
-        await World.multiplayerSystem.broadcast({
+        World.multiplayerSystem.broadcast({
             type: "configureObject",
             data: {
-                sceneObjectKey: this.id,
+                sceneObjectId: this.id,
                 objectConfigurationData: data,
             },
         })
@@ -1072,6 +1079,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public savePreferences(): void {
+        if (!this.isOwnObject) {
+            console.warn("Tried to save preferences for foreign object")
+            return
+        }
         if (this.miraType == MiraType.FIELD && this._fieldPreferences) {
             PreferencesSystem.setFieldPreferences(this.assemblyId, this._fieldPreferences)
         } else if (this._robotPreferences) {
@@ -1127,11 +1138,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public getPreferenceData(): FieldConfiguration | RobotConfiguration {
         return this.miraType == MiraType.FIELD
             ? {
-                  fieldPreferences: JSON.stringify(this._fieldPreferences),
+                  fieldPreferences: this.fieldPreferences!,
               }
             : {
-                  intakePreferences: JSON.stringify(this.intakePreferences),
-                  ejectorPreferences: JSON.stringify(this.ejectorPreferences),
+                  robotPreferences: this.robotPreferences,
                   alliance: this.alliance,
                   station: this.station,
               }
@@ -1140,11 +1150,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public setPreferenceData(preferences: FieldConfiguration | RobotConfiguration) {
         if (this.miraType === MiraType.FIELD) {
             const config = preferences as FieldConfiguration
-            this._fieldPreferences = JSON.parse(config.fieldPreferences)
+            this._fieldPreferences = config.fieldPreferences
         } else {
             const config = preferences as RobotConfiguration
-            this.intakePreferences = JSON.parse(config.intakePreferences)
-            this.ejectorPreferences = JSON.parse(config.ejectorPreferences)
+            this._robotPreferences = config.robotPreferences
             this.alliance = config.alliance
             this.station = config.station
         }
@@ -1166,25 +1175,33 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
-            World.physicsSystem.enablePhysicsForBody(this.mechanism.getBodyByNodeId(rn.id)!)
+            World.physicsSystem.enablePhysicsForBody(
+                this.mechanism.getBodyByNodeId(rn.id)!,
+                this._physicsLayerReserve?.layer
+            )
         })
         this.mechanism.ghostBodies.forEach(x => World.physicsSystem.enablePhysicsForBody(x))
+        World.physicsSystem.addStepListeners(this.mechanism.stepListeners)
     }
 
     public disablePhysics() {
+        if (!this.hasPhysics()) return
+
         if (World.multiplayerSystem?.getOwnSceneObjectIDs().includes(this.id)) {
             World.multiplayerSystem.broadcast({ type: "disableObjectPhysics", data: this.id })
         }
 
+        this._physicsLayerReserve?.release()
         this.mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.physicsSystem.disablePhysicsForBody(this.mechanism.getBodyByNodeId(rn.id)!)
         })
         this.mechanism.ghostBodies.forEach(x => World.physicsSystem.disablePhysicsForBody(x))
+        World.physicsSystem.removeStepListeners(this.mechanism.stepListeners)
     }
 
     public hasPhysics(): boolean {
         const rootBody = World.physicsSystem.getBody(this.getRootNodeId()!)!
-        return rootBody.IsActive() && !rootBody.IsSensor()
+        return rootBody.GetObjectLayer() !== LAYER_GHOST
     }
 
     public getRootNodeId(): Jolt.BodyID {
@@ -1357,24 +1374,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return data
     }
 
-    public getUpdateData(): UpdateObjectData | undefined {
-        const gamePiecesControlled: number[] = this.activeEjectables.map(bodyId => bodyId.GetIndexAndSequenceNumber())
+    public getUpdateData(): UpdateObjectData {
+        const gamePiecesControlled: RigidNodeId[] = this.activeEjectables.map(
+            bodyId => (<RigidNodeAssociate>World.physicsSystem.getBodyAssociation(bodyId)).rigidNodeId
+        )
 
         const bodies = this.getAllBodies()
-            .map(body => {
-                const linearVelocity = body.GetLinearVelocity()
-                const angularVelocity = body.GetAngularVelocity()
-                const position = body.GetPosition()
-                const rotation = body.GetRotation()
-
-                return {
-                    bodyId: body.GetID().GetIndexAndSequenceNumber(),
-                    linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
-                    angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
-                    positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
-                    rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
-                }
-            })
+            .map(body => World.physicsSystem.getBodyUpdateData(body))
             .filter(n => n != null)
 
         return {
@@ -1399,6 +1405,33 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (objectCollidedWith && objectCollidedWith.isGamePiece) {
             objectCollidedWith.robotLastInContactWith = this
         }
+    }
+}
+
+export function getUnusedAlliance(): { alliance: Alliance; station: Station } {
+    const used = {
+        red: [false, false, false],
+        blue: [false, false, false],
+    }
+    World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(body => {
+        if (body.alliance != null && body.station != null) {
+            used[body.alliance][body.station - 1] = true
+        }
+    })
+    const usedRed = used.red.reduce((sum, v) => sum + (v ? 1 : 0), 0)
+    const usedBlue = used.blue.reduce((sum, v) => sum + (v ? 1 : 0), 0)
+
+    const alliance: Alliance = usedRed > usedBlue ? "blue" : "red"
+    let station: Station = 1
+
+    const unusedStation = (alliance == "blue" ? used.blue : used.red).findIndex(v => !v)
+    if (unusedStation !== -1) {
+        station = (unusedStation + 1) as Station // Stations are 1-indexed, array is 0-indexed
+    }
+
+    return {
+        alliance,
+        station,
     }
 }
 

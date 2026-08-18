@@ -203,7 +203,11 @@ const GeneralTab: React.FC = () => (
                 tooltip="If disabled, protected zones will not be visible but will continue to function the same."
             />
             <GeneralTabCheckbox preference="RenderSceneTags" label="Show Scene Tags" tooltip="Name tags above robot." />
-            <GeneralTabCheckbox preference="RenderScoreboard" label="Show Scoreboard" />
+            <GeneralTabCheckbox
+                preference="AlwaysShowScoreboard"
+                label="Always Show Scoreboard"
+                tooltip="If disabled, the scoreboard is only shown while a match is running."
+            />
             <GeneralTabCheckbox
                 preference="ShowCenterOfMassIndicators"
                 label="Show Centers of Mass"
