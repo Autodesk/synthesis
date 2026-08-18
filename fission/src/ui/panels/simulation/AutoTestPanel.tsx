@@ -150,7 +150,9 @@ function captureBodies(): BodyCapture[] {
 function resetBodies(captures: BodyCapture[]) {
     const zero = new JOLT.Vec3(0, 0, 0)
     captures.forEach(x => {
-        World.physicsSystem.setBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
+        const position = new JOLT.RVec3(x.pos.GetX(), x.pos.GetY(), x.pos.GetZ())
+        const rotation = new JOLT.Quat(x.rot.GetX(), x.rot.GetY(), x.rot.GetZ(), x.rot.GetW())
+        World.physicsSystem.setBodyPositionRotationAndVelocity(x.id, position, rotation, zero, zero)
     })
     JOLT.destroy(zero)
 }
