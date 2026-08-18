@@ -3,6 +3,7 @@ import type React from "react"
 import { useEffect } from "react"
 import APS from "@/aps/APS"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import EventSystem from "@/systems/EventSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import ConfirmModal from "@/ui/modals/common/ConfirmModal"
@@ -28,9 +29,9 @@ CommandRegistry.get().registerCommand({
 function toggleDragMode() {
     const dragSystem = World.dragModeSystem
     if (dragSystem) {
-        dragSystem.enabled = !dragSystem.enabled
-        const status = dragSystem.enabled ? "enabled" : "disabled"
-        globalAddToast("info", "Drag Mode", `Drag mode has been ${status}`)
+        const enabled = !dragSystem.enabled
+        EventSystem.dispatch("SetDragModeEvent", { enabled })
+        globalAddToast("info", "Drag Mode", `Drag mode has been ${enabled ? "enabled" : "disabled"}`)
     }
 }
 

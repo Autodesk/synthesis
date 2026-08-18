@@ -20,6 +20,7 @@ use std::ops;
 use std::sync::Arc;
 
 type WsStream<S> = WebSocketStream<Prefixed<S>>;
+const MAX_CLIENT_NAME_LENGTH: usize = 100;
 
 /// Waits for and handles messages from the client that are intended for the server.
 ///
@@ -51,10 +52,13 @@ where
             // When they ask to initialize a connection, then we add them to a room
             // Or create a room for them
             Some(ClientToServerMessage::InitializeConnection { room_id, name }) => {
+                if name.len() > MAX_CLIENT_NAME_LENGTH {
+                    break None;
+                }
+
                 let info = state.initialize_client_in_room(tx, room_id, &name);
-                let (client_id, room_id) = match info {
-                    Some(info) => info,
-                    None => break None,
+                let Some((client_id, room_id)) = info else {
+                    break None;
                 };
 
                 let message = server_sent_msg(ServerToClientMessage::SendInfo {
@@ -90,9 +94,13 @@ where
     S: SynthesisStream,
 {
     let Some(Ok(Message::Binary(message_data))) = read.next().await else {
-        warn_global!("Client disconnected before handshake (probably a test)");
+        warn_global!("Client disconnected before handshake (probably connection test)");
         return None;
     };
+
+    if message_data.len() == 1 {
+        return None;
+    }
 
     let Ok(message) = deserialize_messagepack::<ClientToServerMessage>(&message_data[1..]) else {
         error_global!("{addr} sent an invalid initial message");
@@ -134,8 +142,9 @@ pub async fn handle_client_message(
             // If we're here, that means the message has a client-client prefix
             // which we want anyway, so there's no need to prefix the message
             // we can just forward it!
-            let senders: Vec<ClientSender> = state.get_senders_from_user_room(client_id);
+            let senders: Vec<ClientSender> = state.get_senders_from_user_room(&client_id);
 
+            // TODO perf
             let tasks = senders.iter().map(|tx| tx.send(message.clone()));
             let _ = futures_util::future::join_all(tasks).await;
 

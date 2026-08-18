@@ -296,6 +296,16 @@
       "linter": {
         "enabled": false
       }
+    },
+    {
+      "includes": ["src/test/**/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useComponentExportOnlyModules": "off"
+          }
+        }
+      }
     }
   ],
   "assist": {

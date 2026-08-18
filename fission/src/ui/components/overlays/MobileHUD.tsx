@@ -12,7 +12,8 @@ import LibraryModal from "@/modals/mirabuf/LibraryModal.tsx"
 import { globalOpenModal, setAddToast, setOpenModal, setOpenPanel } from "../GlobalUIControls.ts"
 import { IconButton, SynthesisIcons } from "../StyledComponents.tsx"
 import { AssemblySelect } from "../topbar/AssemblySelect.tsx"
-import { HUDMenuButton } from "../topbar/HUDMenuButton.tsx"
+import { ConfigureIcon } from "../topbar/ConfigureIcon.tsx"
+import { HUD_MENU_ICON_SIZE, HUDMenuButton } from "../topbar/HUDMenuButton.tsx"
 import { TOP_BAR_ICON_BUTTON_SX } from "../topbar/TopBarConfig.ts"
 import { TopBarIcon } from "../topbar/TopBarIcons.tsx"
 import { useAssemblySelection, useConfigureAssembly } from "../topbar/UseConfigureAssembly.ts"
@@ -80,7 +81,11 @@ const MobileHUD: React.FC = () => {
 
                 <HUDMenuButton label="Configure" iconName="mode-configure" onClick={() => setView("configure")} />
 
-                <HUDMenuButton label="Multiplayer" iconName="gp-1" onClick={() => runAction(openMultiplayer)} />
+                <HUDMenuButton
+                    label="Multiplayer"
+                    iconName="gp-multiplayer"
+                    onClick={() => runAction(openMultiplayer)}
+                />
 
                 {isTouchDevice && (
                     <HUDMenuButton
@@ -134,11 +139,11 @@ const MobileHUD: React.FC = () => {
                     alignContent: "space-evenly",
                 }}
             >
-                {configureButtons.map(({ name, label, mode }) => (
+                {configureButtons.map(({ icon, label, mode }) => (
                     <HUDMenuButton
                         key={label}
                         label={label}
-                        iconName={name}
+                        icon={<ConfigureIcon icon={icon} size={HUD_MENU_ICON_SIZE} />}
                         disabled={disabledMessage != null}
                         disabledTooltip={disabledMessage}
                         onClick={() => {
