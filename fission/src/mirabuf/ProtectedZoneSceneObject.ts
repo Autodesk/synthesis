@@ -53,7 +53,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
             this._robotBounding = robots.map(([_, b]) => renderOrientedBox(b))
         }
 
-        const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.OverlapsOrientedBox(bounding))
+        const robotsInZone = robots.filter(([_, bounding]) => this.bounding?.OverlapsOrientedBox(bounding))
         const oldRobotsInZone = [...this._robotsInside.keys()]
 
         const { added, removed } = findListDifference(
@@ -122,7 +122,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
     private penalizeEnteringZone(robot: MirabufSceneObject) {
         if (robot.alliance !== this.prefs.alliance)
-            World.scoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone")
+            World.scoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone", false)
 
         this._robotsInside.set(robot, Date.now())
     }
@@ -142,7 +142,8 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         World.scoreTracker.robotPenalty(
             opposingRobot,
             this.prefs?.penaltyPoints ?? 0,
-            `Contact penalty in protected zone`
+            `Contact penalty in protected zone`,
+            false
         )
     }
 

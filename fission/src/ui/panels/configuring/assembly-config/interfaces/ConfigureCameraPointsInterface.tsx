@@ -1,6 +1,6 @@
 import { Divider, MenuItem, Select, Stack, TextField } from "@mui/material"
-import { useCallback, useEffect, useRef, useState } from "react"
-import * as THREE from "three"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -11,7 +11,13 @@ import ScrollView from "@/ui/components/ScrollView"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
+import {
+    useDirectionIndicatorMesh,
+    useFieldPointMarkers,
+    useFieldRelativeGizmoPosition,
+    useSyncIndicatorRotation,
+} from "./FieldPointEditing"
 
 const RAD_TO_DEG = 180 / Math.PI
 const DEG_TO_RAD = Math.PI / 180
@@ -44,12 +50,20 @@ interface ListViewProps {
 const ListView: React.FC<ListViewProps> = ({ selectedField, points, onChange, onAdd, onEdit }) => {
     const saveEvent = useCallback(() => persist(points, selectedField), [points, selectedField])
 
-    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
-    useEffect(() => {
-        persist(points, selectedField)
-    }, [selectedField, points])
-
+    useConfigurationSavedListener(saveEvent)
     useHoldPhysicsPause()
+    useEffect(() => persist(points, selectedField), [selectedField, points])
+
+    const markerPoints = useMemo(
+        () =>
+            points.map(p => ({
+                pos: p.pos,
+                yaw: p.look.type === "rotation" ? p.look.yaw : undefined,
+                pitch: p.look.type === "rotation" ? p.look.pitch : undefined,
+            })),
+        [points]
+    )
+    useFieldPointMarkers(selectedField, markerPoints, "-z")
 
     return (
         <>
@@ -105,32 +119,35 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
     const [pitchDeg, setPitchDeg] = useState(
         point.look.type === "rotation" ? Math.round(point.look.pitch * RAD_TO_DEG) : -30
     )
-    const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
+    const { gizmoRef, postGizmoCreation, readFieldRelativePosition } = useFieldRelativeGizmoPosition(
+        selectedField,
+        point.pos
+    )
+    // Cameras look down their local -Z axis, so the indicator points -Z instead of the usual +Z "forward".
+    const directionIndicatorMesh = useDirectionIndicatorMesh("-z")
+    useSyncIndicatorRotation(directionIndicatorMesh, yawDeg * DEG_TO_RAD, pitchDeg * DEG_TO_RAD)
 
-    const postGizmoCreation = useCallback(
+    const setupGizmo = useCallback(
         (gizmo: GizmoSceneObject) => {
-            const fieldRef = selectedField.getXZPositionTransform()
-            gizmo.obj.position.set(fieldRef.x + point.pos[0], fieldRef.y + point.pos[1], fieldRef.z + point.pos[2])
+            postGizmoCreation(gizmo)
+            gizmo.obj.add(directionIndicatorMesh)
         },
-        [selectedField, point.pos]
+        [postGizmoCreation, directionIndicatorMesh]
     )
 
+    useEffect(() => {
+        directionIndicatorMesh.visible = lookType === "rotation"
+    }, [directionIndicatorMesh, lookType])
+
     const buildPoint = useCallback((): CameraPoint => {
-        let pos: [number, number, number] = [point.pos[0], point.pos[1], point.pos[2]]
-        if (gizmoRef.current) {
-            gizmoRef.current.obj.updateWorldMatrix(true, false)
-            const worldPos = gizmoRef.current.obj.getWorldPosition(new THREE.Vector3())
-            const fieldRef = selectedField.getXZPositionTransform()
-            pos = [worldPos.x - fieldRef.x, worldPos.y - fieldRef.y, worldPos.z - fieldRef.z]
-        }
         const look: CameraLook =
             lookType === "field"
                 ? { type: "field" }
                 : { type: "rotation", yaw: yawDeg * DEG_TO_RAD, pitch: pitchDeg * DEG_TO_RAD }
-        return { name, pos, look }
-    }, [selectedField, point.pos, lookType, name, yawDeg, pitchDeg])
+        return { name, pos: readFieldRelativePosition(), look }
+    }, [readFieldRelativePosition, lookType, name, yawDeg, pitchDeg])
 
-    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", () => onSave(buildPoint())), [buildPoint, onSave])
+    useConfigurationSavedListener(useCallback(() => onSave(buildPoint()), [buildPoint, onSave]))
     useHoldPhysicsPause()
 
     return (
@@ -182,7 +199,7 @@ const EditView: React.FC<EditViewProps> = ({ selectedField, point, onSave }) => 
                 defaultMode="translate"
                 rotateDisabled={true}
                 scaleDisabled={true}
-                postGizmoCreation={postGizmoCreation}
+                postGizmoCreation={setupGizmo}
             />
         </Stack>
     )
@@ -229,11 +246,14 @@ const ConfigureCameraPointsInterface: ConfigurationSubpanelComponent = ({
     if (editIndex !== undefined && points[editIndex] !== undefined) {
         return (
             <>
-                <Stack direction="row" minHeight="30px" alignItems="center">
-                    <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        Configuring Camera Position
-                    </Label>
-                </Stack>
+                <SelectMenuHeader
+                    label={points[editIndex].name}
+                    showBackButton={true}
+                    onBackButton={() => {
+                        EventSystem.dispatch("ConfigurationSavedEvent")
+                        setEditIndex(undefined)
+                    }}
+                />
                 <Divider />
                 <EditView
                     selectedField={selectedAssembly}

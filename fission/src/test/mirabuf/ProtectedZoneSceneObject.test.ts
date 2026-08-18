@@ -161,7 +161,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 
@@ -219,7 +220,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 
@@ -236,7 +238,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 
@@ -253,7 +256,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 
@@ -270,7 +274,8 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(World.scoreTracker.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
             blueRobot,
             5,
-            expect.any(String)
+            expect.any(String),
+            false
         )
     })
 

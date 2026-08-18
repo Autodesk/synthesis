@@ -321,16 +321,16 @@ describe("Physics Enable/Disable", () => {
     test("Disable Physics for Body", () => {
         system.disablePhysicsForBody(body.GetID())
 
-        expect(body.IsSensor()).toBe(true)
-        expect(body.IsActive()).toBe(false)
+        expect(body.GetObjectLayer()).toBe(10) // LAYER_GHOST
+        expect(body.GetLinearVelocity().Length()).toBeCloseTo(0)
+        expect(body.GetAngularVelocity().Length()).toBeCloseTo(0)
     })
 
     test("Enable Physics for Body", () => {
         system.disablePhysicsForBody(body.GetID())
         system.enablePhysicsForBody(body.GetID())
 
-        expect(body.IsSensor()).toBe(false)
-        expect(body.IsActive()).toBe(true)
+        expect(body.GetObjectLayer()).not.toBe(10) // no longer LAYER_GHOST
     })
 
     test("Disable Physics on Non-Added Body", () => {

@@ -13,6 +13,14 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
     private _prevGPs: Jolt.BodyID[] = []
 
+    public get prevGamePieces(): Jolt.BodyID[] {
+        return this._prevGPs
+    }
+
+    public set prevGamePieces(gps: Jolt.BodyID[]) {
+        this._prevGPs = gps
+    }
+
     public get materials(): { red: THREE.MeshPhongMaterial; blue: THREE.MeshPhongMaterial } {
         return { red: ScoringZoneSceneObject.RED_MATERIAL, blue: ScoringZoneSceneObject.BLUE_MATERIAL }
     }

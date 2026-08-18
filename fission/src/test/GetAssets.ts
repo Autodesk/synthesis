@@ -3,7 +3,7 @@ import MirabufInstance from "@/mirabuf/MirabufInstance.ts"
 import MirabufParser from "@/mirabuf/MirabufParser.ts"
 
 export const ROBOT_MODELS = {
-    DOZER: "/api/mira/robots/Dozer v11.mira",
+    DOZER: "/api/mira/robots/Dozer v12.mira",
     MULTI_JOINT: "/api/mira/private/Multi-Joint Wheels v0.mira",
 } satisfies Record<string, string>
 

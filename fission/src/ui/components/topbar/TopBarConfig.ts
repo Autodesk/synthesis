@@ -1,9 +1,23 @@
 export const TOP_BAR_HEIGHT = 48
 
+const MUI_SPACING_UNIT_PX = 8
+
+export const TOP_BAR_GAP = 1.5
+export const TOP_BAR_GAP_PX = TOP_BAR_GAP * MUI_SPACING_UNIT_PX
+
 export const TOP_BAR_ICON_BUTTON_SX = {
     color: "topBarText.main",
-    "&:hover": { backgroundColor: "transparent" },
+    borderRadius: 1,
+    // touch devices shouldn't have hover capability for icons
+    "@media (hover: hover)": { "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.08)" } },
     "&:focus, &:focus-visible": { outline: "none" },
+} as const
+
+export const TOP_BAR_ICON_BUTTON_ACTIVE_SX = {
+    borderRadius: 1,
+    color: "primary.main",
+    backgroundColor: "color-mix(in srgb, currentColor 16%, transparent)",
+    "@media (hover: hover)": { "&:hover": { backgroundColor: "color-mix(in srgb, currentColor 24%, transparent)" } },
 } as const
 
 // making react-icon glyph consistent with buttons
@@ -22,6 +36,8 @@ export const DROPDOWN_SELECT_SX = {
     "& .MuiSelect-select": { display: "flex", alignItems: "center", py: 0, boxSizing: "border-box" },
     "& .MuiSelect-icon": { color: "topBarText.main", right: 8, pointerEvents: "none" },
 } as const
+
+export const DROPDOWN_MENU_ICON_SIZE = 18
 
 export const DROPDOWN_MENU_PROPS = {
     marginThreshold: 8,
