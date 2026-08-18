@@ -1,9 +1,10 @@
 import { Box, Popper, type PopperPlacementType } from "@mui/material"
 import type { Instance as PopperInstance } from "@popperjs/core"
 import type React from "react"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { TOP_BAR_HEIGHT } from "@/ui/components/topbar/TopBarConfig"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { clippingAncestors, visibleRect } from "./AnchorGeometry"
 import type { ScreenPosition } from "./TourSteps"
 import { TOUR_STEPS } from "./TourSteps"
 import TourCard from "./TourCard"
@@ -36,42 +37,63 @@ function arrowEdgeFor(placement: PopperPlacementType) {
     return ARROW_EDGE_BY_BASE[placement.split("-")[0] as keyof typeof ARROW_EDGE_BY_BASE]
 }
 
-const sameRect = (a: DOMRect | null, b: DOMRect) =>
-    a !== null && a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height
+const sameRect = (a: DOMRect | null, b: DOMRect | null) =>
+    a === b ||
+    (a !== null && b !== null && a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height)
 
-function useAnchorRect(element: HTMLElement | null, enabled: boolean) {
+function useVisibleRect(element: HTMLElement | null) {
     const [rect, setRect] = useState<DOMRect | null>(null)
 
     useEffect(() => {
-        if (!element || !enabled) {
+        if (!element) {
             setRect(null)
             return
         }
-        const update = () =>
+        let frame = 0
+        let clippers = clippingAncestors(element)
+        const observer = new ResizeObserver(() => schedule())
+
+        const measure = () =>
             setRect(prev => {
-                const next = element.getBoundingClientRect()
+                const next = visibleRect(element, clippers)
                 return sameRect(prev, next) ? prev : next
             })
+        const schedule = () => {
+            frame ||= requestAnimationFrame(() => {
+                frame = 0
+                measure()
+            })
+        }
+        const remeasure = () => {
+            observer.disconnect()
+            clippers = clippingAncestors(element)
+            observer.observe(element)
+            clippers.forEach(clipper => observer.observe(clipper))
+            measure()
+        }
 
-        const timers = SETTLE_DELAYS.map(delay => setTimeout(update, delay))
-        const observer = new ResizeObserver(update)
-        observer.observe(element)
-        window.addEventListener("resize", update)
+        remeasure()
+        const timers = SETTLE_DELAYS.map(delay => setTimeout(remeasure, delay))
+        window.addEventListener("resize", remeasure)
+        window.addEventListener("scroll", schedule, { capture: true, passive: true })
         return () => {
             timers.forEach(clearTimeout)
+            if (frame) cancelAnimationFrame(frame)
             observer.disconnect()
-            window.removeEventListener("resize", update)
+            window.removeEventListener("resize", remeasure)
+            window.removeEventListener("scroll", schedule, { capture: true })
         }
-    }, [element, enabled])
+    }, [element])
 
     return rect
 }
 
 const SpotlightScrim: React.FC<{ rect: DOMRect }> = ({ rect }) => {
+    const view = document.documentElement
     const top = Math.max(0, rect.top - SPOTLIGHT_PAD)
     const left = Math.max(0, rect.left - SPOTLIGHT_PAD)
-    const right = rect.right + SPOTLIGHT_PAD
-    const bottom = rect.bottom + SPOTLIGHT_PAD
+    const right = Math.min(view.clientWidth, rect.right + SPOTLIGHT_PAD)
+    const bottom = Math.min(view.clientHeight, rect.bottom + SPOTLIGHT_PAD)
 
     const bands = {
         above: { top: 0, left: 0, right: 0, height: top },
@@ -136,7 +158,32 @@ const TourOverlay: React.FC = () => {
     const rawAnchor = step?.anchorId ? getAnchor(step.anchorId) : null
     const anchorEl = rawAnchor?.isConnected ? rawAnchor : null
 
-    const spotlightRect = useAnchorRect(anchorEl, step?.focus === "anchor")
+    const anchorRect = useVisibleRect(anchorEl)
+
+    const rectRef = useRef<DOMRect | null>(null)
+    rectRef.current = anchorRect
+    const popperAnchor = useMemo(
+        () =>
+            anchorEl && {
+                getBoundingClientRect: () => rectRef.current ?? anchorEl.getBoundingClientRect(),
+                contextElement: anchorEl,
+            },
+        [anchorEl]
+    )
+
+    const modifiers = useMemo(
+        () => [
+            { name: "offset", options: { offset: [0, 12] } },
+            { name: "flip", enabled: false },
+            // altAxis clamps along the placement axis itself (y for a "top-end" card) and
+            // tether:false lets it detach from an oversized reference, so the card stays fully
+            // on-screen instead of running off the edge - e.g. the near-full-screen Library
+            // modal, which leaves less headroom above it than the card is tall.
+            { name: "preventOverflow", options: { padding: 8, altAxis: true, tether: false } },
+            { name: "arrow", enabled: true, options: { element: arrowRef, padding: 12 } },
+        ],
+        [arrowRef]
+    )
 
     useEffect(() => {
         const timers = SETTLE_DELAYS.map(delay => setTimeout(() => popperRef.current?.update(), delay))
@@ -150,8 +197,8 @@ const TourOverlay: React.FC = () => {
             data-testid={SCRIM_TEST_ID}
             sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: SCRIM_Z_INDEX, pointerEvents: "auto" }}
         />
-    ) : spotlightRect ? (
-        <SpotlightScrim rect={spotlightRect} />
+    ) : step.focus === "anchor" && anchorRect ? (
+        <SpotlightScrim rect={anchorRect} />
     ) : null
 
     const card = (
@@ -175,19 +222,10 @@ const TourOverlay: React.FC = () => {
                 <Popper
                     open
                     popperRef={popperRef}
-                    anchorEl={anchorEl}
+                    anchorEl={popperAnchor}
                     placement={step.placement}
                     sx={{ zIndex: ZIndex, pointerEvents: "none" }}
-                    modifiers={[
-                        { name: "offset", options: { offset: [0, 12] } },
-                        { name: "flip", enabled: false },
-                        // altAxis clamps along the placement axis itself (x for a "left" card) and
-                        // tether:false lets it detach from an oversized reference, so the card stays
-                        // fully on-screen instead of running off the edge - e.g. the near-full-screen
-                        // Library modal, whose left edge would otherwise push the card off-viewport.
-                        { name: "preventOverflow", options: { padding: 8, altAxis: true, tether: false } },
-                        { name: "arrow", enabled: true, options: { element: arrowRef, padding: 12 } },
-                    ]}
+                    modifiers={modifiers}
                 >
                     {card}
                 </Popper>

@@ -2,6 +2,7 @@ import { render } from "@testing-library/react"
 import { describe, expect, test } from "vitest"
 import { UIContext, type UIBlockState, type UIContextProps } from "@/ui/helpers/UIProviderHelpers"
 import { TourContext, type TourContextValue } from "@/ui/tour/TourProviderHelpers"
+import { visibleRect } from "@/ui/tour/AnchorGeometry"
 import TourOverlay from "@/ui/tour/TourOverlay"
 import { TOUR_STEPS } from "@/ui/tour/TourSteps"
 
@@ -63,6 +64,26 @@ describe("tour scrim", () => {
             })
         )
         expect(queryAllByTestId(SCRIM_TEST_ID)).toHaveLength(0)
+    })
+})
+
+describe("tour anchor geometry", () => {
+    test("measures an anchor as the part its scroll container shows", () => {
+        const container = document.createElement("div")
+        container.style.cssText =
+            "position: fixed; top: 100px; left: 50px; width: 300px; height: 100px; overflow: auto;"
+        const anchor = document.createElement("div")
+        anchor.style.cssText = "height: 1000px;"
+        container.appendChild(anchor)
+        document.body.appendChild(container)
+
+        try {
+            const rect = visibleRect(anchor)!
+            expect(rect.top).toBeCloseTo(100, 0)
+            expect(rect.height).toBeCloseTo(100, 0)
+        } finally {
+            container.remove()
+        }
     })
 })
 
