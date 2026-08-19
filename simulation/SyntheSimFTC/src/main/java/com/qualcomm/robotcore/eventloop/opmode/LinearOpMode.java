@@ -10,6 +10,7 @@ public abstract class LinearOpMode extends OpMode {
      * no idle()/sleep of its own operates it loop unrealistically fast.
      */
     private static final long LOOP_PERIOD_MILLIS = 10;
+    private static final double LOOP_PERIOD_SECONDS = LOOP_PERIOD_MILLIS / 1000.0;
 
     volatile boolean isStarted;
     volatile boolean stopRequested;
@@ -25,6 +26,7 @@ public abstract class LinearOpMode extends OpMode {
     public final boolean opModeIsActive() {
         boolean active = isStarted && !stopRequested;
         if (active) {
+            advanceRuntime(LOOP_PERIOD_SECONDS);
             idle();
         }
         return active;
