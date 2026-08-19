@@ -7,8 +7,6 @@ import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import EventSystem from "@/systems/EventSystem.ts"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
@@ -22,6 +20,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
+import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -124,9 +123,7 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
         }
     }, [selectedAssembly, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useConfigurationSavedListener(saveEvent)
 
     useEffect(() => {
         if (!gizmoRef.current) {
@@ -210,19 +207,21 @@ const ConfigureGamepieceIntakeInterface: ConfigurationSubpanelComponent = ({
         }
     }, [selectedAssembly])
 
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+    useHoldPhysicsPause()
 
+    useEffect(() => {
         // Hide the visual indicator when entering configuration mode
         if (selectedAssembly) {
+            selectedAssembly.disablePhysics()
+            // Hide the visual indicator when entering configuration mode
             selectedAssembly.setIntakeVisualIndicatorVisible(false)
         }
 
         return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-
             // Show the visual indicator when exiting configuration mode
             if (selectedAssembly) {
+                selectedAssembly.enablePhysics()
+                // Show the visual indicator when exiting configuration mode
                 selectedAssembly.setIntakeVisualIndicatorVisible(true)
             }
         }

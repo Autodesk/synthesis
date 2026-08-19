@@ -21,7 +21,7 @@ const CODESIM_BUTTONS: CodesimButton[] = [
 ]
 
 const CodesimControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
-    const { isField, isCodesimBrain, openConfig } = useConfigureAssembly(selectedAssembly)
+    const { isField, isCodesimBrain, openConfig, disabledMessage } = useConfigureAssembly(selectedAssembly)
 
     // codesim is robot only
     const disabledTooltip = ({ requiresCodesimBrain }: CodesimButton) => {
@@ -38,14 +38,14 @@ const CodesimControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ 
                     key={button.label}
                     label={button.label}
                     icon={<Box sx={TOP_BAR_GLYPH_SX}>{button.icon}</Box>}
-                    disabledTooltip={disabledTooltip(button)}
+                    disabledTooltip={disabledMessage ?? disabledTooltip(button)}
                     onClick={() => openConfig(button.mode)}
                 />
             ))}
 
             <Box sx={TOP_BAR_DIVIDER_SX} />
 
-            <ConfigureSplitDropdown selectedAssembly={selectedAssembly} />
+            <ConfigureSplitDropdown disabledMessage={disabledMessage} selectedAssembly={selectedAssembly} />
         </Stack>
     )
 }

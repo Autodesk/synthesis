@@ -65,6 +65,7 @@ export enum ConfigMode {
     SCORING_ZONES,
     PROTECTED_ZONES,
     CAMERA_POINTS,
+    SPAWN_POSITIONS,
     MOVE,
     SIM,
     BRAIN,
@@ -135,6 +136,11 @@ export const fieldConfigModes = [
         "Protected Zones",
         ConfigMode.PROTECTED_ZONES,
         "Define and manage protected zones on the field where robots can not enter."
+    ),
+    new ConfigModeSelectionOption(
+        "Robot Spawn Positions",
+        ConfigMode.SPAWN_POSITIONS,
+        "Set where robots spawn for the default position and each alliance station."
     ),
     new ConfigModeSelectionOption(
         "Camera Positions",

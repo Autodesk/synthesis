@@ -134,14 +134,14 @@ const ConfigureJointsInterface: ConfigurationSubpanelComponent = ({ selectedAsse
         [selectedAssembly]
     )
 
-    // Covers both sections below: motor config mutates `unstickForce` and the
+    // Covers both sections below: motor config mutates `unstickStrength` and the
     // `inverted` flags inside `sequentialConfig`, sequencing mutates `parentJointIndex`.
     useEffect(() => {
         const originalPrefs = structuredClone(selectedAssembly.robotPreferences.sequentialConfig)
-        const originalUnstickForce = selectedAssembly.robotPreferences.unstickForce
+        const originalUnstickStrength = selectedAssembly.robotPreferences.unstickStrength
         registerCleanupFunction(undefined, () => {
             selectedAssembly.robotPreferences.sequentialConfig = originalPrefs
-            selectedAssembly.robotPreferences.unstickForce = originalUnstickForce
+            selectedAssembly.robotPreferences.unstickStrength = originalUnstickStrength
         })
     }, [registerCleanupFunction, selectedAssembly])
 

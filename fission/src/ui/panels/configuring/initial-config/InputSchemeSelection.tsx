@@ -1,4 +1,14 @@
-import { Box, Divider, FormControl, InputLabel, MenuItem, Stack, Tooltip } from "@mui/material"
+import {
+    Box,
+    Divider,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Stack,
+    type SxProps,
+    type Theme,
+    Tooltip,
+} from "@mui/material"
 import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -17,7 +27,7 @@ interface SchemeSelectorProps {
     panelId?: string
     brainIndex: number
 
-    style?: React.CSSProperties
+    style?: SxProps<Theme>
     message: string
     disabled?: boolean
 
@@ -123,10 +133,8 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                     onChange={e => {
                         const newDriveType = e.target.value as DriveType
                         const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
-                        if (brain) {
-                            brain.configureDriveBehavior(newDriveType)
-                        }
-                        setRobotDriveType(newDriveType)
+                        const appliedDriveType = brain?.configureDriveBehavior(newDriveType) ?? newDriveType
+                        setRobotDriveType(appliedDriveType)
 
                         const scheme = InputSchemeManager.applyCompatibleScheme(brainIndex)
                         if (scheme) setSelectedScheme(scheme)

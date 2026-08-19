@@ -1,14 +1,13 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import { Button, Stack, TextField } from "@mui/material"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
-import EventSystem from "@/systems/EventSystem.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import { createZoneMaterial } from "@/mirabuf/ZoneSceneObject"
 import World from "@/systems/World"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -18,6 +17,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
+import { useConfigurationSavedListener, useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 /**
  * Saves zone configuration to selected field.
@@ -72,18 +72,8 @@ export type ZoneConfigBaseProps<TZone extends BaseZonePreferences> = {
     children?: React.ReactNode
 }
 
-const DEFAULT_RED_MATERIAL = new THREE.MeshPhongMaterial({
-    color: 0xed1c24,
-    shininess: 0.0,
-    opacity: 0.7,
-    transparent: true,
-})
-const DEFAULT_BLUE_MATERIAL = new THREE.MeshPhongMaterial({
-    color: 0x0066b3,
-    shininess: 0.0,
-    opacity: 0.7,
-    transparent: true,
-})
+const DEFAULT_RED_MATERIAL = createZoneMaterial(0xed1c24, 0.7)
+const DEFAULT_BLUE_MATERIAL = createZoneMaterial(0x0066b3, 0.7)
 
 function computeDeltaFromGizmo(
     field: MirabufSceneObject,
@@ -160,16 +150,9 @@ export default function ZoneConfigBase<TZone extends BaseZonePreferences>(props:
         saveAllZones,
     ])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
+    useConfigurationSavedListener(saveEvent)
 
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-        }
-    }, [])
+    useHoldPhysicsPause()
 
     const defaultGizmoMesh = useMemo(() => {
         if (!selectedZone) return undefined
