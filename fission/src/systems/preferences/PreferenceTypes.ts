@@ -28,6 +28,7 @@ export type UserPreferences = {
     MultiplayerHost: string
     MultiplayerSecure: boolean
     HasSeenOnboardingTour: boolean
+    AssemblyFavoriteStatus: Record<string, "favorited" | "unfavorited">
 }
 
 export type UserPreference = keyof UserPreferences
@@ -71,6 +72,7 @@ export function defaultUserPreferences(): UserPreferences {
         MultiplayerPort: DEFAULT_MULTIPLAYER_PORT,
         MultiplayerSecure: false,
         HasSeenOnboardingTour: false,
+        AssemblyFavoriteStatus: {},
     }
 }
 

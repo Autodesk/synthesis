@@ -5,6 +5,7 @@ import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { embedAssemblyThumbnail } from "@/mirabuf/MirabufThumbnail"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import World from "@/systems/World"
 import { loadURDF } from "@/urdf/URDFLoader"
 import Label from "@/ui/components/Label"
@@ -111,6 +112,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     } else {
                         hash = res.hash
                     }
+
+                    PreferencesSystem.setFavoriteAsset(hash, true)
 
                     mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
                     progressHandle.done("Import complete!")

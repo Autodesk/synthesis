@@ -48,6 +48,8 @@ import {
     FaTags,
     FaWrench,
     FaXmark,
+    FaStar,
+    FaRegStar
 } from "react-icons/fa6"
 import { FaHandPaper, FaUnlink } from "react-icons/fa"
 import { GiPerspectiveDiceSixFacesOne, GiSteeringWheel } from "react-icons/gi"
@@ -101,6 +103,8 @@ export class SynthesisIcons {
     public static readonly INFINITY = FaInfinity
     public static readonly UNLINK = FaUnlink
     public static readonly DICE = GiPerspectiveDiceSixFacesOne
+    public static readonly STAR = FaStar
+    public static readonly STAR_OUTLINE = FaRegStar
     public static readonly DROPDOWN_CARET = IoMdArrowDropdown
     public static readonly BRAIN = FaBrain
     public static readonly MOVE = FaArrowsUpDownLeftRight
