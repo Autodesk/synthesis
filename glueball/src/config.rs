@@ -15,7 +15,7 @@ pub const DEFAULT_PORT: u16 = 2610;
 pub fn certification_directory() -> Result<PathBuf> {
     let dir = match ProjectDirs::from("com", "Autodesk", "synthesis-glueball") {
         Some(dirs) => dirs.data_dir().join("secrets"),
-        None => bail!("Cound not find certificate directory"),
+        None => bail!("Could not find certificate directory"),
     };
 
     Ok(dir)

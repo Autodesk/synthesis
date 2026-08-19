@@ -4,32 +4,27 @@ use crate::{
     state::State,
     util::server_sent_msg,
 };
-use rtrb::{Consumer, Producer, RingBuffer};
 use std::sync::Arc;
+use tokio::sync::mpsc::{self, Receiver, Sender};
 use tokio_tungstenite::tungstenite::Message;
 
-const MAX_PENDING_KICK_MESSAGES: usize = 12;
+const MAX_PENDING_ACTIONS: usize = 12;
 
 pub enum UserAction {
     Lock(RoomId),
     Kick(ClientId),
 }
 
-pub fn setup_user_action_system(state: &Arc<State>) -> Producer<UserAction> {
-    let (tx, rx) = RingBuffer::new(MAX_PENDING_KICK_MESSAGES);
+pub fn setup_user_action_system(state: &Arc<State>) -> Sender<UserAction> {
+    let (tx, rx) = mpsc::channel::<UserAction>(MAX_PENDING_ACTIONS);
     spawn_user_action_receiver(rx, state.clone());
 
     tx
 }
 
-fn spawn_user_action_receiver(mut rx: Consumer<UserAction>, state: Arc<State>) {
+fn spawn_user_action_receiver(mut rx: Receiver<UserAction>, state: Arc<State>) {
     tokio::spawn(async move {
-        loop {
-            let Ok(user_message) = rx.pop() else {
-                tokio::task::yield_now().await;
-                continue;
-            };
-
+        while let Some(user_message) = rx.recv().await {
             match user_message {
                 UserAction::Lock(room_id) => {
                     let _ = state.toggle_room_lock(&room_id);

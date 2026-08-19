@@ -1,32 +1,44 @@
-import { Box, Stack } from "@mui/material"
+import { Box } from "@mui/material"
 import type React from "react"
+import { useMemo } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { CollapsibleGroup, type CollapsibleItem } from "@/ui/components/topbar/CollapsibleGroup"
+import { ConfigureIcon } from "@/ui/components/topbar/ConfigureIcon"
 import ConfigureSplitDropdown from "@/ui/components/topbar/ConfigureSplitDropdown"
 import { TOP_BAR_DIVIDER_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarButton } from "@/ui/components/topbar/TopBarButton"
-import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 import { useConfigureAssembly } from "@/ui/components/topbar/UseConfigureAssembly"
 
 const ConfigureControls: React.FC<{ selectedAssembly?: MirabufSceneObject }> = ({ selectedAssembly }) => {
     const { configureButtons, openConfig, disabledMessage } = useConfigureAssembly(selectedAssembly)
 
+    const items: CollapsibleItem[] = useMemo(
+        () =>
+            configureButtons.map(({ icon, label, mode }) => ({
+                key: label,
+                node: (
+                    <TopBarButton
+                        label={label}
+                        icon={<ConfigureIcon icon={icon} size={30} />}
+                        disabledTooltip={disabledMessage}
+                        onClick={() => openConfig(mode)}
+                    />
+                ),
+            })),
+        [configureButtons, disabledMessage, openConfig]
+    )
+
     // TODO: add a "..." after a long robot name to ensure it isn't rendered underneath the dropdown arrow
     return (
-        <Stack direction="row" alignItems="center" gap={1.5}>
-            {configureButtons.map(({ name, label, mode }) => (
-                <TopBarButton
-                    key={label}
-                    label={label}
-                    icon={<TopBarIcon name={name} size={30} />}
-                    disabledTooltip={disabledMessage}
-                    onClick={() => openConfig(mode)}
-                />
-            ))}
-
-            <Box sx={TOP_BAR_DIVIDER_SX} />
-
-            <ConfigureSplitDropdown disabledMessage={disabledMessage} selectedAssembly={selectedAssembly} />
-        </Stack>
+        <CollapsibleGroup
+            items={items}
+            always={
+                <>
+                    <Box sx={TOP_BAR_DIVIDER_SX} />
+                    <ConfigureSplitDropdown disabledMessage={disabledMessage} selectedAssembly={selectedAssembly} />
+                </>
+            }
+        />
     )
 }
 

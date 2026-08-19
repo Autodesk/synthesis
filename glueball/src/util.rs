@@ -74,7 +74,7 @@ where
 {
     #[allow(clippy::expect_used)]
     rmp_serde::to_vec_named(&message)
-        .expect("Serilization of message failed. This is a bug in Glueball.")
+        .expect("Serialization of message failed. This is a bug in Glueball.")
 }
 
 pub fn deserialize_messagepack<'de, S>(data: &'de [u8]) -> Result<S, rmp_serde::decode::Error>

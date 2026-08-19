@@ -9,10 +9,9 @@ use uuid::Uuid;
 pub type ClientMap = DashMap<ClientId, RoomId>;
 pub type RoomMap = DashMap<RoomId, Room>;
 
-/// Maximum number of log lines retained in each log (both per-room and system logs)
-/// Oldest lines are dropped once the buffer is full.
 const VALID_ROOM_ID_CHARACTERS: [char; 36] = valid_room_id_characters();
 const MAX_ROOM_COUNT: usize = 32;
+const MAX_MEMBER_COUNT_PER_ROOM: usize = 10;
 
 pub struct State {
     pub users: ClientMap,
@@ -34,7 +33,7 @@ impl State {
         name: &str,
     ) -> Option<(ClientId, RoomId)> {
         match room_id {
-            None if self.room_count() == MAX_ROOM_COUNT => None,
+            None if self.room_count() >= MAX_ROOM_COUNT => None,
             None => Some(self.add_room_and_host(name, tx)),
             Some(room_id) => self
                 .add_client_to_room(name, tx, &room_id)
@@ -66,12 +65,14 @@ impl State {
         (host_id, room_id)
     }
 
-    /// # Safety
+    /// # Deadlock
     /// Relinquish all locks on `self.room` before calling
     pub fn remove_client(&self, client_id: &ClientId) {
         let Some(room_id) = self.users.get(client_id).map(|a| a.value().clone()) else {
             return;
         };
+
+        self.users.remove(client_id);
 
         // Room lock held
         let Some(mut room) = self.rooms.get_mut(&room_id) else {
@@ -94,12 +95,17 @@ impl State {
         room_id: &RoomId,
     ) -> Option<ClientId> {
         let client_id = Uuid::new_v4();
+
         let Some(mut room) = self.rooms.get_mut(room_id) else {
             warn_global!("Attempted to add {client_id} into non-existant room {room_id}");
             return None;
         };
 
         if room.locked {
+            return None;
+        }
+
+        if room.members.len() >= MAX_MEMBER_COUNT_PER_ROOM {
             return None;
         }
 
@@ -125,13 +131,18 @@ impl State {
             return;
         }
 
+        if self.rooms.contains_key(room_id) {
+            error_global!("Attempted to create permanent room that already exists");
+            return;
+        }
+
         let room = Room {
             members: Vec::new(),
             host: None,
             locked: false,
             permanent: true,
         };
-        self.rooms.insert(room_id.to_string(), room);
+        self.rooms.insert(room_id.clone(), room);
     }
 
     pub fn get_room_of_client_mut(&self, client_id: &ClientId) -> Option<RefMut<'_, RoomId, Room>> {
@@ -149,12 +160,12 @@ impl State {
         self.rooms.get(&room_id)
     }
 
-    pub fn get_senders_from_user_room(&self, client_id: ClientId) -> Vec<ClientSender> {
-        let Some(room) = self.get_room_of_client(&client_id) else {
+    pub fn get_senders_from_user_room(&self, client_id: &ClientId) -> Vec<ClientSender> {
+        let Some(room) = self.get_room_of_client(client_id) else {
             return Vec::new();
         };
 
-        room.get_peer_senders(&client_id)
+        room.get_peer_senders(client_id)
     }
 
     /// Flips whether new clients can join `room_id`.
@@ -222,9 +233,14 @@ impl State {
 }
 
 pub fn is_valid_room_id(s: &str) -> bool {
-    s.trim().len() == 6
-        && s.chars()
-            .all(|c| c.is_ascii_digit() || c.is_ascii_uppercase())
+    let s = s.trim();
+
+    let correct_length = s.len() == 6;
+    let all_characters_valid = s
+        .chars()
+        .all(|c| c.is_ascii_digit() || c.is_ascii_uppercase());
+
+    correct_length && all_characters_valid
 }
 
 const fn valid_room_id_characters() -> [char; 36] {

@@ -15,7 +15,7 @@ export type UserPreferences = {
     RenderProtectedZones: boolean
     InputSchemes: InputScheme[]
     RenderSceneTags: boolean
-    RenderScoreboard: boolean
+    AlwaysShowScoreboard: boolean
     SubsystemGravity: boolean
     TouchControls: boolean
     SimAutoReconnect: boolean
@@ -57,7 +57,7 @@ export function defaultUserPreferences(): UserPreferences {
         RenderProtectedZones: true,
         InputSchemes: [],
         RenderSceneTags: true,
-        RenderScoreboard: false,
+        AlwaysShowScoreboard: true,
         SubsystemGravity: false,
         TouchControls: false,
         SimAutoReconnect: false,
