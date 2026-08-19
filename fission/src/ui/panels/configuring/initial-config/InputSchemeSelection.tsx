@@ -1,4 +1,14 @@
-import { Box, Divider, FormControl, InputLabel, MenuItem, Stack, Tooltip } from "@mui/material"
+import {
+    Box,
+    Divider,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Stack,
+    type SxProps,
+    type Theme,
+    Tooltip,
+} from "@mui/material"
 import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -17,7 +27,7 @@ interface SchemeSelectorProps {
     panelId?: string
     brainIndex: number
 
-    style?: React.CSSProperties
+    style?: SxProps<Theme>
     message: string
     disabled?: boolean
 

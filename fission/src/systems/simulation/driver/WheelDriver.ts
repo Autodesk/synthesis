@@ -3,9 +3,9 @@ import type * as THREE from "three"
 import type { mirabuf } from "@/proto/mirabuf"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { readJoltVec3 } from "@/util/TypeConversions"
-import { type NoraNumber, NoraTypes } from "../Nora"
 import type { SimType } from "../wpilib_brain/WPILibTypes"
 import Driver, { type DriverID } from "./Driver"
+import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../Nora"
 
 const LATERIAL_FRICTION = 1.0
 const LONGITUDINAL_FRICTION = 1.0
@@ -61,7 +61,9 @@ export function mecanumSuspensionTravel(radii: number[]): number {
     return MECANUM_SUSPENSION_TRAVEL + 2 * spread
 }
 
-class WheelDriver extends Driver {
+export const WHEEL_DRIVER_TYPE = noraType([num(BaseUnit.POSITION, DerivativeOrder.ZERO, "Position")])
+
+class WheelDriver extends Driver<typeof WHEEL_DRIVER_TYPE> {
     private _constraint: Jolt.VehicleConstraint
     private _wheel: Jolt.WheelWV
     public deviceType?: SimType
@@ -291,12 +293,12 @@ class WheelDriver extends Driver {
         this._prevVel = vel
     }
 
-    public getReceiverType(): NoraTypes {
-        return NoraTypes.NUMBER
+    public get receiverType() {
+        return WHEEL_DRIVER_TYPE
     }
 
-    public setReceiverValue(val: NoraNumber): void {
-        this.accelerationDirection = val
+    protected receiveValue([val]: NoraValueOf<typeof WHEEL_DRIVER_TYPE>): void {
+        this.accelerationDirection = val.value
     }
 
     public displayName(): string {

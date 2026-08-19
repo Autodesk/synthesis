@@ -2,7 +2,7 @@ import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
 import type { mirabuf } from "@/proto/mirabuf"
 import type { LayerReserve } from "./PhysicsSystem"
-import { SceneObjectId } from "../scene/SceneRenderer"
+import type { SceneObjectId } from "../scene/SceneRenderer"
 
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID
