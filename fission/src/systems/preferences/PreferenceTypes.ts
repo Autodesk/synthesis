@@ -2,7 +2,7 @@ import type { Vector3Tuple } from "three"
 import type { ContactType } from "@/mirabuf/ZoneTypes"
 import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import type { InputScheme } from "../input/InputTypes"
-import type { SimConfigData } from "../simulation/SimConfigShared"
+import type { SimConfigData } from "../simulation/wiring/SimGraph"
 
 /** Names of all global preferences. */
 
@@ -143,6 +143,17 @@ export type EjectorPreferences = {
     ejectOrder: "FIFO" | "LIFO"
 }
 
+export type SensorType = "gyro" | "accel"
+
+export type SensorPreferences = {
+    name: string
+    sensorType: SensorType
+    /** WPILib device this sensor feeds, e.g. "SYN AHRS[0]". */
+    device: string
+    parentNode: string | undefined
+    deltaTransformation: number[]
+}
+
 // name/id must match the robot code's UsbCamera args, key `"<name>[<id>]"`
 export type CameraPreferences = {
     name: string
@@ -194,6 +205,7 @@ export type RobotPreferences = {
     motors: MotorPreferences[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    sensors: SensorPreferences[]
     cameras: CameraPreferences[]
     driveVelocity: number
     driveAcceleration: number
@@ -288,6 +300,7 @@ export function defaultRobotPreferences(): RobotPreferences {
             parentNode: undefined,
             ejectOrder: "FIFO",
         },
+        sensors: [],
         cameras: [],
         driveVelocity: 0,
         driveAcceleration: 0,
