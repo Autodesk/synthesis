@@ -68,22 +68,47 @@ class GizmoSceneObject extends SceneObject {
 
         postGizmoCreation?.(this)
 
-        if (this._parentObject) {
-            this._relativeTransformations = new Map<RigidNodeId, THREE.Matrix4>()
-            const gizmoTransformInv = this._obj.matrix.clone().invert()
+        if (this._parentObject) this.bakeRelativeTransformations()
+    }
 
-            /** Due to the limited math functionality exposed to JS for Jolt, we need everything in ThreeJS. */
-            this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
-                const jBodyId = this._parentObject!.mechanism.getBodyByNodeId(rn.id)
-                if (!jBodyId) return
+    /**
+     * Records where every body of the parent sits relative to the gizmo, which is what dragging then
+     * moves them by.
+     *
+     * Re-baked rather than updated in place: the offsets only stay valid for as long as the parent moves
+     * rigidly, so anything that repositions bodies on their own (a snap, a reconcile, a joint moving)
+     * has to be captured fresh.
+     */
+    private bakeRelativeTransformations() {
+        if (!this._parentObject) return
 
-                const worldTransform = convertJoltMat44ToThreeMatrix4(
-                    World.physicsSystem.getBody(jBodyId)!.GetWorldTransform()
-                )
-                const relativeTransform = worldTransform.premultiply(gizmoTransformInv)
-                this._relativeTransformations!.set(rn.id, relativeTransform)
-            })
-        }
+        this._relativeTransformations = new Map<RigidNodeId, THREE.Matrix4>()
+        const gizmoTransformInv = this._obj.matrix.clone().invert()
+
+        this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
+            const jBodyId = this._parentObject!.mechanism.getBodyByNodeId(rn.id)
+            if (!jBodyId) return
+
+            const worldTransform = convertJoltMat44ToThreeMatrix4(
+                World.physicsSystem.getBody(jBodyId)!.GetWorldTransform()
+            )
+            const relativeTransform = worldTransform.premultiply(gizmoTransformInv)
+            this._relativeTransformations!.set(rn.id, relativeTransform)
+        })
+    }
+
+    /**
+     * Re-seats the gizmo on its parent after something other than this gizmo moved the parent.
+     */
+    public syncToParent() {
+        if (!this._parentObject || this.isDragging) return
+
+        this._parentObject.postGizmoCreation(this)
+        // postGizmoCreation seats the gizmo via setTransform, which asks to drive the parent. Nothing
+        // needs driving here, the parent is already where it wants to be.
+        this._forceUpdate = false
+
+        this.bakeRelativeTransformations()
     }
 
     public setup(): void {

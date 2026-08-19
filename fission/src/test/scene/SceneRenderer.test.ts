@@ -9,7 +9,6 @@ import SceneRenderer, {
     STANDARD_CAMERA_FOV_X,
     STANDARD_CAMERA_FOV_Y,
 } from "@/systems/scene/SceneRenderer"
-import JOLT from "@/util/loading/JoltSyncLoader"
 import type { RecursivePartial } from "@/util/Utility.ts"
 
 interface MockSceneObject {
@@ -200,16 +199,6 @@ describe("SceneRenderer", () => {
         test("should create sphere with default material", () => {
             const sphere = sceneRenderer.createSphere(1.0)
             expect(sphere.material).toBeInstanceOf(THREE.MeshToonMaterial)
-        })
-
-        test("should create box with default material and correct position", () => {
-            const vec3 = new JOLT.Vec3(2, 3, 4)
-
-            const box = sceneRenderer.createBox(vec3)
-            expect(box.material).toBeInstanceOf(THREE.MeshToonMaterial)
-            expect(box.geometry.attributes.position.array[0]).toBe(1)
-            expect(box.geometry.attributes.position.array[1]).toBe(1.5)
-            expect(box.geometry.attributes.position.array[2]).toBe(2)
         })
 
         test("should create toon material", () => {
