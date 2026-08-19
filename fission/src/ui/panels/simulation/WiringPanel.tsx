@@ -12,7 +12,7 @@ import {
     useReactFlow,
 } from "@xyflow/react"
 import type React from "react"
-import { useCallback, useEffect, useMemo, useReducer, useState } from "react"
+import { useCallback, useEffect, useMemo, useReducer, useState, type JSX } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import {

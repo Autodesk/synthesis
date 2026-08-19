@@ -1,4 +1,3 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 import * as THREE from "three"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
@@ -149,11 +148,13 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
+        const graphicsSettings = PreferencesSystem.getGraphicsPreferences()
+
         this._renderer = new THREE.WebGLRenderer({
             powerPreference: "high-performance",
-            antialias: false,
+            antialias: graphicsSettings.antiAliasing,
             stencil: false,
-            depth: !PreferencesSystem.getGraphicsPreferences().antiAliasing,
+            depth: true,
         })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
@@ -161,7 +162,7 @@ class SceneRenderer extends WorldSystem {
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
-        this.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
+        this.changeLighting(graphicsSettings.fancyShadows)
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
@@ -464,15 +465,6 @@ class SceneRenderer extends WorldSystem {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
             if (this._light instanceof CSM) this._light.setupMaterial(material)
-            return new THREE.Mesh(geo, material)
-        } else {
-            return new THREE.Mesh(geo, this.createToonMaterial())
-        }
-    }
-
-    public createBox(halfExtent: Jolt.Vec3, material?: THREE.Material | undefined): THREE.Mesh {
-        const geo = new THREE.BoxGeometry(halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ())
-        if (material) {
             return new THREE.Mesh(geo, material)
         } else {
             return new THREE.Mesh(geo, this.createToonMaterial())

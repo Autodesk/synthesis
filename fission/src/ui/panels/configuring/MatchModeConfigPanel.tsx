@@ -244,7 +244,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                                 globalAddToast(
                                     "error",
                                     "Match Mode Already Running",
-                                    "You can't modify the match mode ruleset while a match is running"
+                                    "You can't start a new match while one is already running"
                                 )
                                 return
                             }

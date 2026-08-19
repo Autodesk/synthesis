@@ -19,7 +19,6 @@ const mockPhysicsSystem = {
 }
 const mockSceneRenderer = {
     filterSceneObjects: vi.fn().mockReturnValue([]),
-    createBox: vi.fn(),
     scene: {
         remove: vi.fn(),
     },

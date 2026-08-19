@@ -61,6 +61,7 @@ export const TOP_BAR_ICON_NAMES = [
     "cfg-camera-positions",
     "gp-multiplayer",
     "gp-match-mode",
+    "gp-match-mode-abort",
 ] as const
 
 export type TopBarIconName = (typeof TOP_BAR_ICON_NAMES)[number]

@@ -12,18 +12,25 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import {
+    createBoxMesh,
     deltaFieldTransformsPhysicalProp as deltaAndFieldTransformsToVisualProp,
     type VisualProperties,
 } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
 
-export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
-    private static readonly TRANSPARENT_MATERIAL = new THREE.MeshPhongMaterial({
-        color: 0x0000,
+export function createZoneMaterial(color: THREE.ColorRepresentation, opacity: number): THREE.MeshPhongMaterial {
+    return new THREE.MeshPhongMaterial({
+        color,
+        opacity,
         shininess: 0.0,
-        opacity: 0.0,
         transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide, // Keeps the zone visible when the camera moves inside of it
     })
+}
+
+export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
+    private static readonly TRANSPARENT_MATERIAL = createZoneMaterial(0x0000, 0.0)
 
     private _parentAssembly: MirabufSceneObject
     public parentBodyId?: Jolt.BodyID
@@ -119,7 +126,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private createVisualMesh(props: VisualProperties) {
         const unitVector = new JOLT.Vec3(1, 1, 1)
 
-        this.mesh = World.sceneRenderer.createBox(unitVector, ZoneSceneObject.TRANSPARENT_MATERIAL)
+        this.mesh = createBoxMesh(unitVector, ZoneSceneObject.TRANSPARENT_MATERIAL)
         World.sceneRenderer.addObject(this.mesh)
 
         this.setMeshProperties(props)

@@ -90,7 +90,7 @@ export function defaultGraphicsPreferences(): GraphicsPreferences {
         maxFar: 30,
         cascades: 4,
         shadowMapSize: 4096,
-        antiAliasing: false,
+        antiAliasing: true,
     }
 }
 
@@ -101,7 +101,7 @@ export function lowGraphicsPreferences(): GraphicsPreferences {
         maxFar: 30,
         cascades: 4,
         shadowMapSize: 4096,
-        antiAliasing: false,
+        antiAliasing: true,
     }
 }
 
