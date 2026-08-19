@@ -2,6 +2,10 @@
 
 A proxy server for facilitating multiplayer interactions in [Autodesk Synthesis](https://github.com/Autodesk/synthesis).
 
+## Bindings
+
+The `./bindings` directory hold TypeScript bindings for Rust types, generated with `ts_rs`. They aren't symlinked for Windows compatibility reasons, so everytime you update the bindings with `cargo test`, please remember to recursively copy `synthesis/glueball/bindings` into `synthesis/fission/src/systems/multiplayer/bindings`
+
 ## Multiplayer Setup
 
 ### Running the Server
