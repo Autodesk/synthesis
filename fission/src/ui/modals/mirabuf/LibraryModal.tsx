@@ -332,6 +332,10 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
      const [favoriteStatus, setFavoriteStatus] = useState(() => ({
         ...PreferencesSystem.getUserPreference("AssemblyFavoriteStatus"),
     }))
+    useEffect(
+        () => PreferencesSystem.addPreferenceEventListener("AssemblyFavoriteStatus", event => setFavoriteStatus({ ...event.prefValue })),
+        []
+    )
     const isFavorite = useCallback(
         (hash: string, defaultFavorite = false) => {
             const status = favoriteStatus[hash]

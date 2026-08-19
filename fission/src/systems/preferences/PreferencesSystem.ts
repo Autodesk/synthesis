@@ -92,8 +92,8 @@ class PreferencesSystem {
      * Sets a global preference to be a value of a specific type
      */
     public static setUserPreference<K extends UserPreference>(key: K, value: UserPreferences[K]) {
-        window.dispatchEvent(new UserPreferenceEvent(key, value))
         this._userPreferences[key] = value
+        window.dispatchEvent(new UserPreferenceEvent(key, value))
     }
 
     /**
