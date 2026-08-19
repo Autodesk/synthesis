@@ -148,11 +148,13 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
+        const graphicsSettings = PreferencesSystem.getGraphicsPreferences()
+
         this._renderer = new THREE.WebGLRenderer({
             powerPreference: "high-performance",
-            antialias: false,
+            antialias: graphicsSettings.antiAliasing,
             stencil: false,
-            depth: !PreferencesSystem.getGraphicsPreferences().antiAliasing,
+            depth: true,
         })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
@@ -160,7 +162,7 @@ class SceneRenderer extends WorldSystem {
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
-        this.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
+        this.changeLighting(graphicsSettings.fancyShadows)
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
