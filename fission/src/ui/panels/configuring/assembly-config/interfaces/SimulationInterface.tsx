@@ -15,7 +15,8 @@ const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly,
     const { openPanel, closePanel } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
     const [teleopEnabled, setTeleopEnabled] = useState<boolean>(() => SimDriverStation.isEnabled())
-    const supportsAutoTesting = (selectedAssembly?.brain?.isWPILib() ?? false) || (selectedAssembly?.brain?.isFTC() ?? false)
+    const supportsAutoTesting =
+        (selectedAssembly?.brain?.isWPILib() ?? false) || (selectedAssembly?.brain?.isFTC() ?? false)
 
     useEffect(() => {
         const originalAutoReconnect = PreferencesSystem.getUserPreference("SimAutoReconnect")
@@ -53,16 +54,18 @@ const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly,
             >
                 Auto Testing
             </Button>
-            <Button
-                className="self-center"
-                onClick={() => {
-                    const next = !teleopEnabled
-                    SimDriverStation.setMode(next ? RobotSimMode.TELEOP : RobotSimMode.DISABLED)
-                    setTeleopEnabled(next)
-                }}
-            >
-                {teleopEnabled ? "Disable Robot" : "Enable FTC Teleop"}
-            </Button>
+            {selectedAssembly?.brain?.isFTC() && (
+                <Button
+                    className="self-center"
+                    onClick={() => {
+                        const next = !teleopEnabled
+                        SimDriverStation.setMode(next ? RobotSimMode.TELEOP : RobotSimMode.DISABLED)
+                        setTeleopEnabled(next)
+                    }}
+                >
+                    {teleopEnabled ? "Disable Robot" : "Enable FTC Teleop"}
+                </Button>
+            )}
         </Stack>
     )
 }

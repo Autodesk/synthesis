@@ -27,8 +27,6 @@ For example, running the JavaAutoSample should cause the `ADXL362[4]` and `SYN A
 
 ## FTC Code Simulation
 
-Same idea, over WS, but for FTC. We have a clean-room shim of the base FTC SDK's hardware/opmode surface called SyntheSimFTC under `simulation/SyntheSimFTC/`, plus an `OpModeRunner` harness that compiles+runs team OpMode source (JDK compiler only, no Gradle/Android project needed yet) and bridges it to Fission.
-
 To run:
 
 ```
@@ -38,7 +36,7 @@ cd simulation/SyntheSimFTC
 
 `--src` points at a plain directory of `.java` files, rooted so package folders (`org/firstinspires/ftc/teamcode/...`) hang off it. `--port` defaults to `3301`. Make sure to start the simulation before starting the dev server.
 
-`--opmode` picks which discovered OpMode to run, matching a class name (`ExampleDozerArcadeDrive`), a fully-qualified name, or the annotation's display name (`"Dozer Arcade Drive"`). Left off, a `@TeleOp` is preferred over an `@Autonomous`, so adding an autonomous to a team's source can't silently change what runs; with several of the preferred kind it takes the first and says so. `@Disabled` classes are skipped, as on-device.
+`--opmode` picks which discovered OpMode to run, matching a class name (`ExampleDozerArcadeDrive`), or the annotation's display name (`"Dozer Arcade Drive"`).
 
 The runner logs every OpMode it found and which one it selected, e.g.:
 
@@ -46,11 +44,10 @@ The runner logs every OpMode it found and which one it selected, e.g.:
 [OpModeRunner] Discovered [TeleOp] Dozer Arcade Drive (org.firstinspires.ftc.teamcode.examples.ExampleDozerArcadeDrive)
 [OpModeRunner] Running [TeleOp] Dozer Arcade Drive (org.firstinspires.ftc.teamcode.examples.ExampleDozerArcadeDrive)
 ```
-Example, running the dozer sample under `simulation/samples/FTCDozerArcadeDriveSample`. From the Synthesis repo root:
+
+Running the Dozer sample at `simulation/samples/FTCDozerArcadeDriveSample`:
 
 ```
 cd simulation/SyntheSimFTC
 ./gradlew run --args="--src ../samples/FTCDozerArcadeDriveSample --opmode ExampleDozerArcadeDrive"
 ```
-
-In Fission, configure the brain as FTC and it should connect to the running OpModeRunner. Then, switch the robot's brain to FTC Brain, and proceed to wire the robot in the Simulation Panel. From there, both FTC autonomous and teleop can be started. 
