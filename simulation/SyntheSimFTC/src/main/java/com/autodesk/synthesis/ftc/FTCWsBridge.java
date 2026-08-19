@@ -27,6 +27,7 @@ public class FTCWsBridge extends WebSocketServer {
     private final Gamepad gamepad1 = new Gamepad();
     private final Gamepad gamepad2 = new Gamepad();
     private final Map<String, SynthesisDcMotor> dcMotors = new ConcurrentHashMap<>();
+    private final Map<String, SynthesisServo> servos = new ConcurrentHashMap<>();
     private volatile ConnectionListener listener;
 
     private volatile boolean dsEnabled;
@@ -70,6 +71,19 @@ public class FTCWsBridge extends WebSocketServer {
         send("CANMotor", deviceName, data);
     }
 
+    public void registerServo(String deviceName, SynthesisServo servo) {
+        servos.put(deviceName, servo);
+        Map<String, Object> init = new HashMap<>();
+        init.put("<init", true);
+        send("PWM", deviceName, init);
+    }
+
+    public void sendServoPosition(String deviceName, double position) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("<position", position);
+        send("PWM", deviceName, data);
+    }
+
     //Announces the driver station deice
     private void registerDriverStation() {
         Map<String, Object> init = new HashMap<>();
@@ -107,6 +121,7 @@ public class FTCWsBridge extends WebSocketServer {
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         System.out.println("[FTCWsBridge] Fission disconnected: " + reason);
         dcMotors.clear();
+        servos.clear();
         ConnectionListener l = listener;
         if (l != null) {
             l.onFissionDisconnected();

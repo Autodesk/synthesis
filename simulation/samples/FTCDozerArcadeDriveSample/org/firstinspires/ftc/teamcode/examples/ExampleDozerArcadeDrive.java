@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.examples;
 
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -13,10 +13,8 @@ public class ExampleDozerArcadeDrive extends LinearOpMode {
     @Override
     public void runOpMode() {
         DcMotorSimple leftFront   = hardwareMap.get(DcMotorSimple.class, "leftFront");
-        DcMotorSimple leftMiddle  = hardwareMap.get(DcMotorSimple.class, "leftMiddle");
         DcMotorSimple leftBack    = hardwareMap.get(DcMotorSimple.class, "leftBack");
         DcMotorSimple rightFront  = hardwareMap.get(DcMotorSimple.class, "rightFront");
-        DcMotorSimple rightMiddle = hardwareMap.get(DcMotorSimple.class, "rightMiddle");
         DcMotorSimple rightBack   = hardwareMap.get(DcMotorSimple.class, "rightBack");
 
         waitForStart();
@@ -33,10 +31,8 @@ public class ExampleDozerArcadeDrive extends LinearOpMode {
             rightPower /= max;
 
             leftFront.setPower(leftPower);
-            leftMiddle.setPower(leftPower);
             leftBack.setPower(leftPower);
             rightFront.setPower(rightPower);
-            rightMiddle.setPower(rightPower);
             rightBack.setPower(rightPower);
         }
     }

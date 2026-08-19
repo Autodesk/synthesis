@@ -1,3 +1,4 @@
+import { getSimMap } from "../WPILibState"
 import { type AllianceStation, RobotSimMode, SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
 
@@ -17,6 +18,14 @@ export default class SimDriverStation {
     }
 
     public static setMode(mode: RobotSimMode) {
+        const simMap = getSimMap()
+        if (!simMap) {
+            return
+        }
+        if (!simMap.has(SimType.DRIVERS_STATION)) {
+            simMap.set(SimType.DRIVERS_STATION, new Map())
+        }
+
         const enabled = mode != RobotSimMode.DISABLED
         const autonomous = mode == RobotSimMode.AUTO
         SimGeneric.set<boolean>(SimType.DRIVERS_STATION, "", ">ds", true)

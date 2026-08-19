@@ -299,7 +299,10 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
-        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => (x.brain?.isWPILib() ?? false) || (x.brain?.isFTC() ?? false)),
+        () =>
+            World.sceneRenderer.mirabufSceneObjects.findWhere(
+                x => (x.brain?.isWPILib() ?? false) || (x.brain?.isFTC() ?? false)
+            ),
         []
     )
 
