@@ -125,6 +125,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                         })
                         return
                     }
+                    PreferencesSystem.setFavoriteAsset(result.cacheInfo.hash, true)
                     mirabufSceneObject = await createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
                 }
 

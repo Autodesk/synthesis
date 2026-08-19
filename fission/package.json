@@ -25,7 +25,7 @@
     "style": "bunx biome check",
     "style:fix": "bunx biome check --write",
     "assetpack": "git lfs pull && (rm -rf public/Downloadables;tar -xf public/assetpack.zip -C public/)",
-    "assetpack:update": "bun update_manifest.ts && cd public && zip -FS -r assetpack.zip Downloadables -x '**/.*' -x '**/__MACOSX'",
+    "assetpack:update": "bun update_manifest.ts && cd public && tar -a -c -f assetpack.zip Downloadables",
     "assetpack:merge": "git checkout --theirs public/assetpack.zip && rm -rf public/Downloadables && tar -xf public/assetpack.zip -C public/ && git checkout --ours public/assetpack.zip && tar -xf public/assetpack.zip -C public/ && bun run assetpack:update",
     "playwright:install": "bun x playwright install",
     "lockfile:clean": "bun x replace-regex --from='https:\\/\\/npm.autodesk.com\\/artifactory\\/[a-zA-Z0-9_.\\/@-]*' --to='' ./bun.lock",
