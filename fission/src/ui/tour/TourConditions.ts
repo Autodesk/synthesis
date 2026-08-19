@@ -63,11 +63,7 @@ export interface TourResult {
     toast?: string
 }
 
-/**
- * returning the nearest preceding step that created this condition
- *
- * This is used specifically when rewinding steps after a condition was not met.
- */
+// nearest earlier step that would set this condition back up, for rewinding
 function producerOf(condition: TourCondition, before: number, snapshot: TourSnapshot): number | undefined {
     for (let i = before - 1; i >= 0; i--) {
         const step = TOUR_STEPS[i]
@@ -78,11 +74,8 @@ function producerOf(condition: TourCondition, before: number, snapshot: TourSnap
     return undefined
 }
 
-/**
- * given the current step and the progress of the simulator, returns what step the user should be on.
- *
- * Used for rewinding in the event of a user being outside the tour and advancing when step condition met
- */
+// advance when the step's condition is met or rewind if the user undid
+// something a later step needs. TourProvider reruns it on each snapshot until it stops moving
 export function reconcile(stepIndex: number, snapshot: TourSnapshot, previous: TourRuntime): TourResult {
     const step = TOUR_STEPS[stepIndex]
 

@@ -25,7 +25,6 @@ function trackSpawn(delta: number) {
     if (was !== now) EventSystem.dispatch("SpawnPendingChangeEvent", now)
 }
 
-/** Announce a newly spawned scene object to the multiplayer session, if one is active. */
 function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf.Assembly, info: MirabufCacheInfo) {
     const multiplayer = World.multiplayerSystem
     if (multiplayer == null) return
@@ -50,13 +49,8 @@ function broadcastSpawn(sceneObject: MirabufSceneObject, assembly: mirabuf.Assem
     multiplayer.registerOwnSceneObject(sceneObject.id)
 }
 
-/**
- * Spawn a mirabuf assembly that already lives in the cache. Shared by every
- * entry point of the asset Library (cached, remote, and APS spawns all funnel
- * through here once their buffer is cached).
- */
+// every library entry point funnels through here once its buffer is cached
 export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = new ProgressHandle(info.name)) {
-    // If spawning a field, then remove all other fields
     if (info.miraType === MiraType.FIELD) {
         if (World.multiplayerSystem != null && World.sceneRenderer.mirabufSceneObjects.getField() != null) {
             globalAddToast("warning", "Cannot spawn a second field!")
@@ -109,7 +103,6 @@ export async function spawnCachedMira(info: MirabufCacheInfo, progressHandle = n
     }
 }
 
-/** Cache a default (remote) asset, carrying its year/thumbnail metadata into the cache entry. */
 function cacheDefaultAsset(info: DefaultAssetInfo) {
     return MirabufCachingService.cacheRemote(info.remotePath, info.miraType, {
         name: info.name,
@@ -119,7 +112,6 @@ function cacheDefaultAsset(info: DefaultAssetInfo) {
     })
 }
 
-/** Run `cache`, then spawn the cached assembly, reporting progress and failures on `status`. */
 async function cacheAndSpawn(status: ProgressHandle, cache: () => Promise<MirabufCacheInfo | undefined>) {
     trackSpawn(1)
     try {
@@ -137,28 +129,21 @@ async function cacheAndSpawn(status: ProgressHandle, cache: () => Promise<Mirabu
     }
 }
 
-/**
- * Download a default (remote) asset into the cache, then spawn it.
- * Fire-and-forget: progress is surfaced via ProgressHandle.
- */
+// fire and forget, progress goes out on the ProgressHandle
 export function spawnRemote(info: DefaultAssetInfo) {
     const status = new ProgressHandle(info.name)
     status.update("Downloading from Synthesis...", 0.05)
     void cacheAndSpawn(status, () => cacheDefaultAsset(info))
 }
 
-/**
- * Cache an APS (Autodesk Hub) file, then spawn it.
- */
+// APS is the Autodesk Hub
 export function spawnAPS(data: Data, miraType: MiraType) {
     const status = new ProgressHandle(data.attributes.displayName ?? data.id)
     status.update("Downloading from APS...", 0.05)
     void cacheAndSpawn(status, () => MirabufCachingService.cacheAPS(data, miraType))
 }
 
-/**
- * Download every remote asset not yet cached (no spawn). Used by "Download All".
- */
+// backs the "Download All" button, caches only and spawns nothing
 export async function downloadAll(manifestAssets: DefaultAssetInfo[], cachedAssets: MirabufCacheInfo[]) {
     const cachedHashes = new Set(cachedAssets.map(info => info.hash))
     const toCache = manifestAssets.filter(asset => !cachedHashes.has(asset.hash))

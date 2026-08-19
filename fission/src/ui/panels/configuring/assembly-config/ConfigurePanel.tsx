@@ -401,7 +401,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     )
 }
 
-// tagging onboarding target to allow for auto-advancing despite minification
 tourTarget(ConfigurePanel, "ConfigurePanel")
 
 export default ConfigurePanel

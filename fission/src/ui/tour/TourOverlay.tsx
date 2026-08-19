@@ -1,5 +1,4 @@
 import { Box, Popper, type PopperPlacementType } from "@mui/material"
-import type { Instance as PopperInstance } from "@popperjs/core"
 import type React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { TOP_BAR_HEIGHT } from "@/ui/components/topbar/TopBarConfig"
@@ -14,23 +13,19 @@ const ZIndex = 1400 // above panels/modals (1300) and the top bar (1200)
 const SCRIM_Z_INDEX = ZIndex - 10
 const SCRIM_COLOR = "rgba(0,0,0,0.5)"
 const SCRIM_TEST_ID = "tour-scrim"
-// Gap from the top bar / viewport edge for an anchorless card that is pinned to a corner.
 const SCREEN_EDGE_GAP = 12
 const SPOTLIGHT_PAD = 6
 
-// after step changes we remeasure points. Anchors can move without resizing because of MUI stuff / panels
+// panels and the topbar move anchors around without resizing them, and nothing fires for that
 const SETTLE_DELAYS = [0, 100, 250, 450]
 
-/** Fixed-position style for an anchorless card, keyed by its {@link ScreenPosition}. */
 function screenPositionStyle(position: ScreenPosition | undefined) {
     if (position === "top-left") {
         return { top: TOP_BAR_HEIGHT + SCREEN_EDGE_GAP, left: SCREEN_EDGE_GAP }
     }
-    // Default: dead center.
     return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" }
 }
 
-/** Maps a Popper placement to the card edge its pointer should sit on. */
 const ARROW_EDGE_BY_BASE = { top: "bottom", bottom: "top", left: "right", right: "left" } as const
 
 function arrowEdgeFor(placement: PopperPlacementType) {
@@ -134,27 +129,14 @@ const SpotlightScrim: React.FC<{ rect: DOMRect }> = ({ rect }) => {
     )
 }
 
-/**
- * Renders the current tour step's card, anchored to its registered element via an MUI
- * Popper (which repositions on resize, so cards stay attached across screen sizes).
- * Steps with no anchor - or whose anchor is not yet mounted - fall back to a centered card.
- */
 const TourOverlay: React.FC = () => {
-    // Consuming the context re-renders this component whenever the provider value changes -
-    // including the anchorVersion bump on anchor (de)registration - so the anchor below is
-    // always re-resolved when a panel mounts or unmounts.
-    const { active, stepIndex, canAdvance, next, prev, skip, getAnchor, anchorVersion } = useTourContext()
+    const { active, stepIndex, canAdvance, next, prev, skip, getAnchor } = useTourContext()
     const { blockState } = useUIContext()
     const [arrowRef, setArrowRef] = useState<HTMLElement | null>(null)
-    const popperRef = useRef<PopperInstance>(null)
 
     const step = active ? TOUR_STEPS[stepIndex] : undefined
 
-    // Resolved on every render; the context change from anchor (de)registration drives re-renders.
-    // Guard on `isConnected`: while an anchor's host (a panel/modal) unmounts, the element can be
-    // detached from the document for a tick before its callback ref clears the registry entry.
-    // Feeding a detached node to the Popper throws an MUI "invalid anchorEl" warning, so we treat
-    // it as absent and fall through to the centered card until a live anchor re-registers.
+    // a closing panel leaves its element detached for a tick, and popper throws on a detached anchor
     const rawAnchor = step?.anchorId ? getAnchor(step.anchorId) : null
     const anchorEl = rawAnchor?.isConnected ? rawAnchor : null
 
@@ -175,20 +157,12 @@ const TourOverlay: React.FC = () => {
         () => [
             { name: "offset", options: { offset: [0, 12] } },
             { name: "flip", enabled: false },
-            // altAxis clamps along the placement axis itself (y for a "top-end" card) and
-            // tether:false lets it detach from an oversized reference, so the card stays fully
-            // on-screen instead of running off the edge - e.g. the near-full-screen Library
-            // modal, which leaves less headroom above it than the card is tall.
+            // without these the card runs off screen above the near-fullscreen library modal
             { name: "preventOverflow", options: { padding: 8, altAxis: true, tether: false } },
             { name: "arrow", enabled: true, options: { element: arrowRef, padding: 12 } },
         ],
         [arrowRef]
     )
-
-    useEffect(() => {
-        const timers = SETTLE_DELAYS.map(delay => setTimeout(() => popperRef.current?.update(), delay))
-        return () => timers.forEach(clearTimeout)
-    }, [stepIndex, anchorVersion])
 
     if (!step) return null
 
@@ -214,14 +188,13 @@ const TourOverlay: React.FC = () => {
         />
     )
 
-    // Anchored card.
     if (anchorEl) {
         return (
             <>
                 {scrim}
+                {/* MUI force-updates the popper every render, so nothing here has to poke it */}
                 <Popper
                     open
-                    popperRef={popperRef}
                     anchorEl={popperAnchor}
                     placement={step.placement}
                     sx={{ zIndex: ZIndex, pointerEvents: "none" }}
@@ -233,7 +206,6 @@ const TourOverlay: React.FC = () => {
         )
     }
 
-    // Anchorless steps (or an anchor that has not mounted yet): pin the card to a screen position.
     return (
         <>
             {scrim}

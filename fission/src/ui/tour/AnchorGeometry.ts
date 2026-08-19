@@ -16,6 +16,7 @@ export function visibleRect(element: HTMLElement, clippers = clippingAncestors(e
 
     for (const clipper of clippers) {
         const box = clipper.getBoundingClientRect()
+        // clip to the padding box, a border is not part of what the container shows
         const innerTop = box.top + clipper.clientTop
         const innerLeft = box.left + clipper.clientLeft
         top = Math.max(top, innerTop)

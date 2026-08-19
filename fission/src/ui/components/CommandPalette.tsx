@@ -98,7 +98,6 @@ const CommandPalette: React.FC = () => {
         })
     }, [commands])
 
-    // command palette should be highest priority in 'esc' queue
     useEffect(
         () =>
             InputSystem.addEscapeHandler(() => {

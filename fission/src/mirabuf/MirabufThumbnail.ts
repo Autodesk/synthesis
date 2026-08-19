@@ -11,10 +11,7 @@ import {
 import World from "@/systems/World"
 import { unzipMira } from "@/util/Utility"
 
-/**
- * wire tag protobuf has for thumbnails
- * derived so renumbering the schema can't desync from the generated code
- */
+// derived rather than hardcoded so renumbering the schema cant desync it from the generated code
 const ASSEMBLY_THUMBNAIL_TAG = Reader.create(
     mirabuf.Assembly.encode(new mirabuf.Assembly({ thumbnail: new mirabuf.Thumbnail() })).finish()
 ).uint32()
@@ -82,15 +79,11 @@ async function readCachedThumbnail(hash: string): Promise<Blob | undefined> {
     })
 }
 
-/**
- * stripping the message structure to only get the wiretype (which are the low 3 bits)
- *
- * See "Message Structure" in the protobuf encoding spec:
- * https://protobuf.dev/programming-guides/encoding/#structure
- */
+// wiretype is the low 3 bits of the tag
+// https://protobuf.dev/programming-guides/encoding/#structure
 const WIRE_TYPE_MASK = 0b111
 
-/** Pulls only the thumbnail out of an encoded assembly. */
+// skips past every other field so we never decode the whole assembly just for a preview
 function decodeThumbnailField(assemblyBuffer: Uint8Array): mirabuf.Thumbnail | undefined {
     const reader = Reader.create(assemblyBuffer)
     while (reader.pos < reader.len) {

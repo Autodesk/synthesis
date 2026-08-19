@@ -88,7 +88,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void, 
                 update()
             }}
             onAddClicked={() => {
-                // Save current configuration first, then open Spawn panel next tick
+                // save the config before the library takes over
                 closePanel(panel!.id, CloseType.ACCEPT)
                 setTimeout(() => openModal(LibraryModal, undefined), 0)
             }}

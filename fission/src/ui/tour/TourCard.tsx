@@ -14,23 +14,11 @@ const PILL_SX = {
     fontWeight: 700,
     "&:hover": { opacity: 0.85 },
 } as const
-/** Length of the pointer's base, running along the card edge. */
+// base runs along the card edge, height is how far the tip sticks out toward the anchor
 const ARROW_BASE = 16
-/** How far the pointer's tip protrudes past the card edge toward the anchor. */
 const ARROW_HEIGHT = 8
 
-/**
- * Per-edge geometry for the triangular pointer.
- *
- * We carve a real triangle with `clipPath` rather than rotating a square: the MUI Popper
- * `arrow` modifier positions this element with an inline `transform: translate(...)`, which
- * would clobber any `transform: rotate(...)` we set (inline style beats the emotion class),
- * leaving a square poking out. `clipPath` never touches `transform`, so the two never fight.
- *
- * For each edge the base sits flush against the card and the tip points toward the anchor;
- * `width`/`height` size the bounding box (base spans the edge, height is the protrusion) and
- * the negative `offset` pulls the box fully outside that edge.
- */
+// dont swap this for a rotated square since popper writes an inline transform here and overrides the rotate
 const ARROW_GEOMETRY: Record<
     "top" | "bottom" | "left" | "right",
     { clipPath: string; width: number; height: number; offset: Record<string, number> }
@@ -68,18 +56,12 @@ interface TourCardProps {
     onNext: () => void
     onPrev: () => void
     onSkip: () => void
-    /** Popper arrow element ref. Omit for a centered (anchorless) card. */
+    // don't specify both of these for a centered anchorless card with no arrow
     setArrowRef?: (el: HTMLElement | null) => void
-    /** Which card edge the pointer sits on. Omit to hide the pointer. */
     arrowEdge?: "top" | "bottom" | "left" | "right"
     nextDisabled?: boolean
 }
 
-/**
- * The onboarding callout card (Figma 357-18): title, body, Skip pill, a "n of N"
- * counter and `<` / `>` navigation, plus an optional triangular pointer for anchored
- * steps. Purely presentational - all state lives in the TourProvider.
- */
 const TourCard: React.FC<TourCardProps> = ({
     step,
     stepIndex,
@@ -114,9 +96,6 @@ const TourCard: React.FC<TourCardProps> = ({
                     sx={{
                         position: "absolute",
                         bgcolor: "topBar.main",
-                        // The popper arrow modifier centers this element along the card edge (via an
-                        // inline transform); the clip-path + offset below draw the triangle protruding
-                        // from that edge. See ARROW_GEOMETRY for why we clip rather than rotate.
                         clipPath: ARROW_GEOMETRY[arrowEdge].clipPath,
                         width: ARROW_GEOMETRY[arrowEdge].width,
                         height: ARROW_GEOMETRY[arrowEdge].height,

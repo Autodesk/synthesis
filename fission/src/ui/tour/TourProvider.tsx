@@ -33,8 +33,7 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
 
     useEffect(() => EventSystem.listen("SpawnPendingChangeEvent", setSpawnPending), [])
 
-    // Anchor registry. The Map lives in a ref (stable identity); a version counter
-    // triggers overlay re-resolution when elements mount/unmount (e.g. panels opening).
+    // map in a ref so its identity is stable, counter is what tells the overlay to re-resolve
     const anchorsRef = useRef(new Map<TourAnchorId, HTMLElement>())
     const [anchorVersion, setAnchorVersion] = useState(0)
 
@@ -72,11 +71,10 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
 
     const skip = useCallback(() => finish(), [finish])
 
-    // First-visit trigger. Desktop only, once per browser (persisted preference).
     const startedRef = useRef(false)
     useEffect(() => {
         if (isMobile) {
-            // Never run on mobile; end the tour if the viewport crosses into mobile mid-run.
+            // also kills a running tour if the viewport shrinks into mobile mid-run
             setActive(false)
             return
         }
@@ -126,7 +124,6 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
 
     useEffect(() => {
         if (!active) return
-        // tour has the highest priority for 'esc'. Then next is modals and panels
         return InputSystem.addEscapeHandler(() => {
             skip()
             return true

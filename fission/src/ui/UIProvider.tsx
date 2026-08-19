@@ -255,7 +255,6 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         })
     }, [])
 
-    // 'esc' closes modal
     useEffect(
         () =>
             InputSystem.addEscapeHandler(() => {

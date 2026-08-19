@@ -7,6 +7,7 @@ interface TourTagged {
     tourId?: TourTargetId
 }
 
+// this tags a screen so the tour can recognise it. comparing by component.name would break it in prod (minified)
 export function tourTarget<P>(component: FunctionComponent<P>, id: TourTargetId): FunctionComponent<P> {
     ;(component as FunctionComponent<P> & TourTagged).tourId = id
     return component

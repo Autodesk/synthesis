@@ -13,7 +13,6 @@ export function thumbnailMimeType(extension: string): string {
 
 const CAPTURE_SUPERSAMPLE = 2
 
-// thumbnail angle constants
 export const THUMBNAIL_FOV_Y_DEGREES = 45
 export const THUMBNAIL_THETA = -Math.PI / 4
 export const THUMBNAIL_PHI = -Math.PI / 6
@@ -34,9 +33,7 @@ export function collectInstanceBoundsPoints(
     return points
 }
 
-/* Computing thumbnail bounds */
-
-/** unit vector from origin (relative) toward camera */
+// unit vector pointing from the origin toward the camera
 export function canonicalCameraOffset(): THREE.Vector3 {
     return new THREE.Vector3(0, 0, 1).applyEuler(new THREE.Euler(THUMBNAIL_PHI, THUMBNAIL_THETA, 0, "YXZ"))
 }
@@ -77,7 +74,7 @@ export function computeThumbnailFraming(bounds: THREE.Box3 | readonly THREE.Vect
     const tanX = Math.tan(halfFovY) * THUMBNAIL_FILL.x
     const tanY = Math.tan(halfFovY) * THUMBNAIL_FILL.y
 
-    /* camera distance D from the center must satisfy `D >= p.toCamera + l / tan` for every point */
+    // every point needs D >= p.toCamera + l / tan, so take the largest
     let distance = 0
     const relative = new THREE.Vector3()
     for (const point of points) {
@@ -90,7 +87,7 @@ export function computeThumbnailFraming(bounds: THREE.Box3 | readonly THREE.Vect
     return { position: toCamera.multiplyScalar(distance).add(center), lookAt: center }
 }
 
-/** square camera */
+// square, so aspect is pinned to 1
 export function createThumbnailCamera(framing: ThumbnailFraming): THREE.PerspectiveCamera {
     const cameraDistance = framing.position.distanceTo(framing.lookAt)
     const camera = new THREE.PerspectiveCamera(THUMBNAIL_FOV_Y_DEGREES, 1, Math.min(0.1, cameraDistance / 10), 2000)
@@ -118,8 +115,6 @@ function computeTargetBounds(targets: readonly THREE.Object3D[]): THREE.Box3 {
     return bounds
 }
 
-/* rendering thumbnail */
-
 export interface ThumbnailCaptureProps {
     renderer: THREE.WebGLRenderer
     scene: THREE.Scene
@@ -127,7 +122,6 @@ export interface ThumbnailCaptureProps {
     target: MirabufSceneObject
 }
 
-/** renders the targets to an off-screen render target */
 export async function captureSceneThumbnail(props: ThumbnailCaptureProps): Promise<Blob | undefined> {
     const { renderer, scene, skybox, target } = props
     const framingPoints = collectInstanceBoundsPoints([...target.mirabufInstance.meshes.values()].flat())
@@ -148,7 +142,7 @@ export async function captureSceneThumbnail(props: ThumbnailCaptureProps): Promi
     const renderTarget = new THREE.WebGLRenderTarget(renderSize, renderSize, { depthBuffer: true })
     renderTarget.texture.colorSpace = renderer.outputColorSpace
 
-    // no awaits so the render loop doesn't paint a frame where everything is hidden to the user
+    // dont await in here. the render loop would paint a frame with everything still hidden
     try {
         for (const child of scene.children) {
             prevVisibility.set(child, child.visible)
@@ -180,7 +174,6 @@ function createSquareCanvas(size: number): OffscreenCanvas | HTMLCanvasElement {
     return canvas
 }
 
-/** encoding rendered offscreen scene */
 async function encodePixels(pixels: Uint8Array, renderSize: number): Promise<Blob | undefined> {
     const flipped = new Uint8ClampedArray(pixels.length)
 

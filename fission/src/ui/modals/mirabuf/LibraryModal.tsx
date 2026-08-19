@@ -157,7 +157,6 @@ const AssetCard: React.FC<AssetCardProps> = ({
     )
 }
 
-/** Responsive card grid shared by the year view and the Saved section. */
 const AssetCardGrid: React.FC<{ children: ReactNode }> = ({ children }) => (
     <Box
         sx={{
@@ -368,14 +367,12 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     }, [assetsForYear, cachedInfos, closeModal])
 
     const importFromFile = useCallback(() => {
-        // openModal auto-closes this Library modal (fires its onClose(Overwrite)).
         openModal(ImportLocalMirabufModal, { configurationType: "ROBOTS" })
     }, [openModal])
 
     const hasRemoteInYear = assetsForYear.some(asset => !cachedByHash.has(asset.hash))
 
     return (
-        // tour anchor
         <Stack
             direction="column"
             ref={libraryRef}
@@ -391,7 +388,7 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
                 variant="scrollable"
                 scrollButtons="auto"
                 allowScrollButtonsMobile
-                // pin the year tabs while the single (modal) scroll container scrolls
+                // the modal is the only scroll container, so the year tabs need pinning
                 sx={{ position: "sticky", top: 0, zIndex: 2, backgroundColor: "#2e2e2e" }}
                 {...SoundPlayer.getInstance().buttonSoundEffects()}
             >
@@ -453,7 +450,6 @@ const LibraryModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     )
 }
 
-// tagging onboarding target to allow for auto-advancing despite minification
 tourTarget(LibraryModal, "LibraryModal")
 
 export default LibraryModal
