@@ -1,6 +1,7 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import Pako from "pako"
 import JOLT from "./loading/JoltSyncLoader"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
@@ -103,6 +104,45 @@ export function copyVec3(vec: Jolt.Vec3): Jolt.Vec3 {
  * Useful in long, blocking functions to allow the UI to update
  */
 export const yieldToMain = () => new Promise<void>(resolve => setTimeout(resolve, 0))
+
+export async function waitUntil(condition: () => boolean, interval: number = 1000, timeout?: number) {
+    let handle: NodeJS.Timeout | string | number | undefined
+    try {
+        return await new Promise<boolean>(resolve => {
+            if (timeout != null) {
+                setTimeout(() => resolve(false), timeout)
+            }
+
+            handle = setInterval(() => {
+                if (condition()) {
+                    resolve(true)
+                }
+            }, interval)
+        })
+    } finally {
+        clearInterval(handle)
+    }
+}
+
+export async function withTimeout(promise: Promise<boolean>, timeoutMessage: string, duration: number = 5000) {
+    let timeout: NodeJS.Timeout
+    return await Promise.race([
+        promise,
+        new Promise<boolean>(res => {
+            timeout = setTimeout(() => {
+                globalAddToast("warning", timeoutMessage)
+                res(false)
+            }, duration)
+        }),
+    ]).then(v => {
+        clearTimeout(timeout)
+        return v
+    })
+}
+
+export function isDefined<T>(item: T | undefined): item is T {
+    return item !== undefined
+}
 
 export type RecursivePartial<T> = {
     [P in keyof T]?: T[P] extends (infer U)[]

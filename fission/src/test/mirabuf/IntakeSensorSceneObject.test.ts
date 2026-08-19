@@ -20,7 +20,6 @@ const mockPhysicsSystem = {
 }
 const mockSceneRenderer = {
     sceneObjects: new Map(),
-    createBox: vi.fn(),
     scene: {
         remove: vi.fn(),
     },

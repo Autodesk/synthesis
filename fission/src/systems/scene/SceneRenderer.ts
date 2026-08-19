@@ -1,4 +1,3 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 import * as THREE from "three"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
@@ -17,7 +16,7 @@ import {
 } from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import type { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
+import type { PixelSpaceCoord } from "@/components/overlays/SceneOverlayEvents.ts"
 import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { rayCastForRigidBody } from "@/util/RaycastUtils"
@@ -149,11 +148,13 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
+        const graphicsSettings = PreferencesSystem.getGraphicsPreferences()
+
         this._renderer = new THREE.WebGLRenderer({
             powerPreference: "high-performance",
-            antialias: false,
+            antialias: graphicsSettings.antiAliasing,
             stencil: false,
-            depth: !PreferencesSystem.getGraphicsPreferences().antiAliasing,
+            depth: true,
         })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
@@ -161,7 +162,7 @@ class SceneRenderer extends WorldSystem {
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
-        this.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
+        this.changeLighting(graphicsSettings.fancyShadows)
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
@@ -403,8 +404,8 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public registerSceneObject<T extends SceneObject>(obj: T): SceneObjectId {
-        const id = uuidv4() as SceneObjectId
+    public registerSceneObject<T extends SceneObject>(obj: T, id?: SceneObjectId): SceneObjectId {
+        id ??= uuidv4() as SceneObjectId
 
         obj.id = id
         this._sceneObjects.set(id, obj)
@@ -429,13 +430,15 @@ class SceneRenderer extends WorldSystem {
 
     public removeSceneObject(id: SceneObjectId) {
         const obj = this._sceneObjects.get(id)
-
         if (!obj) return
 
         // If the object is a mirabuf object, remove the gizmo as well
         if (obj instanceof MirabufSceneObject) {
             const objGizmo = this._gizmosOnMirabuf.get(id)
-            if (this._gizmosOnMirabuf.delete(id)) objGizmo!.dispose()
+            if (this._gizmosOnMirabuf.delete(id)) {
+                this._sceneObjects.delete(objGizmo!.id)
+                objGizmo!.dispose()
+            }
 
             World?.multiplayerSystem?.broadcast({
                 type: "deleteObject",
@@ -462,15 +465,6 @@ class SceneRenderer extends WorldSystem {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
             if (this._light instanceof CSM) this._light.setupMaterial(material)
-            return new THREE.Mesh(geo, material)
-        } else {
-            return new THREE.Mesh(geo, this.createToonMaterial())
-        }
-    }
-
-    public createBox(halfExtent: Jolt.Vec3, material?: THREE.Material | undefined): THREE.Mesh {
-        const geo = new THREE.BoxGeometry(halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ())
-        if (material) {
             return new THREE.Mesh(geo, material)
         } else {
             return new THREE.Mesh(geo, this.createToonMaterial())
@@ -589,18 +583,15 @@ class SceneRenderer extends WorldSystem {
         const hit = rayCastForRigidBody(e.position)
         if (hit) {
             const sceneObject = hit.association.sceneObject
-            if (
-                !World.multiplayerSystem ||
-                (sceneObject.miraType === MiraType.ROBOT &&
-                    World.multiplayerSystem
-                        ?.getOwnRobots()
-                        .map(obj => obj.id)
-                        .includes(sceneObject.id))
-            ) {
+
+            const configurableObjectIds = World.getOwnRobots().map(obj => obj?.id)
+            const isField = sceneObject.miraType === MiraType.FIELD
+
+            if ((isField && sceneObject.isOwnObject) || configurableObjectIds.includes(sceneObject.id)) {
                 miraSupplierData = sceneObject.getSupplierData()
             }
         }
-        // All else fails, present default options.
+
         if (!miraSupplierData) {
             miraSupplierData = { title: "The Scene", items: [] }
             miraSupplierData.items.push({

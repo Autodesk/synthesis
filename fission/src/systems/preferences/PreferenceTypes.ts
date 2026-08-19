@@ -15,7 +15,7 @@ export type UserPreferences = {
     RenderProtectedZones: boolean
     InputSchemes: InputScheme[]
     RenderSceneTags: boolean
-    RenderScoreboard: boolean
+    AlwaysShowScoreboard: boolean
     SubsystemGravity: boolean
     TouchControls: boolean
     SimAutoReconnect: boolean
@@ -24,7 +24,9 @@ export type UserPreferences = {
     SFXVolume: number
     ShowCenterOfMassIndicators: boolean
     MultiplayerUsername: string
-    MultiplayerClientID: string
+    MultiplayerPort: number
+    MultiplayerHost: string
+    MultiplayerSecure: boolean
 }
 
 export type UserPreference = keyof UserPreferences
@@ -55,7 +57,7 @@ export function defaultUserPreferences(): UserPreferences {
         RenderProtectedZones: true,
         InputSchemes: [],
         RenderSceneTags: true,
-        RenderScoreboard: false,
+        AlwaysShowScoreboard: true,
         SubsystemGravity: false,
         TouchControls: false,
         SimAutoReconnect: false,
@@ -63,10 +65,14 @@ export function defaultUserPreferences(): UserPreferences {
         MuteAllSound: false,
         SFXVolume: 25,
         ShowCenterOfMassIndicators: false,
-        MultiplayerClientID: "",
         MultiplayerUsername: "",
+        MultiplayerHost: "",
+        MultiplayerPort: DEFAULT_MULTIPLAYER_PORT,
+        MultiplayerSecure: false,
     }
 }
+
+export const DEFAULT_MULTIPLAYER_PORT = 2610
 
 export type GraphicsPreferences = {
     lightIntensity: number
@@ -84,7 +90,7 @@ export function defaultGraphicsPreferences(): GraphicsPreferences {
         maxFar: 30,
         cascades: 4,
         shadowMapSize: 4096,
-        antiAliasing: false,
+        antiAliasing: true,
     }
 }
 
@@ -95,7 +101,7 @@ export function lowGraphicsPreferences(): GraphicsPreferences {
         maxFar: 30,
         cascades: 4,
         shadowMapSize: 4096,
-        antiAliasing: false,
+        antiAliasing: true,
     }
 }
 

@@ -105,7 +105,7 @@ export type TogglePanelFn = <T, P>(
     customProps: P,
     matchesOpen?: (openCustomProps: P) => boolean
 ) => string | null
-export type CloseModalFn = (closeType: CloseType) => void
+export type CloseModalFn = (closeType: CloseType, id?: string) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
 export type AddToastFn = (variant: VariantType, ...contents: ReactNode[]) => void
 export type ConfigureScreenFn = <T extends UIScreen<any, any>>(
@@ -155,7 +155,7 @@ export const UIContext = createContext<UIContextProps>({
         _props = { hideAccept: false, hideCancel: false, position: "center" }
     ) => null,
     togglePanel: (_content, _customProps, _matchesOpen) => null,
-    closeModal: _closeType => {},
+    closeModal: (_closeType, _id) => {},
     closePanel: (_id, _closeType) => {},
     addToast: (_variant, ..._msg) => null,
     configureScreen: (_screen, _props) => {},

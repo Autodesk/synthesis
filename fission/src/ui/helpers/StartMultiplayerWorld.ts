@@ -1,18 +1,16 @@
-import { globalAddToast } from "@/components/GlobalUIControls"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import type { MultiplayerInitProps } from "@/modals/multiplayer/MultiplayerStartModal.tsx"
+import World from "@/systems/World.ts"
 
 /**
  * Shared `startWorldCallback` for {MultiplayerStartModal}, used by both the
  * desktop (GameplayControls) and mobile (MobileHUD) entry points. Returns
  * whether the multiplayer session was set up successfully.
  */
-export async function startMultiplayerWorld(name: string, room?: string): Promise<boolean> {
-    const isHost = room == null
-    const roomId = room ?? Math.random().toString(10).substring(2, 8)
-    PreferencesSystem.setUserPreference("MultiplayerUsername", name)
+export async function startMultiplayerWorld(info: MultiplayerInitProps): Promise<boolean> {
+    PreferencesSystem.setUserPreference("MultiplayerUsername", info.displayName)
     PreferencesSystem.savePreferences()
-    const success = await MultiplayerSystem.setup(roomId, name, isHost)
-    if (success && isHost) globalAddToast("info", "Room Code", roomId)
-    return success
+    World.reset(info.keepAssets ? "all" : "none")
+    return await MultiplayerSystem.setup(info.ws, info.displayName, info.isHost)
 }
