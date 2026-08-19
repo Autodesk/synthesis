@@ -21,7 +21,7 @@ class InputSystem extends WorldSystem {
     /** Whether the command palette is currently open, which blocks robot input */
     private static _isCommandPaletteOpen: boolean = false
 
-    private static _gpIndexes: number[] = []
+    private static _gpIndexes: (number | null)[] = []
     public static gamepads: (Gamepad | null)[] = []
 
     /** Normalized joystick positions (-1 to 1) set by TouchControls component via react-joystick-component */
@@ -139,16 +139,20 @@ class InputSystem extends WorldSystem {
     }
 
     public update(_: number): void {
-        // Fetch current gamepad information
-        const rawGamepads = navigator.getGamepads()
+    const rawGamepads = navigator.getGamepads();
 
-        for (const lookupIndex of InputSystem._gpIndexes) {
-            if (lookupIndex == null || rawGamepads[lookupIndex] == null) {
-                InputSystem.gamepads[lookupIndex] = null
+    for (let i = 0; i < InputSystem._gpIndexes.length; i++) {
+        const lookupIndex = InputSystem._gpIndexes[i];
+        
+        // If this slot is tracked and contains a valid number
+        if (lookupIndex !== null) {
+            if (rawGamepads[lookupIndex] == null) {
+                InputSystem.gamepads[lookupIndex] = null;
             } else {
-                InputSystem.gamepads[lookupIndex] = rawGamepads[lookupIndex]
+                InputSystem.gamepads[lookupIndex] = rawGamepads[lookupIndex];
             }
         }
+    }
 
         if (!document.hasFocus()) this.clearKeyData()
 
@@ -218,18 +222,13 @@ class InputSystem extends WorldSystem {
 
     /* Called once when a gamepad is first disconnected */
     private gamepadDisconnected(event: GamepadEvent) {
-        if (LOG_GAMEPAD_EVENTS) {
-            console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
-        }
+    const index = event.gamepad.index;
+    
+    InputSystem.gamepads[index] = null;
+    
+    InputSystem._gpIndexes[index] = null;
+}
 
-        const removedIndex = event.gamepad.index
-
-        InputSystem._gpIndexes = InputSystem._gpIndexes.filter(idx => idx !== removedIndex)
-
-        if (InputSystem.gamepads[removedIndex]) {
-            InputSystem.gamepads[removedIndex] = null
-        }
-    }
 
     /**
      * @param {string} key - The keycode of the target key.
@@ -285,10 +284,11 @@ class InputSystem extends WorldSystem {
 
     /** @returns An array of all currently connected, active Gamepad objects. */
     public static getConnectedGamepads(): Gamepad[] {
-        return this._gpIndexes
-            .map(index => this.gamepads[index])
-            .filter((gamepad): gamepad is Gamepad => gamepad != null)
-    }
+    return this._gpIndexes
+        .map(index => index !== null ? this.gamepads[index] : null)
+        .filter((gamepad): gamepad is Gamepad => gamepad != null)
+}
+
 
     /**
      * @param {number} playerSlot The logical player slot.
