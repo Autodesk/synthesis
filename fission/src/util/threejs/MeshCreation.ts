@@ -33,6 +33,11 @@ export function createMeshForShape(shape: Jolt.Shape) {
     return geometry
 }
 
+export function createBoxMesh(size: Jolt.Vec3, material: THREE.Material): THREE.Mesh {
+    const geo = new THREE.BoxGeometry(size.GetX(), size.GetY(), size.GetZ())
+    return new THREE.Mesh(geo, material)
+}
+
 export function getThreeObjForBody(body: Jolt.Body, color: THREE.Color) {
     const material = new THREE.MeshPhongMaterial({
         color: color,

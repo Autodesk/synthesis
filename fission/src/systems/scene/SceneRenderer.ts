@@ -1,4 +1,3 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 import * as THREE from "three"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
@@ -478,15 +477,6 @@ class SceneRenderer extends WorldSystem {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
             if (this._light instanceof CSM) this._light.setupMaterial(material)
-            return new THREE.Mesh(geo, material)
-        } else {
-            return new THREE.Mesh(geo, this.createToonMaterial())
-        }
-    }
-
-    public createBox(halfExtent: Jolt.Vec3, material?: THREE.Material | undefined): THREE.Mesh {
-        const geo = new THREE.BoxGeometry(halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ())
-        if (material) {
             return new THREE.Mesh(geo, material)
         } else {
             return new THREE.Mesh(geo, this.createToonMaterial())
