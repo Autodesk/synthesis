@@ -132,4 +132,4 @@ These core systems make up the lion's share of the fission source code. Each sys
 | `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                                                         |
 | `assetpack:update`   | Downloads the assetpack and unzips/installs it in the correct location, replacing the old directory if it exists.                               |
 | `playwright:install` | Downloads the Playwright browsers.                                                                                                              |
-| `prepare`            | Run automatically by `bun i`. Adds a line to `.git/hooks/pre-commit` which runs `scripts/hooks/pre-commit`.                                     |
+| `prepare`            | Run automatically by `bun i`. Adds a line to the repo's `pre-commit` hook that runs `scripts/hooks/pre-commit`.                                 |
