@@ -47,6 +47,16 @@ export async function hashBuffer(buffer: ArrayBuffer, fallbackHash?: string): Pr
         .join("")
 }
 
+export function hashBufferSync(str: string): number {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i)
+        hash |= 0
+    }
+
+    return hash >>> 0
+}
+
 export function forPair<T, U>(listOne: T[], listTwo: U[], predicate: (one: T, two: U) => void): void {
     listOne.forEach(a => listTwo.forEach(b => predicate(a, b)))
 }
@@ -66,6 +76,13 @@ export function hexStringToUint8Array(hexString: string) {
         arrayBuffer[i / 2] = parseInt(hexString.substring(i, i + 2), 16)
     }
     return arrayBuffer
+}
+
+export function titleCase(str: string): string {
+    return str
+        .split(" ")
+        .map((s: string) => s.substring(0, 1).toUpperCase() + s.substring(1))
+        .join(" ")
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns `any`

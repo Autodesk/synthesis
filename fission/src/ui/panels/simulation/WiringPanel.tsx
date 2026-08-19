@@ -5,7 +5,6 @@ import {
     type FinalConnectionState,
     type Edge as FlowEdge,
     type Node as FlowNode,
-    type NodeProps,
     ReactFlow,
     ReactFlowProvider,
     useEdgesState,
@@ -13,20 +12,18 @@ import {
     useReactFlow,
 } from "@xyflow/react"
 import type React from "react"
-import { type ComponentType, useCallback, useEffect, useMemo, useReducer, useState, type JSX } from "react"
+import { useCallback, useEffect, useMemo, useReducer, useState, type JSX } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
-import { isNoraDeconstructable } from "@/systems/simulation/Nora"
 import {
-    type ConfigState,
+    removeConnection,
     type HandleInfo,
     handleInfoDisplayCompare,
-    NODE_ID_ROBOT_IO,
-    NODE_ID_SIM_IN,
-    NODE_ID_SIM_OUT,
-    SimConfig,
+    makeConnection,
+    removeNode,
     type SimConfigData,
-} from "@/systems/simulation/SimConfigShared"
+} from "@/systems/simulation/wiring/SimGraph"
+import { compile } from "@/systems/simulation/wiring/Compile"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import World from "@/systems/World.ts"
 import Checkbox from "@/ui/components/Checkbox"
@@ -37,7 +34,18 @@ import { Button } from "@/ui/components/StyledComponents"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
-import WiringNode from "./WiringNode"
+import { NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, nodeTypes } from "@/systems/simulation/wiring/NodeKinds"
+import {
+    addConstructorNode,
+    addDeconstructorNode,
+    addJunctionNode,
+    defaultConfig,
+    syncRobotIOHandles,
+    syncSimIOHandles,
+} from "@/systems/simulation/wiring/Factories"
+import { titleCase } from "@/util/Utility"
+
+export type ConfigState = "wiring" | "simIO" | "robotIO"
 
 /**
  * WARNING: Please test *thoroughly* when making changes. React Flow is very temperamental with how nodes
@@ -50,20 +58,6 @@ type ConfigComponentProps = {
     simConfig: SimConfigData
     reset?: () => void
 }
-
-type NodeType = ComponentType<
-    NodeProps & {
-        data: Record<string, unknown>
-        type: string
-    }
->
-
-const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{
-    [k: string]: NodeType
-}>((prev, next) => {
-    prev[next.name] = next
-    return prev
-}, {})
 
 function generateGraph(
     simConfig: SimConfigData,
@@ -84,7 +78,7 @@ function generateGraph(
                 title = "Robot IO"
                 onEdit = () => setConfigState("robotIO")
                 onRefresh = () => {
-                    SimConfig.refreshRobotIO(simConfig)
+                    syncRobotIOHandles(simConfig)
                     refreshGraph()
                 }
                 break
@@ -97,15 +91,16 @@ function generateGraph(
                 onEdit = () => setConfigState("simIO")
                 break
             default:
+                title = titleCase(v.kind)
                 onDelete = () => {
-                    if (SimConfig.removeNode(simConfig, v.id)) refreshGraph()
+                    if (removeNode(simConfig, v.id)) refreshGraph()
                 }
                 break
         }
 
         nodes.set(v.id, {
             id: v.id,
-            type: v.type,
+            type: v.kind,
             position: v.position,
             data: {
                 title: title,
@@ -328,7 +323,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
 
     const onEdgeDoubleClick = useCallback(
         (_: React.MouseEvent, edge: FlowEdge) => {
-            if (SimConfig.deleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
+            if (removeConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
                 refreshGraph()
             }
         },
@@ -351,7 +346,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         (connection: Connection) => {
             const sourceId = connection.sourceHandle
             const targetId = connection.targetHandle
-            if (SimConfig.makeConnection(simConfig, sourceId!, targetId!)) {
+            if (makeConnection(simConfig, sourceId!, targetId!)) {
                 refreshGraph()
             }
         },
@@ -367,21 +362,23 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
             const { clientX, clientY } = "changedTouches" in event ? event.changedTouches[0] : event
 
             const handleInfo = simConfig.handles[state.fromHandle.id!]
-            if (!handleInfo || !isNoraDeconstructable(handleInfo.noraType)) {
+            // null means wildcard, so any type can connect to handle.
+            // we can't deconstruct wildcard handles
+            if (!handleInfo || handleInfo.noraType === null) {
                 return
             }
 
-            const newHandleId = (handleInfo.isSource ? SimConfig.addDeconstructorNode : SimConfig.addConstructorNode)(
+            const newHandleId = (handleInfo.isSource ? addDeconstructorNode : addConstructorNode)(
                 simConfig,
-                handleInfo.noraType,
+                handleInfo.noraType!,
                 screenToFlowPosition({ x: clientX, y: clientY })
             )
             if (!newHandleId) return
 
             if (
                 handleInfo.isSource
-                    ? SimConfig.makeConnection(simConfig, handleInfo.id, newHandleId)
-                    : SimConfig.makeConnection(simConfig, newHandleId, handleInfo.id)
+                    ? makeConnection(simConfig, handleInfo.id, newHandleId)
+                    : makeConnection(simConfig, newHandleId, handleInfo.id)
             )
                 refreshGraph()
         },
@@ -389,9 +386,19 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     )
 
     const onCreateJunction = useCallback(() => {
-        SimConfig.addJunctionNode(simConfig)
+        addJunctionNode(simConfig)
         refreshGraph()
     }, [refreshGraph, simConfig])
+
+    const onEdgesDelete = useCallback(
+        (edges: FlowEdge[]) => {
+            edges.forEach(edge => {
+                removeConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
+            })
+            refreshGraph()
+        },
+        [refreshGraph, simConfig]
+    )
 
     return (
         <ReactFlow
@@ -402,6 +409,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onEdgeDoubleClick={onEdgeDoubleClick}
+            onEdgesDelete={onEdgesDelete}
             onConnect={onConnect}
             onConnectEnd={onConnectEnd}
             nodeTypes={nodeTypes}
@@ -434,31 +442,34 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
         const existingConfig = selectedAssembly.simConfigData
         if (existingConfig) {
             console.debug("Existing SimConfig found")
-            setSimConfig(JSON.parse(JSON.stringify(existingConfig))) // Create copy to not force a save
+            const config = JSON.parse(JSON.stringify(existingConfig)) as SimConfigData
+            syncRobotIOHandles(config)
+            syncSimIOHandles(config, selectedAssembly)
+            setSimConfig(config)
         } else {
             console.debug("No SimConfig found, creating default...")
-            setSimConfig(SimConfig.default(selectedAssembly))
+            setSimConfig(defaultConfig(selectedAssembly))
         }
     }, [selectedAssembly])
 
     const save = useCallback(() => {
         if (simConfig && selectedAssembly) {
-            const flows = SimConfig.compile(simConfig, selectedAssembly)
-            if (!flows) {
-                console.error("Compilation Failed")
-                return
+            const { flows, error } = compile(simConfig, selectedAssembly)
+            if (flows) {
+                console.debug(`${flows.length} Flows Successfully Compiled!`)
+            } else {
+                addToast("error", "Compilation Failed", error)
             }
-            console.debug(`${flows.length} Flows Successfully Compiled!`)
 
             selectedAssembly.updateSimConfig(simConfig)
         } else {
             console.warn("Failed to save SimConfig", simConfig, selectedAssembly)
         }
-    }, [selectedAssembly, simConfig])
+    }, [addToast, selectedAssembly, simConfig])
 
     const reset = useCallback(() => {
         if (selectedAssembly) {
-            setSimConfig(SimConfig.default(selectedAssembly))
+            setSimConfig(defaultConfig(selectedAssembly))
         }
     }, [selectedAssembly])
 
