@@ -60,6 +60,7 @@ class GyroStimulus extends Stimulus<typeof GYRO_TYPE> {
         return worldOmega.applyQuaternion(bodyRot.invert()).applyQuaternion(this._mountRotation.clone().invert())
     }
 
+    /** Integrates rotational velocity to get angle and updates stored state */
     private integrateAngle(axis: "x" | "y" | "z", rate: number, deltaT: number): number {
         this._accumulated[axis] += rate * deltaT
 
@@ -74,6 +75,7 @@ class GyroStimulus extends Stimulus<typeof GYRO_TYPE> {
     }
 
     public update(deltaT: number): void {
+        // TODO: can we get angle from this._body.GetRotation()?
         const omega = this.mountAngularVelocity()
 
         this._rate.x = THREE.MathUtils.radToDeg(omega.x)

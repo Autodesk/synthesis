@@ -4,7 +4,6 @@ import { NodeKindId, nodeTargets, type HandleIdAlias, type HandleInfo, type SimC
 import { Handle, Position, type NodeProps } from "@xyflow/react"
 import type { SimReceiver, SimSupplier } from "../wpilib_brain/SimDataFlow"
 import { noraTypeToColorStr, type NoraType } from "../Nora"
-import { JunctionNode } from "./nodes/JunctionNode"
 import { compileSuppliersFor } from "./Compile"
 import { RobotIONode } from "./nodes/RobotIONode"
 import { SimType } from "../wpilib_brain/WPILibTypes"
@@ -13,9 +12,11 @@ import SimAccel from "../wpilib_brain/sim/SimAccel"
 import SimGyro from "../wpilib_brain/sim/SimGyro"
 import SimCANMotor from "../wpilib_brain/sim/SimCANMotor"
 import SimPWM from "../wpilib_brain/sim/SimPWM"
-import { SimInputNode } from "./nodes/SimInputNode"
-import { SimOutputNode } from "./nodes/SimOutputNode"
 import { FunctionNode } from "./nodes/FunctionNode"
+
+export const NODE_ID_SIM_IN = "sim-input-node"
+export const NODE_ID_SIM_OUT = "sim-output-node"
+export const NODE_ID_ROBOT_IO = "robot-io-node"
 
 export type CompileCtx = {
     config: SimConfigData
@@ -57,19 +58,19 @@ const robotIONode: NodeKind = {
 
 const simInputNode: NodeKind = {
     id: NodeKindId.SIM_INPUT,
-    component: SimInputNode,
+    component: FunctionNode,
     makeReceiver: (handle, ctx) => ctx.simLayer.getDriver(handle.originId),
 }
 
 const simOutputNode: NodeKind = {
     id: NodeKindId.SIM_OUTPUT,
-    component: SimOutputNode,
+    component: FunctionNode,
     makeSupplier: (handle, ctx) => ctx.simLayer.getStimuli(handle.originId),
 }
 
 const junctionNode: NodeKind = {
     id: NodeKindId.JUNCTION,
-    component: JunctionNode,
+    component: FunctionNode,
     makeSupplier: (handle, ctx) => {
         const [input] = nodeTargets(ctx.config, handle.nodeId)
         return input && compileSuppliersFor(ctx, input.id)

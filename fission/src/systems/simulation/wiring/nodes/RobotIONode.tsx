@@ -4,8 +4,6 @@ import { handleInfoDisplayCompare, handlesOf, type SimConfigData } from "@/syste
 import { RefreshButton } from "@/ui/components/StyledComponents"
 import { HandleRow, WiringNodeShell } from "../NodeKinds"
 
-export const NODE_ID_ROBOT_IO = "robot-io-node"
-
 export const RobotIONode = memo(({ id, data }: NodeProps) => {
     const simConfig = data.simConfig as SimConfigData
     const onRefresh = data.onRefresh as (() => void) | undefined

@@ -70,8 +70,8 @@ class AccelStimulus extends Stimulus<typeof ACCEL_TYPE> {
             this._accel = specificForce.applyQuaternion(mountRot.invert())
         }
 
-        this._prevVel = velCom.clone()
-        this._prevOmega = omega.clone()
+        this._prevVel = velCom
+        this._prevOmega = omega
     }
 
     public get supplierType() {

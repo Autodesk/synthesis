@@ -34,10 +34,7 @@ import { Button } from "@/ui/components/StyledComponents"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
-import { NODE_ID_ROBOT_IO } from "@/systems/simulation/wiring/nodes/RobotIONode"
-import { NODE_ID_SIM_IN } from "@/systems/simulation/wiring/nodes/SimInputNode"
-import { NODE_ID_SIM_OUT } from "@/systems/simulation/wiring/nodes/SimOutputNode"
-import { nodeTypes } from "@/systems/simulation/wiring/NodeKinds"
+import { NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, nodeTypes } from "@/systems/simulation/wiring/NodeKinds"
 import {
     addConstructorNode,
     addDeconstructorNode,

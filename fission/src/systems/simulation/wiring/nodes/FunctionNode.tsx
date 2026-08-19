@@ -16,15 +16,17 @@ export const FunctionNode = memo(({ id, data }: NodeProps) => {
 
     return (
         <WiringNodeShell title={data.title as string}>
-            <div className="flex flex-col gap-4">
-                {targets.map(x => (
-                    <HandleRow key={x.id} handle={x} />
-                ))}
-            </div>
-            <div className="flex flex-col gap-4">
-                {sources.map(x => (
-                    <HandleRow key={x.id} handle={x} />
-                ))}
+            <div className="grid grid-cols-2 gap-x-2">
+                <div className="flex flex-col gap-4">
+                    {targets.map(x => (
+                        <HandleRow key={x.id} handle={x} />
+                    ))}
+                </div>
+                <div className="flex flex-col gap-4">
+                    {sources.map(x => (
+                        <HandleRow key={x.id} handle={x} />
+                    ))}
+                </div>
             </div>
             {onDelete && (
                 <div className="flex justify-center px-4">

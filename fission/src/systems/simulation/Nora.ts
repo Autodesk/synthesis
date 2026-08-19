@@ -6,7 +6,7 @@
 /// the underlying primitive data type, a unit, and a derivative order.
 /// E.g., an angular velocity would be a number that is the first derivative of an angle
 ///
-/// A base unit of NONE is included for unitless values such as a motor's percent output.
+/// A base unit of NONE is included for unitless values.
 ///
 /// See the `SerializedNoraBaseType` definition for information on the serialized representation
 /// of the various types
