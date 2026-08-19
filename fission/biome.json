@@ -280,7 +280,7 @@
       }
     },
     {
-      "includes": ["src/proto/**/*"],
+      "includes": ["src/proto/**/*", "src/systems/multiplayer/bindings/**/*"],
       "formatter": {
         "enabled": false
       },
