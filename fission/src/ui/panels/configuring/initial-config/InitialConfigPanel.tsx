@@ -1,10 +1,9 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import { getSpotlightAssembly, getUnusedAlliance } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { InputSchemeUseType } from "@/systems/input/InputTypes"
-import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
@@ -18,23 +17,25 @@ import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import InputSchemeSelection from "./InputSchemeSelection"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
     const { setSelectedScheme } = useStateContext()
     const { configureScreen, closePanel } = useUIContext()
+
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
+    useEffect(() => {
+        const { alliance, station } = getUnusedAlliance()
+        setAlliance(alliance)
+        setStation(station)
+    }, [])
+
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
-
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
-        }
-    }, [])
+    useHoldPhysicsPause()
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
@@ -77,6 +78,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 cancelText: "Remove",
                 blocking: true,
                 blockingMessage: "Finish Assembly Setup first!",
+                exclusiveGroup: "assembly-init",
             },
             {
                 onBeforeAccept: () => {
