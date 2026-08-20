@@ -57,7 +57,6 @@ type ProxyOptions = Proxies[string]
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }): ViteUserConfig => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
-    process.env.VITE_MULTIPLAYER_PORT = mode === "test" ? "3001" : "9002"
     // @vitest/browser spawns its vite server with mode "test" for `vitest test` and
     // "benchmark" for `vitest bench`; both should use local assets when available
     // (private mirabuf assets such as Multi-Joint Wheels only exist locally).
@@ -113,22 +112,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
-            environment: "node",
-            reporters: process.env.GITHUB_ACTIONS
-                ? [
-                      "github-actions",
-                      "default",
-                      {
-                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
-                              if (reason === "passed" && unhandled.length === 0) {
-                                  console.error("GH ACTIONS VITEST PASSED")
-                              } else {
-                                  console.error(unhandled)
-                              }
-                          },
-                      },
-                  ]
-                : ["default"],
+            environment: "jsdom",
             browser: {
                 enabled: true,
                 provider: "playwright",
@@ -229,7 +213,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
                 reporter: ["text", "html"] as const,
                 reportsDirectory: "./coverage",
                 include: ["src/**/*.{ts,tsx}"],
-                exclude: ["src/test/**", "src/proto/**"],
+                exclude: ["src/test/**", "src/proto/**", "src/bench/**"],
                 reportOnFailure: true,
             },
             projects: [
