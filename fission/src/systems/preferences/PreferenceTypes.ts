@@ -2,24 +2,20 @@ import type { Vector3Tuple } from "three"
 import type { ContactType } from "@/mirabuf/ZoneTypes"
 import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import type { InputScheme } from "../input/InputTypes"
-import type { SimConfigData } from "../simulation/SimConfigShared"
+import type { SimConfigData } from "../simulation/wiring/SimGraph"
 
 /** Names of all global preferences. */
 
 export type UserPreferences = {
-    ZoomSensitivity: number
-    PitchSensitivity: number
-    YawSensitivity: number
     SceneRotationSensitivity: number
     ScenePanSensitivity: number
     ViewCubeRotationSensitivity: number
     ReportAnalytics: boolean
-    UseMetric: boolean
     RenderScoringZones: boolean
     RenderProtectedZones: boolean
     InputSchemes: InputScheme[]
     RenderSceneTags: boolean
-    RenderScoreboard: boolean
+    AlwaysShowScoreboard: boolean
     SubsystemGravity: boolean
     TouchControls: boolean
     SimAutoReconnect: boolean
@@ -28,7 +24,9 @@ export type UserPreferences = {
     SFXVolume: number
     ShowCenterOfMassIndicators: boolean
     MultiplayerUsername: string
-    MultiplayerClientID: string
+    MultiplayerPort: number
+    MultiplayerHost: string
+    MultiplayerSecure: boolean
 }
 
 export type UserPreference = keyof UserPreferences
@@ -51,19 +49,15 @@ export type Preferences = {
  */
 export function defaultUserPreferences(): UserPreferences {
     return {
-        ZoomSensitivity: 15,
-        PitchSensitivity: 10,
-        YawSensitivity: 3,
         SceneRotationSensitivity: 0.5,
         ScenePanSensitivity: 1.0,
         ViewCubeRotationSensitivity: 0.025,
         ReportAnalytics: false,
-        UseMetric: false,
         RenderScoringZones: true,
         RenderProtectedZones: true,
         InputSchemes: [],
         RenderSceneTags: true,
-        RenderScoreboard: false,
+        AlwaysShowScoreboard: true,
         SubsystemGravity: false,
         TouchControls: false,
         SimAutoReconnect: false,
@@ -71,10 +65,14 @@ export function defaultUserPreferences(): UserPreferences {
         MuteAllSound: false,
         SFXVolume: 25,
         ShowCenterOfMassIndicators: false,
-        MultiplayerClientID: "",
         MultiplayerUsername: "",
+        MultiplayerHost: "",
+        MultiplayerPort: DEFAULT_MULTIPLAYER_PORT,
+        MultiplayerSecure: false,
     }
 }
+
+export const DEFAULT_MULTIPLAYER_PORT = 2610
 
 export type GraphicsPreferences = {
     lightIntensity: number
@@ -92,7 +90,7 @@ export function defaultGraphicsPreferences(): GraphicsPreferences {
         maxFar: 30,
         cascades: 4,
         shadowMapSize: 4096,
-        antiAliasing: false,
+        antiAliasing: true,
     }
 }
 
@@ -103,7 +101,7 @@ export function lowGraphicsPreferences(): GraphicsPreferences {
         maxFar: 30,
         cascades: 4,
         shadowMapSize: 4096,
-        antiAliasing: false,
+        antiAliasing: true,
     }
 }
 
@@ -143,6 +141,17 @@ export type EjectorPreferences = {
     ejectorVelocity: number
     parentNode: string | undefined
     ejectOrder: "FIFO" | "LIFO"
+}
+
+export type SensorType = "gyro" | "accel"
+
+export type SensorPreferences = {
+    name: string
+    sensorType: SensorType
+    /** WPILib device this sensor feeds, e.g. "SYN AHRS[0]". */
+    device: string
+    parentNode: string | undefined
+    deltaTransformation: number[]
 }
 
 // name/id must match the robot code's UsbCamera args, key `"<name>[<id>]"`
@@ -196,10 +205,11 @@ export type RobotPreferences = {
     motors: MotorPreferences[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    sensors: SensorPreferences[]
     cameras: CameraPreferences[]
     driveVelocity: number
     driveAcceleration: number
-    unstickForce: number
+    unstickStrength: number
     sequentialConfig?: SequentialBehaviorPreferences[]
     simConfig?: SimConfigData
 }
@@ -210,9 +220,11 @@ export type MotorPreferences = {
     maxAcceleration: number
 }
 
-export type Alliance = "red" | "blue"
+export const ALLIANCES = ["red", "blue"] as const
+export type Alliance = (typeof ALLIANCES)[number]
 
-export type Station = 1 | 2 | 3
+export const STATIONS = [1, 2, 3] as const
+export type Station = (typeof STATIONS)[number]
 
 export type ZonePreferencesShared = {
     name: string
@@ -267,6 +279,9 @@ export type FieldPreferences = {
     cameraPoints: CameraPoint[]
 }
 
+export const MIN_UNSTICK_STRENGTH = 0
+export const MAX_UNSTICK_STRENGTH = 5
+
 export function defaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
@@ -285,10 +300,11 @@ export function defaultRobotPreferences(): RobotPreferences {
             parentNode: undefined,
             ejectOrder: "FIFO",
         },
+        sensors: [],
         cameras: [],
         driveVelocity: 0,
         driveAcceleration: 0,
-        unstickForce: 8000,
+        unstickStrength: 1,
     }
 }
 

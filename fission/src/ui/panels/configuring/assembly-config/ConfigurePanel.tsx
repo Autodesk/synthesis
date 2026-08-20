@@ -19,16 +19,19 @@ import AssemblySelection, { type AssemblySelectionOption } from "./configure/Ass
 import ConfigModeSelection from "./configure/ConfigModeSelection"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
-import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepieceIntakeInterface.tsx"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureGamepieceEjectorInterface.tsx"
+import ConfigureGamepieceIntakeInterface from "./interfaces/ConfigureGamepieceIntakeInterface.tsx"
+import ConfigureGamepieceEjectorInterface from "./interfaces/ConfigureGamepieceEjectorInterface.tsx"
 import ConfigureJointsInterface from "./interfaces/ConfigureJointsInterface"
+import ConfigureSensorsInterface from "./interfaces/sensors/ConfigureSensorsInterface"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsInterface"
+import ConfigureSpawnPositionsInterface from "./interfaces/ConfigureSpawnPositionsInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { Tab, Tabs, type TabsActions } from "@mui/material"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
@@ -40,6 +43,7 @@ import ConfigureCameraInterface from "./interfaces/cameras/ConfigureCameraInterf
 import MoveInterface from "@/panels/configuring/assembly-config/interfaces/MoveInterface.tsx"
 import ControlsConfigInterface from "@/panels/configuring/assembly-config/interfaces/ControlsConfigInterface.tsx"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import Label from "@/components/Label.tsx"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -74,7 +78,7 @@ const provider: CommandProvider = () => {
     if (!World.isAlive || !World.sceneRenderer) return []
     const list: CommandDefinition[] = []
 
-    const robots = World.sceneRenderer.mirabufSceneObjects.getRobots() || []
+    const robots = World.getOwnRobots() || []
     for (const r of robots) {
         const name = r.assemblyName || "Robot"
         const nameTokens = String(name)
@@ -143,15 +147,18 @@ export interface ConfigurePanelCustomProps {
     configMode?: ConfigMode
     configurationType?: ConfigurationType
 }
+
 const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
     [ConfigMode.JOINTS]: ConfigureJointsInterface,
-    [ConfigMode.EJECTOR]: ConfigureShotTrajectoryInterface,
+    [ConfigMode.EJECTOR]: ConfigureGamepieceEjectorInterface,
+    [ConfigMode.INTAKE]: ConfigureGamepieceIntakeInterface,
     [ConfigMode.CAMERA]: ConfigureCameraInterface,
-    [ConfigMode.INTAKE]: ConfigureGamepiecePickupInterface,
+    [ConfigMode.SENSORS]: ConfigureSensorsInterface,
     [ConfigMode.CONTROLS]: ControlsConfigInterface,
     [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface,
     [ConfigMode.PROTECTED_ZONES]: ConfigureProtectedZonesInterface,
     [ConfigMode.CAMERA_POINTS]: ConfigureCameraPointsInterface,
+    [ConfigMode.SPAWN_POSITIONS]: ConfigureSpawnPositionsInterface,
     [ConfigMode.MOVE]: MoveInterface,
     [ConfigMode.SIM]: SimulationInterface,
     [ConfigMode.BRAIN]: BrainSelectionInterface,
@@ -206,6 +213,14 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
             setAccessedAssemblies(v => [...v, selectedAssembly])
         }
     }, [selectedAssembly])
+
+    useEffect(() => {
+        return EventSystem.listen("MatchStateChangedEvent", ({ mode }) => {
+            if (mode === MatchModeType.AUTONOMOUS) {
+                closePanel(panel!.id, CloseType.OVERWRITE)
+            }
+        })
+    }, [closePanel, panel])
 
     const onBeforeAccept = useCallback(async () => {
         for (const callback of confirmCallbacks) {
@@ -264,6 +279,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 title: "Configure Assets",
                 acceptText: "Save",
                 cancelText: hasMadeChanges ? "Revert" : "Cancel",
+                exclusiveGroup: "assembly-init",
                 disableAccept,
             },
             { onBeforeAccept, onCancel, onClose }
@@ -326,48 +342,56 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                             }}
                             pendingDeletes={pendingDeletes}
                         />
-                        {selectedAssembly !== undefined && (
-                            <ConfigModeSelection
-                                modes={modes}
-                                configMode={configMode}
-                                onModeSelected={mode => {
-                                    if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                                    setConfigMode(mode)
-                                }}
-                            />
-                        )}
-                        {ConfigSubPanel != null && (
-                            <ConfigSubPanel
-                                panel={panel!}
-                                selectedAssembly={selectedAssembly!}
-                                hasMadeChanges={hasMadeChanges}
-                                setDisableAccept={setDisableAccept}
-                                registerCleanupFunction={registerCleanupFunctions}
-                            />
-                        )}
-                        {configMode === undefined && selectedAssembly !== undefined && (
-                            <>
-                                <Spacer height={16} />
-                                <AssemblyExportButton selectedAssembly={selectedAssembly} />
-                                <Spacer height={16} />
-                                <Button
-                                    className={"w-full"}
-                                    color={"warning"}
-                                    onClick={() => {
-                                        closePanel(panel!.id, CloseType.ACCEPT)
-                                        selectedAssembly.resetPreferences()
-                                        globalAddToast(
-                                            "info",
-                                            "Preferences for " + selectedAssembly.descriptiveName + " reset"
-                                        )
-                                    }}
-                                >
-                                    Reset
-                                    <Spacer width={5} />
-                                    <FaArrowsRotate />
-                                </Button>
-                            </>
-                        )}
+
+                        {selectedAssembly !== undefined &&
+                            (!selectedAssembly.isOwnObject ? (
+                                <Label size={"sm"}>Cannot configure someone else's object</Label>
+                            ) : (
+                                <>
+                                    <ConfigModeSelection
+                                        modes={modes}
+                                        configMode={configMode}
+                                        onModeSelected={mode => {
+                                            if (configMode !== undefined)
+                                                EventSystem.dispatch("ConfigurationSavedEvent")
+                                            setConfigMode(mode)
+                                        }}
+                                    />
+
+                                    {ConfigSubPanel != null && (
+                                        <ConfigSubPanel
+                                            panel={panel!}
+                                            selectedAssembly={selectedAssembly}
+                                            setDisableAccept={setDisableAccept}
+                                            hasMadeChanges={hasMadeChanges}
+                                            registerCleanupFunction={registerCleanupFunctions}
+                                        />
+                                    )}
+                                    {configMode === undefined && (
+                                        <>
+                                            <Spacer height={16} />
+                                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
+                                            <Spacer height={16} />
+                                            <Button
+                                                className={"w-full"}
+                                                color={"warning"}
+                                                onClick={() => {
+                                                    closePanel(panel!.id, CloseType.ACCEPT)
+                                                    selectedAssembly.resetPreferences()
+                                                    globalAddToast(
+                                                        "info",
+                                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
+                                                    )
+                                                }}
+                                            >
+                                                Reset
+                                                <Spacer width={5} />
+                                                <FaArrowsRotate />
+                                            </Button>
+                                        </>
+                                    )}
+                                </>
+                            ))}
                     </>
                 )}
             </div>

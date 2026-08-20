@@ -1,6 +1,6 @@
 import * as THREE from "three"
 import World from "@/systems/World.ts"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
+import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import type { mirabuf } from "../proto/mirabuf"
 import type MirabufParser from "./MirabufParser.ts"
 import { ParseErrorSeverity } from "./MirabufParser.ts"
@@ -137,6 +137,7 @@ class MirabufInstance {
                         ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0]
                         : [0xe32b50, 1.0]
 
+                const isTransparent = opacity < 1.0
                 const material =
                     materialStyle === MaterialStyle.REGULAR
                         ? new THREE.MeshStandardMaterial({
@@ -146,7 +147,9 @@ class MirabufInstance {
                               metalness: appearance.metallic ?? 0.0,
                               shadowSide: THREE.DoubleSide,
                               opacity: opacity,
-                              transparent: opacity < 1.0,
+                              transparent: isTransparent,
+                              // Don't want transparent materials (driver station poly) to hide zones behind them
+                              depthWrite: !isTransparent,
                           })
                         : materialStyle === MaterialStyle.NORMAL
                           ? new THREE.MeshNormalMaterial()

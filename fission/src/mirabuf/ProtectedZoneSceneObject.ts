@@ -1,8 +1,7 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type * as THREE from "three"
-import * as Three from "three"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import ZoneSceneObject from "@/mirabuf/ZoneSceneObject"
+import ZoneSceneObject, { createZoneMaterial } from "@/mirabuf/ZoneSceneObject"
 import World from "@/systems/World"
 import type MirabufSceneObject from "./MirabufSceneObject"
 import { ContactType } from "./ZoneTypes"
@@ -18,18 +17,8 @@ type RobotBox = [MirabufSceneObject, Jolt.OrientedBox]
 type Collision = [MirabufSceneObject, MirabufSceneObject]
 
 class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences> {
-    public static readonly RED_MATERIAL = new Three.MeshPhongMaterial({
-        color: 0xff0000,
-        shininess: 0.0,
-        opacity: 0.8,
-        transparent: true,
-    })
-    public static readonly BLUE_MATERIAL = new Three.MeshPhongMaterial({
-        color: 0x0022ff,
-        shininess: 0.0,
-        opacity: 0.8,
-        transparent: true,
-    })
+    public static readonly RED_MATERIAL = createZoneMaterial(0xff0000, 0.8)
+    public static readonly BLUE_MATERIAL = createZoneMaterial(0x0022ff, 0.8)
 
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
     private _lastRobotCollisionTime: number = 0
@@ -64,7 +53,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
             this._robotBounding = robots.map(([_, b]) => renderOrientedBox(b))
         }
 
-        const robotsInZone = robots.filter(([_robot, bounding]) => this.bounding?.OverlapsOrientedBox(bounding))
+        const robotsInZone = robots.filter(([_, bounding]) => this.bounding?.OverlapsOrientedBox(bounding))
         const oldRobotsInZone = [...this._robotsInside.keys()]
 
         const { added, removed } = findListDifference(
@@ -133,7 +122,7 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
 
     private penalizeEnteringZone(robot: MirabufSceneObject) {
         if (robot.alliance !== this.prefs.alliance)
-            World.scoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone")
+            World.scoreTracker.robotPenalty(robot, this.prefs.penaltyPoints ?? 0, "Entered Protected Zone", false)
 
         this._robotsInside.set(robot, Date.now())
     }
@@ -153,7 +142,8 @@ class ProtectedZoneSceneObject extends ZoneSceneObject<ProtectedZonePreferences>
         World.scoreTracker.robotPenalty(
             opposingRobot,
             this.prefs?.penaltyPoints ?? 0,
-            `Contact penalty in protected zone`
+            `Contact penalty in protected zone`,
+            false
         )
     }
 

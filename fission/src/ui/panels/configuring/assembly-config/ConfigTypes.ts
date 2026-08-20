@@ -61,10 +61,12 @@ export enum ConfigMode {
     JOINTS,
     EJECTOR,
     INTAKE,
+    SENSORS,
     CONTROLS,
     SCORING_ZONES,
     PROTECTED_ZONES,
     CAMERA_POINTS,
+    SPAWN_POSITIONS,
     MOVE,
     SIM,
     BRAIN,
@@ -85,6 +87,8 @@ const baseRobotConfigModes = [
         ConfigMode.INTAKE,
         "Configure the robot’s intake position and parent node for picking up game pieces."
     ),
+
+    new ConfigModeSelectionOption("Sensors", ConfigMode.SENSORS, "Place sensors on your robot"),
 
     new ConfigModeSelectionOption(
         "Ejector",
@@ -136,6 +140,11 @@ export const fieldConfigModes = [
         "Protected Zones",
         ConfigMode.PROTECTED_ZONES,
         "Define and manage protected zones on the field where robots can not enter."
+    ),
+    new ConfigModeSelectionOption(
+        "Robot Spawn Positions",
+        ConfigMode.SPAWN_POSITIONS,
+        "Set where robots spawn for the default position and each alliance station."
     ),
     new ConfigModeSelectionOption(
         "Camera Positions",

@@ -1,8 +1,8 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { mirabuf } from "@/proto/mirabuf"
 import type { LayerReserve } from "./PhysicsSystem"
+import type { SceneObjectId } from "../scene/SceneRenderer"
 
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID
@@ -24,7 +24,7 @@ class Mechanism {
     public layerReserve?: LayerReserve
     public controllable: boolean
     public ghostBodies: Jolt.BodyID[] = []
-    public touchedObjects: MirabufSceneObject[] = [] // [SceneObjectKey, rootBodyId]
+    public touchedBodies: [SceneObjectId, RigidNodeId][] = []
 
     public constructor(
         rootBody: string,

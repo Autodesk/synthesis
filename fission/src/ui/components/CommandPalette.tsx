@@ -2,6 +2,7 @@ import { Box, List, ListItemButton, ListItemText, Paper, Stack, TextField } from
 import Fuse from "fuse.js"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import EventSystem from "@/systems/EventSystem"
 import World from "@/systems/World"
 import InputSystem from "@/systems/input/InputSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -20,7 +21,7 @@ function isTextInputTarget(target: EventTarget | null): boolean {
 }
 
 const CommandPalette: React.FC = () => {
-    const { addToast, modal } = useUIContext()
+    const { addToast, modal, blockState } = useUIContext()
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [query, setQuery] = useState<string>("")
@@ -37,10 +38,11 @@ const CommandPalette: React.FC = () => {
     }, [])
 
     const openPalette = useCallback(() => {
+        if (blockState.blocked) return
         setIsOpen(true)
         InputSystem.setCommandPaletteOpen(true)
         setTimeout(() => inputRef.current?.focus(), 0)
-    }, [])
+    }, [blockState])
 
     // Register command(s) not owned elsewhere
     useEffect(() => {
@@ -53,9 +55,9 @@ const CommandPalette: React.FC = () => {
                 perform: () => {
                     const dragSystem = World.dragModeSystem
                     if (!dragSystem) return
-                    dragSystem.enabled = !dragSystem.enabled
-                    const status = dragSystem.enabled ? "enabled" : "disabled"
-                    addToast("info", "Drag Mode", `Drag mode has been ${status}`)
+                    const enabled = !dragSystem.enabled
+                    EventSystem.dispatch("SetDragModeEvent", { enabled })
+                    addToast("info", "Drag Mode", `Drag mode has been ${enabled ? "enabled" : "disabled"}`)
                 },
             },
         ]

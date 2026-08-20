@@ -8,7 +8,7 @@ import EventSystem from "@/systems/EventSystem.ts"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import {
     Accordion,
     AccordionDetails,
@@ -98,7 +98,16 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void, ImportMirabufPanelCustom
     const [files, setFiles] = useState<Data[] | undefined>(undefined)
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back" }, {})
+        configureScreen(
+            panel!,
+            {
+                title: "Spawn Asset",
+                hideAccept: true,
+                cancelText: "Back",
+                exclusiveGroup: "assembly-init",
+            },
+            {}
+        )
     }, [configureScreen, panel])
 
     useEffect(() => {
