@@ -144,8 +144,8 @@ class InputSystem extends WorldSystem {
         for (let i = 0; i < InputSystem._gpIndexes.length; i++) {
             const lookupIndex = InputSystem._gpIndexes[i]
 
-            // If this slot is tracked and contains a valid number
-            if (lookupIndex !== null) {
+            // Safely verify the index is a valid number slot before querying rawGamepads
+            if (lookupIndex !== null && lookupIndex !== undefined) {
                 if (rawGamepads[lookupIndex] == null) {
                     InputSystem.gamepads[lookupIndex] = null
                 } else {
@@ -214,10 +214,9 @@ class InputSystem extends WorldSystem {
             )
         }
 
-        const newIndex = event.gamepad.index
-        if (!InputSystem._gpIndexes.includes(newIndex)) {
-            InputSystem._gpIndexes.push(newIndex)
-        }
+        const index = event.gamepad.index
+        InputSystem._gpIndexes[index] = index
+        InputSystem.gamepads[index] = event.gamepad
     }
 
     /* Called once when a gamepad is first disconnected */
@@ -225,7 +224,6 @@ class InputSystem extends WorldSystem {
         const index = event.gamepad.index
 
         InputSystem.gamepads[index] = null
-
         InputSystem._gpIndexes[index] = null
     }
 
@@ -323,20 +321,16 @@ class InputSystem extends WorldSystem {
     public static isGamepadButtonPressed(buttonNumber: number, playerSlot: number = 0): boolean {
         const targetGamepad = InputSystem.getGamepadBySlot(playerSlot)
         if (targetGamepad == null) return false
-
         if (buttonNumber < 0 || buttonNumber >= targetGamepad.buttons.length) return false
 
-        const button = targetGamepad.buttons[buttonNumber]
-        if (button == null) return false
-
-        return button.pressed
+        return targetGamepad.buttons[buttonNumber].pressed
     }
 
     /**
-     * @returns {number} The number of currently connected gamepads, effectively all useable slots
+     * @returns {number} The true number of currently connected, usable gamepads.
      */
     public static getConnectedPlayerCount(): number {
-        return InputSystem._gpIndexes.length
+        return InputSystem._gpIndexes.filter(index => index !== null && index !== undefined).length
     }
 
     /** Returns a number between -1 and 1 from the touch controls */
