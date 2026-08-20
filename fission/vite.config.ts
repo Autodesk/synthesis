@@ -57,17 +57,25 @@ type ProxyOptions = Proxies[string]
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }): ViteUserConfig => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
-    const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
+    process.env.VITE_MULTIPLAYER_PORT = mode === "test" ? "3001" : "9002"
+    // @vitest/browser spawns its vite server with mode "test" for `vitest test` and
+    // "benchmark" for `vitest bench`; both should use local assets when available
+    // (private mirabuf assets such as Multi-Joint Wheels only exist locally).
+    const useLocalAssets =
+        localAssetsExist && (mode === "test" || mode === "benchmark" || process.env.NODE_ENV == "development")
 
-    if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")) {
+    if (!localAssetsExist && mode !== "production") {
         console.warn("Can't find local assets, do you need to run `npm run assetpack`?")
     }
     console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
 
     const proxies: Proxies = {}
+    // In dev mode NODE_ENV is "development"; in vitest (test or bench) it is "test"
+    // regardless of what mode @vitest/browser uses when spawning the browser vite server.
+    const localAssetPort = process.env.NODE_ENV === "development" ? serverPort : 3001
     const assetProxy: ProxyOptions = useLocalAssets
         ? {
-              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
+              target: `http://localhost:${localAssetPort}`,
               changeOrigin: true,
               secure: false,
               rewrite: path => path.replace(/^\/api/, "/Downloadables"),
@@ -105,7 +113,22 @@ export default defineConfig(({ mode }): ViteUserConfig => {
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
-            environment: "jsdom",
+            environment: "node",
+            reporters: process.env.GITHUB_ACTIONS
+                ? [
+                      "github-actions",
+                      "default",
+                      {
+                          onTestRunEnd(_modules: unknown, unhandled: unknown[], reason: TestRunEndReason) {
+                              if (reason === "passed" && unhandled.length === 0) {
+                                  console.error("GH ACTIONS VITEST PASSED")
+                              } else {
+                                  console.error(unhandled)
+                              }
+                          },
+                      },
+                  ]
+                : ["default"],
             browser: {
                 enabled: true,
                 provider: "playwright",

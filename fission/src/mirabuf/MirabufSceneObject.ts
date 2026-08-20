@@ -31,7 +31,7 @@ import {
 } from "@/systems/scene/CameraControls"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type Brain from "@/systems/simulation/Brain"
-import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
+import type { SimConfigData } from "@/systems/simulation/wiring/SimGraph"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
