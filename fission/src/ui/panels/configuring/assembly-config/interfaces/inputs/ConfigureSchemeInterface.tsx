@@ -1,6 +1,6 @@
 import { Divider, Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useReducer, useRef, useState } from "react"
+import { useCallback, useEffect, useReducer } from "react"
 import Checkbox from "@/components/Checkbox.tsx"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -25,9 +25,6 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
     onBack,
     registerCleanupFunction,
 }) => {
-    const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
-    const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
-    const scrollRef = useRef<HTMLDivElement>(null)
     const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes(panelId)
@@ -48,29 +45,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
         })
     }, [registerCleanupFunction, selectedScheme])
 
-    useEffect(() => {
-        return EventSystem.listen("ConfigurationSavedEvent", saveEvent)
-    }, [saveEvent])
-
-    /** Disable scrolling with arrow keys to stop accidentally scrolling when binding keys */
-    useEffect(() => {
-        const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-            if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-                event.preventDefault()
-            }
-        }
-
-        const scrollElement = scrollRef.current
-        if (scrollElement) {
-            scrollElement.addEventListener("keydown", handleKeyDown as unknown as EventListener)
-        }
-
-        return () => {
-            if (scrollElement) {
-                scrollElement.removeEventListener("keydown", handleKeyDown as unknown as EventListener)
-            }
-        }
-    }, [])
+    useEffect(() => EventSystem.listen("ConfigurationSavedEvent", saveEvent), [saveEvent])
 
     return (
         <>
@@ -96,49 +71,47 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({
             {/** Toggle the input scheme between controller and keyboard mode */}
             <Checkbox
                 label="Use Controller"
-                checked={useGamepad}
+                tooltip="Supported controllers: Xbox one, Xbox 360."
+                checked={selectedScheme.usesGamepad}
                 onClick={val => {
-                    setUseGamepad(val)
-                    if (val) {
-                        setUseTouchControls(false)
-                        selectedScheme.usesTouchControls = false
-                    }
+                    if (val) selectedScheme.usesTouchControls = false
                     selectedScheme.usesGamepad = val
                     selectedScheme.customized = true
+                    update()
                 }}
-                tooltip="Supported controllers: Xbox one, Xbox 360."
             />
             <Checkbox
                 label="Use Touch Controls"
-                checked={useTouchControls}
+                tooltip="Enable on-screen touch controls (only for mobile devices)."
+                checked={selectedScheme.usesTouchControls}
                 onClick={val => {
-                    setUseTouchControls(val)
-                    if (val) {
-                        setUseGamepad(false)
-                        selectedScheme.usesGamepad = false
-                    }
+                    if (val) selectedScheme.usesGamepad = false
                     selectedScheme.usesTouchControls = val
                     selectedScheme.customized = true
+                    update()
                 }}
-                tooltip="Enable on-screen touch controls (only for mobile devices)."
             />
             <Divider />
 
             {/* Inputs list (let parent panel handle scrolling to avoid double scrollbars) */}
-            <Stack ref={scrollRef} gap={2}>
-                {selectedScheme.inputs.map((i: Input) => {
-                    return (
-                        <EditInputInterface
-                            key={i.inputName}
-                            input={i}
-                            useGamepad={useGamepad}
-                            useTouchControls={useTouchControls}
-                            onInputChanged={() => {
-                                selectedScheme.customized = true
-                            }}
-                        />
-                    )
-                })}
+            <Stack
+                gap={2}
+                onKeyDown={event => {
+                    // Disable scrolling with arrow keys to stop accidentally scrolling when binding keys
+                    if (event.key === "ArrowUp" || event.key === "ArrowDown") event.preventDefault()
+                }}
+            >
+                {selectedScheme.inputs.map((i: Input) => (
+                    <EditInputInterface
+                        key={i.inputName}
+                        input={i}
+                        useGamepad={selectedScheme.usesGamepad}
+                        useTouchControls={selectedScheme.usesTouchControls}
+                        onInputChanged={() => {
+                            selectedScheme.customized = true
+                        }}
+                    />
+                ))}
                 <Button
                     onClick={() => {
                         const existingJointIndexes = selectedScheme.inputs
