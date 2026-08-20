@@ -139,8 +139,9 @@ class InputSystem extends WorldSystem {
     }
 
     public update(_: number): void {
-        const rawGamepads = navigator.getGamepads()
+    const rawGamepads = navigator.getGamepads();
 
+<<<<<<< HEAD
         for (let i = 0; i < InputSystem._gpIndexes.length; i++) {
             const lookupIndex = InputSystem._gpIndexes[i]
 
@@ -151,8 +152,20 @@ class InputSystem extends WorldSystem {
                 } else {
                     InputSystem.gamepads[lookupIndex] = rawGamepads[lookupIndex]
                 }
+=======
+    for (let i = 0; i < InputSystem._gpIndexes.length; i++) {
+        const lookupIndex = InputSystem._gpIndexes[i];
+        
+        // If this slot is tracked and contains a valid number
+        if (lookupIndex !== null) {
+            if (rawGamepads[lookupIndex] == null) {
+                InputSystem.gamepads[lookupIndex] = null;
+            } else {
+                InputSystem.gamepads[lookupIndex] = rawGamepads[lookupIndex];
+>>>>>>> parent of e8f870b3f (format:fix)
             }
         }
+    }
 
         if (!document.hasFocus()) this.clearKeyData()
 
@@ -221,11 +234,19 @@ class InputSystem extends WorldSystem {
 
     /* Called once when a gamepad is first disconnected */
     private gamepadDisconnected(event: GamepadEvent) {
-        const index = event.gamepad.index
+    const index = event.gamepad.index;
+    
+    InputSystem.gamepads[index] = null;
+    
+    InputSystem._gpIndexes[index] = null;
+}
 
+<<<<<<< HEAD
         InputSystem.gamepads[index] = null
         InputSystem._gpIndexes[index] = null
     }
+=======
+>>>>>>> parent of e8f870b3f (format:fix)
 
     /**
      * @param {string} key - The keycode of the target key.
@@ -281,10 +302,11 @@ class InputSystem extends WorldSystem {
 
     /** @returns An array of all currently connected, active Gamepad objects. */
     public static getConnectedGamepads(): Gamepad[] {
-        return this._gpIndexes
-            .map(index => (index !== null ? this.gamepads[index] : null))
-            .filter((gamepad): gamepad is Gamepad => gamepad != null)
-    }
+    return this._gpIndexes
+        .map(index => index !== null ? this.gamepads[index] : null)
+        .filter((gamepad): gamepad is Gamepad => gamepad != null)
+}
+
 
     /**
      * @param {number} playerSlot The logical player slot.
