@@ -114,13 +114,13 @@ describe("PhysicsSystem — assembly spawn", () => {
     // createMechanismFromParser allocates a LayerReserve (one of 8 robot slots).
     // destroyMechanism removes bodies and constraints but does not release the slot,
     // so we do it manually to keep the pool from exhausting across iterations.
-    bench("spawn + destroy Dozer (7 bodies, 6 joints)", () => {
+    bench("spawn + destroy Dozer", () => {
         const mech = spawnSystemDozer.createMechanismFromParser(dozerParser)
         spawnSystemDozer.destroyMechanism(mech)
         mech.layerReserve?.release()
     })
 
-    bench("spawn + destroy Multi-Joint Wheels (9 bodies, 8 joints)", () => {
+    bench("spawn + destroy Multi-Joint Wheels", () => {
         const mech = spawnSystemMultiJoint.createMechanismFromParser(multiJointParser)
         spawnSystemMultiJoint.destroyMechanism(mech)
         mech.layerReserve?.release()
