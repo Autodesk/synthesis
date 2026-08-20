@@ -36,19 +36,13 @@ public class ExampleDozerAutoDrive extends LinearOpMode {
                 currentState = DriveState.DRIVE_FORWARD;
             }
 
-            switch (currentState) {
-                case DRIVE_FORWARD:
-                    setAllPower(leftFront, leftMiddle, leftBack, rightFront, rightMiddle, rightBack, 0.5);
-                    break;
+            double power = switch (currentState) {
+                case DRIVE_FORWARD -> 0.5;
+                case DRIVE_BACKWARD -> -0.5;
+                case STOPPED -> 0.0;
+            };
 
-                case DRIVE_BACKWARD:
-                    setAllPower(leftFront, leftMiddle, leftBack, rightFront, rightMiddle, rightBack, -0.5);
-                    break;
-
-                case STOPPED:
-                    setAllPower(leftFront, leftMiddle, leftBack, rightFront, rightMiddle, rightBack, 0.0);
-                    break;
-            }
+            setAllPower(leftFront, leftMiddle, leftBack, rightFront, rightMiddle, rightBack, power);
         }
     }
 
