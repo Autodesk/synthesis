@@ -273,7 +273,8 @@ describe("Gamepad Input Check", () => {
     test("Disconnect event", () => {
         // The connection event is implicitly tested by registering a fake gamepad
         window.dispatchEvent(Object.assign(new Event("gamepaddisconnected"), { gamepad: fakeGamepad }))
-        expect(InputSystem["_gpIndexes"]).toHaveLength(0)
+        expect(InputSystem["_gpIndexes"][0]).toBeNull()
+        expect(InputSystem.getConnectedPlayerCount()).toBe(0)
     })
 
     test("Get input with gamepad scheme", () => {
