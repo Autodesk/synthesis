@@ -1,6 +1,6 @@
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type WPILibBrain from "./WPILibBrain"
-import { FTC_WS_URL, type SimMap, SimType, WPILIB_WS_URL, worker } from "./WPILibTypes"
+import { FTC_WS_URL, type SimMap, WPILIB_WS_URL, worker } from "./WPILibTypes"
 
 export const simMaps = new Map<string, SimMap>()
 

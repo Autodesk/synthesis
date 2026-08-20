@@ -184,9 +184,9 @@ const TopBar: React.FC = () => {
                     {hasSimBrain() && (
                         <>
                             <CodeConnectionIndicator
-                            label={getSimBrain()?.brainType === "ftc" ? "FTC code connection" : "Code connection"}
-                            getIsConnected={getIsConnected}
-                        />
+                                label={getSimBrain()?.brainType === "ftc" ? "FTC code connection" : "Code connection"}
+                                getIsConnected={getIsConnected}
+                            />
                             <Box sx={TOP_BAR_DIVIDER_SX} />
                         </>
                     )}
