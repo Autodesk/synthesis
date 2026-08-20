@@ -247,7 +247,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     const name =
                         this.nameOverride ??
                         (this._brain?.isSynthesis()
-                            ? (this._brain as any).inputSchemeLabel
+                            ? (this._brain as SynthesisBrain).inputSchemeLabel
                             : this._brain?.isWPILib()
                               ? "Magic"
                               : "Not Configured!")
