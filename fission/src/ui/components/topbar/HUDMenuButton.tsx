@@ -4,6 +4,8 @@ import { IconButton } from "@/ui/components/StyledComponents"
 import { TOP_BAR_ICON_BUTTON_SX } from "@/ui/components/topbar/TopBarConfig"
 import { TopBarIcon, type TopBarIconName } from "@/ui/components/topbar/TopBarIcons"
 
+export const HUD_MENU_ICON_SIZE = "clamp(32px, min(10vw, 12vh), 56px)"
+
 type HUDMenuButtonProps = {
     label: string
     onClick: () => void
@@ -23,7 +25,7 @@ export const HUDMenuButton: FC<HUDMenuButtonProps> = ({
     onClick,
     iconName,
     icon,
-    iconSize = "clamp(32px, min(10vw, 12vh), 56px)",
+    iconSize = HUD_MENU_ICON_SIZE,
     disabled = false,
     disabledTooltip,
 }) => {

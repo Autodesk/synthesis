@@ -92,7 +92,7 @@ class DragModeSystem extends WorldSystem {
                 this.handleWheelDuringDrag(event)
             }
         }
-        this._unsubscriber = EventSystem.listen("DragModeToggled", ({ enabled }) => {
+        this._unsubscriber = EventSystem.listen("SetDragModeEvent", ({ enabled }) => {
             this.enabled = enabled
         })
     }
@@ -101,6 +101,7 @@ class DragModeSystem extends WorldSystem {
         return this._enabled
     }
 
+    /** toggle using SetDragModeEvent. Not this */
     public set enabled(enabled: boolean) {
         if (this._enabled === enabled) return
 
@@ -123,8 +124,6 @@ class DragModeSystem extends WorldSystem {
                 this._dragModeStartTime = undefined
             }
         }
-
-        EventSystem.dispatch("DragModeToggled", { enabled })
     }
 
     public update(_deltaT: number): void {
@@ -358,8 +357,22 @@ class DragModeSystem extends WorldSystem {
     private stopDragging(): void {
         if (!this._isDragging) return
 
+        let targetSceneObject: MirabufSceneObject | undefined
+        let shouldTransition = true
+
+        if (this._dragTarget) {
+            const association = World.physicsSystem.getBodyAssociation(this._dragTarget.bodyId) as RigidNodeAssociate
+            targetSceneObject = association?.sceneObject
+            if (association?.isGamePiece) {
+                shouldTransition = false
+            }
+        }
+
         if (this._dragTarget?.physicsDisabled) {
-            World.physicsSystem.enablePhysicsForBody(this._dragTarget.bodyId)
+            World.physicsSystem.enablePhysicsForBody(
+                this._dragTarget.bodyId,
+                targetSceneObject?.mechanism.layerReserve?.layer
+            )
         } else if (this._dragTarget) {
             const body = World.physicsSystem.getBody(this._dragTarget.bodyId)
             if (body) {
@@ -384,17 +397,6 @@ class DragModeSystem extends WorldSystem {
 
                 JOLT.destroy(stopBrakingForce)
                 JOLT.destroy(angularStopTorque)
-            }
-        }
-
-        let targetSceneObject: MirabufSceneObject | undefined
-        let shouldTransition = true
-
-        if (this._dragTarget) {
-            const association = World.physicsSystem.getBodyAssociation(this._dragTarget.bodyId) as RigidNodeAssociate
-            targetSceneObject = association?.sceneObject
-            if (association?.isGamePiece) {
-                shouldTransition = false
             }
         }
 
@@ -427,6 +429,9 @@ class DragModeSystem extends WorldSystem {
         if (!this._dragTarget.physicsDisabled && !body.IsActive()) {
             World.physicsSystem.activateBody(this._dragTarget.bodyId)
         }
+
+        const compensateGravity =
+            DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_COMPENSATION && !this._dragTarget.physicsDisabled
 
         const currentPos = body.GetPosition()
         const currentPosition = new THREE.Vector3(currentPos.GetX(), currentPos.GetY(), currentPos.GetZ())
@@ -509,7 +514,7 @@ class DragModeSystem extends WorldSystem {
             const forceNeeded = velocityError.multiplyScalar(forceMultiplier)
 
             // Add gravity compensation to counteract downward pull
-            if (DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_COMPENSATION) {
+            if (compensateGravity) {
                 const gravityCompensation = new THREE.Vector3(
                     0,
                     mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE,
@@ -559,7 +564,7 @@ class DragModeSystem extends WorldSystem {
             )
 
             // Add gravity compensation to prevent falling when stationary
-            if (DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_COMPENSATION) {
+            if (compensateGravity) {
                 const gravityCompensationY = mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE
                 brakingForce.SetY(brakingForce.GetY() + gravityCompensationY)
             }

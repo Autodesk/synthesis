@@ -11,7 +11,6 @@ import { UIRenderer } from "@/ui/UIRenderer.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
-import DragModeIndicator from "@/components/overlays/DragModeIndicator.tsx"
 import ProgressNotifications from "@/components/ProgressNotification.tsx"
 import SceneOverlay from "@/components/overlays/SceneOverlay.tsx"
 import PortraitOverlay from "@/components/overlays/PortraitOverlay.tsx"
@@ -109,7 +108,6 @@ const Synthesis = () => {
                             <CommandPalette />
                             <ProgressNotifications key={"progress-notifications"} />
                             <Stack direction={"column"} gap={1} position={"absolute"} bottom={0} left={0}>
-                                <DragModeIndicator />
                                 <MultiplayerHUD />
                             </Stack>
                             <PortraitOverlay />

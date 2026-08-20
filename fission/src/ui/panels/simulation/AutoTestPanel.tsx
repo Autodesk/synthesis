@@ -276,7 +276,7 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                     label="Game Data"
                     placeholder="..."
                     defaultValue={gameData}
-                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => setGameData(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGameData(e.target.value)}
                 />
             </Stack>
             <Stack>

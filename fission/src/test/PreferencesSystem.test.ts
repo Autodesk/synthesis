@@ -25,17 +25,17 @@ describe("Preferences System Global Values", () => {
     test("Setting values", () => {
         PreferencesSystem.setUserPreference("SceneRotationSensitivity", 7)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         expect(PreferencesSystem.getUserPreference("SceneRotationSensitivity")).toBe(7)
         expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(false)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
+        expect(PreferencesSystem.getUserPreference("ShowViewCube")).toBe(false)
     })
 
     test("Setting without saving", () => {
         PreferencesSystem.setUserPreference("SceneRotationSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("RenderScoreboard", true)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         window.localStorage.setItem("Preferences", "{}") // Clears local storage
         PreferencesSystem.loadPreferences()
@@ -46,7 +46,7 @@ describe("Preferences System Global Values", () => {
     test("Reset to default if undefined", () => {
         PreferencesSystem.setUserPreference("SceneRotationSensitivity", undefined as unknown as number)
         PreferencesSystem.setUserPreference("RenderSceneTags", undefined as unknown as boolean)
-        PreferencesSystem.setUserPreference("RenderScoreboard", undefined as unknown as boolean)
+        PreferencesSystem.setUserPreference("ShowViewCube", undefined as unknown as boolean)
 
         expectDefaultPreferences()
     })
@@ -54,23 +54,23 @@ describe("Preferences System Global Values", () => {
     test("Setting then saving", () => {
         PreferencesSystem.setUserPreference("SceneRotationSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", true)
-        PreferencesSystem.setUserPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         PreferencesSystem.savePreferences()
         PreferencesSystem.setUserPreference("SceneRotationSensitivity", 20)
         PreferencesSystem.setUserPreference("RenderSceneTags", false)
-        PreferencesSystem.setUserPreference("RenderScoreboard", true)
+        PreferencesSystem.setUserPreference("ShowViewCube", true)
         PreferencesSystem.loadPreferences()
 
         expect(PreferencesSystem.getUserPreference("SceneRotationSensitivity")).toBe(13)
         expect(PreferencesSystem.getUserPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getUserPreference("RenderScoreboard")).toBe(false)
+        expect(PreferencesSystem.getUserPreference("ShowViewCube")).toBe(false)
     })
 
     test("Clearing preferences", () => {
         PreferencesSystem.setUserPreference("SceneRotationSensitivity", 13)
         PreferencesSystem.setUserPreference("RenderSceneTags", true)
-        PreferencesSystem.setUserPreference("RenderScoreboard", false)
+        PreferencesSystem.setUserPreference("ShowViewCube", false)
 
         PreferencesSystem.clearPreferences()
 
@@ -124,6 +124,7 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 ejectOrder: "FIFO",
             },
+            sensors: [],
             cameras: [],
             driveVelocity: 3,
             driveAcceleration: 6,
@@ -146,6 +147,7 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 ejectOrder: "LIFO",
             },
+            sensors: [],
             cameras: [],
             driveVelocity: 1.5,
             driveAcceleration: 8,

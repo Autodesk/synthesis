@@ -1,8 +1,8 @@
 import type { mirabuf } from "@/proto/mirabuf"
 import type { MechanismConstraint } from "@/systems/physics/Mechanism"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import type { NoraType, NoraTypes } from "../Nora"
 import type { SimReceiver } from "../wpilib_brain/SimDataFlow"
+import { type NoraType, type NoraValue, valueMatchesType, type NoraValueOf, serializeNoraType } from "../Nora"
 
 export enum DriverType {
     HINGE = "Driv_Hinge",
@@ -40,7 +40,7 @@ export function makeDriverID(constraint: MechanismConstraint): DriverID {
     }
 }
 
-abstract class Driver implements SimReceiver {
+abstract class Driver<T extends NoraType = NoraType> implements SimReceiver<T> {
     private _id: DriverID
     private _info?: mirabuf.IInfo
 
@@ -63,8 +63,24 @@ abstract class Driver implements SimReceiver {
         return this._info
     }
 
-    public abstract setReceiverValue(val: NoraType): void
-    public abstract getReceiverType(): NoraTypes
+    public abstract get receiverType(): T
+
+    public setReceiverValue(val: NoraValue): void {
+        if (!valueMatchesType(val, this.receiverType))
+            throw new Error(
+                `${this.displayName()}: value of length ${val.length} does not match receiver type ${serializeNoraType(this.receiverType)}`
+            )
+
+        this.receiveValue(val as NoraValueOf<T>)
+    }
+
+    /**
+     * SAFETY: When overriding, it's okay to cast `val` to the right type, since `setReceiverValue` checks it
+     *
+     * NOTE: remember that NoraValue is an array comprised of all associated base values
+     */
+    protected abstract receiveValue(val: NoraValueOf<T>): void
+
     public abstract displayName(): string
 }
 

@@ -3,25 +3,35 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { ConfigMode, type ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import type { TopBarIconName } from "@/ui/components/topbar/TopBarIcons"
+import type { ConfigureIconSource } from "@/ui/components/topbar/ConfigureIcon"
 
-export type ConfigureButton = { name: TopBarIconName; label: string; mode: ConfigMode }
+export type ConfigureButton = { icon: ConfigureIconSource; label: string; mode: ConfigMode }
+
+const MOVE_CONFIGURE_BUTTON: ConfigureButton = {
+    icon: { glyph: SynthesisIcons.MOVE },
+    label: "Move",
+    mode: ConfigMode.MOVE,
+}
 
 export const ROBOT_CONFIGURE_BUTTONS: ConfigureButton[] = [
-    { name: "cfg-1", label: "Controls", mode: ConfigMode.CONTROLS },
-    { name: "cfg-2", label: "Drivetrain", mode: ConfigMode.DRIVETRAIN },
-    { name: "cfg-3", label: "Intake", mode: ConfigMode.INTAKE },
-    { name: "cfg-4", label: "Ejector", mode: ConfigMode.EJECTOR },
-    { name: "cfg-5", label: "Joints", mode: ConfigMode.JOINTS },
-    { name: "cfg-6", label: "Alliance / Station", mode: ConfigMode.ALLIANCE },
+    MOVE_CONFIGURE_BUTTON,
+    { icon: { sprite: "cfg-controls" }, label: "Controls", mode: ConfigMode.CONTROLS },
+    { icon: { sprite: "cfg-drivetrain" }, label: "Drivetrain", mode: ConfigMode.DRIVETRAIN },
+    { icon: { sprite: "cfg-intake" }, label: "Intake", mode: ConfigMode.INTAKE },
+    { icon: { sprite: "cfg-ejector" }, label: "Ejector", mode: ConfigMode.EJECTOR },
+    { icon: { sprite: "cfg-joints" }, label: "Joints", mode: ConfigMode.JOINTS },
+    { icon: { sprite: "cfg-alliance" }, label: "Alliance / Station", mode: ConfigMode.ALLIANCE },
 ]
 
 export const FIELD_CONFIGURE_BUTTONS: ConfigureButton[] = [
-    { name: "cfg-8", label: "Scoring Zones", mode: ConfigMode.SCORING_ZONES },
-    { name: "cfg-7", label: "Protected Zones", mode: ConfigMode.PROTECTED_ZONES },
+    MOVE_CONFIGURE_BUTTON,
+    { icon: { sprite: "cfg-scoring-zones" }, label: "Scoring Zones", mode: ConfigMode.SCORING_ZONES },
+    { icon: { sprite: "cfg-protected-zones" }, label: "Protected Zones", mode: ConfigMode.PROTECTED_ZONES },
+    { icon: { sprite: "cfg-camera-positions" }, label: "Camera Positions", mode: ConfigMode.CAMERA_POINTS },
 ]
 
 const readSpawned = (): MirabufSceneObject[] =>
