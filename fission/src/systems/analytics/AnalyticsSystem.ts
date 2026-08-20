@@ -51,10 +51,8 @@ export type UIInteractionType =
     | "Configure Dropdown"
     | "Command Palette Command"
 
-export type DrivetrainConfigSource = "Assembly Setup" | "Drivetrain Config"
-
-/** Whether the client created the room or joined an existing one */
-export type MultiplayerRole = "Host" | "Client"
+/** How a multiplayer session ended. Shared with MultiplayerSystem, which reports it */
+export type MultiplayerSessionEndOutcome = "User Exit" | "Disconnected"
 
 export type MatchEvent = {
     matchName: string
@@ -138,22 +136,30 @@ export interface AnalyticsEvents {
     "Drivetrain Configured": {
         driveType: DriveType
         robotCentric: boolean
-        source: DrivetrainConfigSource
+        source: "Assembly Setup" | "Drivetrain Config"
     }
 
     // Multiplayer Events
     "Multiplayer Session Start": {
-        role: MultiplayerRole
+        /** Whether the client created the room or joined an existing one */
+        role: "Host" | "Client"
         outcome: "Success" | "Failure"
     }
     // Doesn't get called when the user closes the tab
     "Multiplayer Session End": {
-        outcome: "User Exit" | "Disconnected"
+        outcome: MultiplayerSessionEndOutcome
         durationSeconds: number
         /** Most people in the room at once, including this client */
         peakPlayers: number
         /** Mean one way latency across the session's pings, -1 when no ping ever completed */
         avgLatencyMS: number
+    }
+
+    // Code Simulation Events
+    "Code Sim Connected": unknown
+    "Code Sim Connection Failed": unknown
+    "Code Sim Disconnected": {
+        durationSeconds: number
     }
 }
 

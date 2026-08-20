@@ -12,6 +12,7 @@ import { mirabuf } from "@/proto/mirabuf"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 import MatchMode from "../match_mode/MatchMode.ts"
 import type { MultiplayerCommunicationProvider } from "@/systems/multiplayer/MultiplayerCommunicationInterface.ts"
+import type { MultiplayerSessionEndOutcome } from "@/systems/analytics/AnalyticsSystem.ts"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -368,7 +369,7 @@ class MultiplayerSystem {
         return time + this._clientTimeDeltaMS
     }
 
-    private reportSessionEnd(outcome: "User Exit" | "Disconnected") {
+    private reportSessionEnd(outcome: MultiplayerSessionEndOutcome) {
         if (this._info.creationTime == null || this._sessionEndReported) return
         this._sessionEndReported = true
 
@@ -380,7 +381,7 @@ class MultiplayerSystem {
         })
     }
 
-    public destroy(outcome: "User Exit" | "Disconnected" = "User Exit") {
+    public destroy(outcome: MultiplayerSessionEndOutcome = "User Exit") {
         this.reportSessionEnd(outcome)
         this.client.close()
         World.setMultiplayerSystem(undefined)
