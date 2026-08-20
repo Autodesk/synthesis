@@ -13,6 +13,8 @@ import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { tourTarget } from "@/ui/tour/TourSteps"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import { Box, Stack } from "@mui/material"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -23,6 +25,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     // TODO: can we pass these as custom props?
     const { setSelectedScheme } = useStateContext()
     const { configureScreen, closePanel } = useUIContext()
+    const assemblySetupRef = useTourAnchor("assembly-setup")
 
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
@@ -39,6 +42,11 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
     const drivetrainReported = useRef(false)
 
     useHoldPhysicsPause()
+
+    // The Add Assembly button keeps DOM focus after spawning, so Enter would reopen the Library.
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+    }, [])
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
@@ -165,10 +173,17 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 />
             )}
             {brainIndex !== undefined && (
-                <InputSchemeSelection brainIndex={brainIndex} onSelect={() => {}} panelId={panel?.id} />
+                // Tour anchor for the "Set Up Your Assembly" step. Scoped to just the input-scheme
+                // list (the card's subject) rather than the panel root, whose bounding box is
+                // widened by the transform gizmo control and would push the callout off-screen.
+                <Box ref={assemblySetupRef}>
+                    <InputSchemeSelection brainIndex={brainIndex} onSelect={() => {}} panelId={panel?.id} />
+                </Box>
             )}
         </Stack>
     )
 }
+
+tourTarget(InitialConfigPanel, "InitialConfigPanel")
 
 export default InitialConfigPanel

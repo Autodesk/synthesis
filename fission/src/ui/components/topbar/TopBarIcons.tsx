@@ -43,26 +43,30 @@ const ICON_SVGS: Record<string, SVGSVGElement | null> = Object.fromEntries(
     Object.entries(ICON_MARKUP).map(([path, markup]) => [path, parseSvgMarkup(markup)])
 )
 
-export const TOP_BAR_ICONS = {
-    "mode-configure": "mode-configure.svg",
-    "mode-codesim": "mode-codesim.svg",
-    "mode-gameplay": "mode-gameplay.svg",
-    add: "add-icon.svg",
-    settings: "settings.svg",
-    login: "adsk-login.svg",
-    "cfg-1": "cfg-controls.svg",
-    "cfg-2": "cfg-drivetrain.svg",
-    "cfg-3": "cfg-intake.svg",
-    "cfg-4": "cfg-ejector.svg",
-    "cfg-5": "cfg-joints.svg",
-    "cfg-6": "cfg-alliance.svg",
-    "cfg-7": "cfg-protected-zones.svg",
-    "cfg-8": "cfg-scoring-zones.svg",
-    "gp-1": "gp-multiplayer.svg",
-    "gp-2": "gp-match-mode.svg",
-} as const
+export const TOP_BAR_ICON_NAMES = [
+    "mode-configure",
+    "mode-codesim",
+    "mode-gameplay",
+    "add",
+    "settings",
+    "login",
+    "cfg-controls",
+    "cfg-drivetrain",
+    "cfg-intake",
+    "cfg-ejector",
+    "cfg-joints",
+    "cfg-alliance",
+    "cfg-protected-zones",
+    "cfg-scoring-zones",
+    "cfg-camera-positions",
+    "gp-multiplayer",
+    "gp-match-mode",
+    "gp-match-mode-abort",
+] as const
 
-export type TopBarIconName = keyof typeof TOP_BAR_ICONS
+export type TopBarIconName = (typeof TOP_BAR_ICON_NAMES)[number]
+
+export const topBarIconPath = (name: TopBarIconName) => `./icons/${name}.svg`
 
 export const TopBarIcon: FC<{ name: TopBarIconName; size?: number | string; className?: string }> = ({
     name,
@@ -70,7 +74,7 @@ export const TopBarIcon: FC<{ name: TopBarIconName; size?: number | string; clas
     className,
 }) => {
     const hostRef = useRef<HTMLSpanElement | null>(null)
-    const iconSvg = useMemo(() => ICON_SVGS[`./icons/${TOP_BAR_ICONS[name]}`], [name])
+    const iconSvg = useMemo(() => ICON_SVGS[topBarIconPath(name)], [name])
 
     useEffect(() => {
         if (!hostRef.current) return

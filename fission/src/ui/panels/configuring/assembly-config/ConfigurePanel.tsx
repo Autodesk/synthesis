@@ -22,6 +22,7 @@ import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import ConfigureGamepieceIntakeInterface from "./interfaces/ConfigureGamepieceIntakeInterface.tsx"
 import ConfigureGamepieceEjectorInterface from "./interfaces/ConfigureGamepieceEjectorInterface.tsx"
 import ConfigureJointsInterface from "./interfaces/ConfigureJointsInterface"
+import ConfigureSensorsInterface from "./interfaces/sensors/ConfigureSensorsInterface"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
@@ -31,7 +32,9 @@ import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProt
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import { Tab, Tabs, type TabsActions } from "@mui/material"
+import { Box, Tab, Tabs, type TabsActions } from "@mui/material"
+import { tourTarget } from "@/ui/tour/TourSteps"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
@@ -152,6 +155,7 @@ const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
     [ConfigMode.EJECTOR]: ConfigureGamepieceEjectorInterface,
     [ConfigMode.INTAKE]: ConfigureGamepieceIntakeInterface,
     [ConfigMode.CAMERA]: ConfigureCameraInterface,
+    [ConfigMode.SENSORS]: ConfigureSensorsInterface,
     [ConfigMode.CONTROLS]: ControlsConfigInterface,
     [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface,
     [ConfigMode.PROTECTED_ZONES]: ConfigureProtectedZonesInterface,
@@ -167,6 +171,8 @@ const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
     const { configureScreen, closePanel, addToast } = useUIContext()
+    const configurePanelRef = useTourAnchor("configure-panel")
+
     const {
         configMode: initialConfigMode,
         selectedAssembly: initialSelectedAssembly,
@@ -305,7 +311,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     }, [configMode, selectedAssembly])
 
     return (
-        <>
+        <Box ref={configurePanelRef}>
             <Tabs
                 action={tabsActionsRef}
                 value={configurationType}
@@ -393,8 +399,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     </>
                 )}
             </div>
-        </>
+        </Box>
     )
 }
+
+tourTarget(ConfigurePanel, "ConfigurePanel")
 
 export default ConfigurePanel

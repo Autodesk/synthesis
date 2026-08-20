@@ -55,7 +55,7 @@ import { GrConnect } from "react-icons/gr"
 import { HiDownload, HiUser } from "react-icons/hi"
 import { IoMdArrowDropdown } from "react-icons/io"
 import { IoCheckmark, IoPencil, IoPeople, IoPlayOutline, IoTrashBin } from "react-icons/io5"
-import { MdExpandMore, MdFitScreen, MdZoomInMap, MdZoomOutMap, MdCode, MdCodeOff } from "react-icons/md"
+import { MdExpandMore, MdFitScreen, MdZoomInMap, MdZoomOutMap, MdCode, MdCodeOff, MdScoreboard } from "react-icons/md"
 import type { IconBaseProps, IconType } from "react-icons"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import Label from "./Label"
@@ -108,6 +108,7 @@ export class SynthesisIcons {
     public static readonly MICROCHIP = FaMicrochip
     public static readonly CODE_CONNECTION = MdCode
     public static readonly NO_CODE_CONNECTION = MdCodeOff
+    public static readonly SCOREBOARD = MdScoreboard
     public static readonly REFRESH = BiRefresh
 
     /** Large icons: used for icon buttons */
@@ -232,7 +233,7 @@ export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClic
 export const DownloadButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
-            <SynthesisIcons.DELETE_LARGE />
+            <SynthesisIcons.DOWNLOAD_LARGE />
         </PositiveIconButton>
     )
 }

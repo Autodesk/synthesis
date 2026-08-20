@@ -14,6 +14,7 @@ interface EventDataMap {
     // Mirabuf
     ProgressEvent: ProgressHandle
     MirabufObjectChangeEvent: MirabufSceneObject | null
+    SpawnPendingChangeEvent: boolean
 
     // APS
     MirabufFilesUpdateEvent: Data[]
@@ -33,6 +34,8 @@ interface EventDataMap {
     ConfigurationSavedEvent: never
     InputSchemeChanged: { panelId?: string }
 
+    TourRestartEvent: never
+
     // Match Mode
     ScoreChangedEvent: { red: number; blue: number }
     TimeChangedEvent: { time: number }
@@ -49,8 +52,9 @@ interface EventDataMap {
     SetPlaceAssetButtonVisibleEvent: boolean
     ToggleTouchControlsVisibilityEvent: never
     SetTouchControlsVisibilityEvent: boolean
+    TouchControlsVisibilityChangedEvent: { visible: boolean }
 
-    DragModeToggled: { enabled: boolean }
+    SetDragModeEvent: { enabled: boolean }
 
     CameraModeChangedEvent: { mode: string }
     CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }

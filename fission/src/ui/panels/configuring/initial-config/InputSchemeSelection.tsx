@@ -1,4 +1,14 @@
-import { Box, Divider, FormControl, InputLabel, MenuItem, Stack, Tooltip } from "@mui/material"
+import {
+    Box,
+    Divider,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Stack,
+    type SxProps,
+    type Theme,
+    Tooltip,
+} from "@mui/material"
 import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -17,7 +27,7 @@ interface SchemeSelectorProps {
     panelId?: string
     brainIndex: number
 
-    style?: React.CSSProperties
+    style?: SxProps<Theme>
     message: string
     disabled?: boolean
 
@@ -111,9 +121,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
     }, [onSelect])
 
     return (
-        // A scroll view with buttons to select default and custom input schemes
-        <>
-            {/** The label and divider at the top of the scroll view */}
+        <Stack gap={2}>
             <Divider />
             <FormControl fullWidth>
                 <InputLabel id="input-scheme-drivetrain-type-label">Drivetrain Type</InputLabel>
@@ -204,6 +212,6 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                         </div>
                     )
                 })}
-        </>
+        </Stack>
     )
 }

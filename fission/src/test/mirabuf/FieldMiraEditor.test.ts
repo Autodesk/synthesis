@@ -96,6 +96,7 @@ describe("Devtool Scoring Zones Caching Tests", () => {
 })
 
 describe("Asset tests", () => {
+    // loads a real field asset, which can exceed the default timeout under full-suite load
     test("FRC Field 2018 has spawn locations", async () => {
         const miraInstance = await getMiraInstance(2018)
         assert.exists(miraInstance)
@@ -103,5 +104,5 @@ describe("Asset tests", () => {
         assert.exists(mirabuf)
         assert.exists(mirabuf.fieldPreferences)
         expect(mirabuf.fieldPreferences.spawnLocations).toMatchSnapshot()
-    })
+    }, 20000)
 })

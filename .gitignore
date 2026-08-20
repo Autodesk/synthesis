@@ -11,3 +11,5 @@ renderer/
 .idea
 **/.direnv
 .npmrc
+result
+result-*

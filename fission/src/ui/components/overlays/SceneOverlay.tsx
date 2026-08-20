@@ -11,7 +11,7 @@ const tagMap = new Map<number, SceneOverlayTag>()
 
 const SceneOverlay: React.FC = () => {
     /* State to determine if the overlay is disabled */
-    const [isDisabled, setIsDisabled] = useState(false)
+    const [isDisabled, setIsDisabled] = useState(!PreferencesSystem.getUserPreference("RenderSceneTags"))
 
     /* State to determine if the ViewCube should be shown */
     const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getUserPreference("ShowViewCube"))
@@ -72,15 +72,7 @@ const SceneOverlay: React.FC = () => {
     }, [])
 
     /* Update ViewCube visibility when preferences change */
-    useEffect(() => {
-        const removeListener = PreferencesSystem.addPreferenceEventListener("ShowViewCube", e =>
-            setShowViewCube(e.prefValue)
-        )
-
-        return () => {
-            removeListener()
-        }
-    }, [])
+    useEffect(() => PreferencesSystem.addPreferenceEventListener("ShowViewCube", e => setShowViewCube(e.prefValue)), [])
 
     /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
     return (

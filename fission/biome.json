@@ -280,12 +280,31 @@
       }
     },
     {
-      "includes": ["src/proto/**/*"],
+      "includes": ["src/proto/**/*", "src/systems/multiplayer/bindings/**/*"],
       "formatter": {
         "enabled": false
       },
       "linter": {
         "enabled": false
+      }
+    },
+    {
+      "includes": ["src/systems/multiplayer/bindings/**/*"],
+      "formatter": {
+        "enabled": false
+      },
+      "linter": {
+        "enabled": false
+      }
+    },
+    {
+      "includes": ["src/test/**/*"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useComponentExportOnlyModules": "off"
+          }
+        }
       }
     }
   ],

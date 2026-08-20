@@ -1,4 +1,3 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 import * as THREE from "three"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
@@ -16,10 +15,9 @@ import {
     CustomTargetControls,
 } from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
-import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalOpenModal } from "@/ui/components/GlobalUIControls"
 import type { PixelSpaceCoord } from "@/components/overlays/SceneOverlayEvents.ts"
-import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
 import { rayCastForRigidBody } from "@/util/RaycastUtils"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import type { GraphicsPreferences } from "../preferences/PreferenceTypes"
@@ -28,6 +26,7 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
+import { captureSceneThumbnail } from "./ThumbnailCapture.ts"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -149,11 +148,13 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
+        const graphicsSettings = PreferencesSystem.getGraphicsPreferences()
+
         this._renderer = new THREE.WebGLRenderer({
             powerPreference: "high-performance",
-            antialias: false,
+            antialias: graphicsSettings.antiAliasing,
             stencil: false,
-            depth: !PreferencesSystem.getGraphicsPreferences().antiAliasing,
+            depth: true,
         })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
@@ -161,7 +162,7 @@ class SceneRenderer extends WorldSystem {
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
-        this.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
+        this.changeLighting(graphicsSettings.fancyShadows)
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
@@ -403,6 +404,20 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
+    public async captureAssemblyThumbnail(target: MirabufSceneObject): Promise<Blob | undefined> {
+        try {
+            return await captureSceneThumbnail({
+                renderer: this._renderer,
+                scene: this._scene,
+                skybox: this._skybox,
+                target,
+            })
+        } catch (e) {
+            console.warn("Thumbnail capture failed", e)
+            return undefined
+        }
+    }
+
     public registerSceneObject<T extends SceneObject>(obj: T, id?: SceneObjectId): SceneObjectId {
         id ??= uuidv4() as SceneObjectId
 
@@ -464,15 +479,6 @@ class SceneRenderer extends WorldSystem {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
             if (this._light instanceof CSM) this._light.setupMaterial(material)
-            return new THREE.Mesh(geo, material)
-        } else {
-            return new THREE.Mesh(geo, this.createToonMaterial())
-        }
-    }
-
-    public createBox(halfExtent: Jolt.Vec3, material?: THREE.Material | undefined): THREE.Mesh {
-        const geo = new THREE.BoxGeometry(halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ())
-        if (material) {
             return new THREE.Mesh(geo, material)
         } else {
             return new THREE.Mesh(geo, this.createToonMaterial())
@@ -605,9 +611,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel(ImportMirabufPanel, {
-                        configurationType: "ROBOTS" as ConfigurationType,
-                    })
+                    globalOpenModal(LibraryModal, undefined)
                 },
             })
         }

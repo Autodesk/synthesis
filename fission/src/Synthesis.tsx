@@ -11,7 +11,6 @@ import { UIRenderer } from "@/ui/UIRenderer.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
-import DragModeIndicator from "@/components/overlays/DragModeIndicator.tsx"
 import ProgressNotifications from "@/components/ProgressNotification.tsx"
 import SceneOverlay from "@/components/overlays/SceneOverlay.tsx"
 import PortraitOverlay from "@/components/overlays/PortraitOverlay.tsx"
@@ -20,6 +19,8 @@ import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
 import CommandPalette from "@/ui/components/CommandPalette.tsx"
+import { TourProvider } from "./ui/tour/TourProvider.tsx"
+import TourOverlay from "./ui/tour/TourOverlay.tsx"
 import SessionStorage, { applyAutoToast } from "@/util/SessionStorage.ts"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import { startMultiplayerWorld } from "@/ui/helpers/StartMultiplayerWorld.ts"
@@ -100,23 +101,25 @@ const Synthesis = () => {
                 >
                     <StateProvider>
                         <UIProvider>
-                            <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
-                            <TouchControls />
-                            <SceneOverlay />
-                            <ContextMenu />
-                            <MainHUD key={"main-hud"} />
-                            <UIRenderer />
-                            <CommandPalette />
-                            <ProgressNotifications key={"progress-notifications"} />
-                            <Stack direction={"column"} gap={1} position={"absolute"} bottom={0} left={0}>
-                                <DragModeIndicator />
-                                <MultiplayerHUD />
-                            </Stack>
-                            <PortraitOverlay />
+                            <TourProvider>
+                                <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
+                                <TouchControls />
+                                <SceneOverlay />
+                                <ContextMenu />
+                                <MainHUD key={"main-hud"} />
+                                <UIRenderer />
+                                <CommandPalette />
+                                <ProgressNotifications key={"progress-notifications"} />
+                                <Stack direction={"column"} gap={1} position={"absolute"} bottom={0} left={0}>
+                                    <MultiplayerHUD />
+                                </Stack>
+                                <PortraitOverlay />
+                                <TourOverlay />
 
-                            {!consentPopupDisable && (
-                                <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
-                            )}
+                                {!consentPopupDisable && (
+                                    <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
+                                )}
+                            </TourProvider>
                         </UIProvider>
                     </StateProvider>
                 </SnackbarProvider>

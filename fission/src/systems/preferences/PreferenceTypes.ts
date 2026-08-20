@@ -2,7 +2,7 @@ import type { Vector3Tuple } from "three"
 import type { ContactType } from "@/mirabuf/ZoneTypes"
 import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import type { InputScheme } from "../input/InputTypes"
-import type { SimConfigData } from "../simulation/SimConfigShared"
+import type { SimConfigData } from "../simulation/wiring/SimGraph"
 
 /** Names of all global preferences. */
 
@@ -15,7 +15,7 @@ export type UserPreferences = {
     RenderProtectedZones: boolean
     InputSchemes: InputScheme[]
     RenderSceneTags: boolean
-    RenderScoreboard: boolean
+    AlwaysShowScoreboard: boolean
     SubsystemGravity: boolean
     TouchControls: boolean
     SimAutoReconnect: boolean
@@ -27,6 +27,7 @@ export type UserPreferences = {
     MultiplayerPort: number
     MultiplayerHost: string
     MultiplayerSecure: boolean
+    HasSeenOnboardingTour: boolean
 }
 
 export type UserPreference = keyof UserPreferences
@@ -57,7 +58,7 @@ export function defaultUserPreferences(): UserPreferences {
         RenderProtectedZones: true,
         InputSchemes: [],
         RenderSceneTags: true,
-        RenderScoreboard: false,
+        AlwaysShowScoreboard: true,
         SubsystemGravity: false,
         TouchControls: false,
         SimAutoReconnect: false,
@@ -69,6 +70,7 @@ export function defaultUserPreferences(): UserPreferences {
         MultiplayerHost: "",
         MultiplayerPort: DEFAULT_MULTIPLAYER_PORT,
         MultiplayerSecure: false,
+        HasSeenOnboardingTour: false,
     }
 }
 
@@ -90,7 +92,7 @@ export function defaultGraphicsPreferences(): GraphicsPreferences {
         maxFar: 30,
         cascades: 4,
         shadowMapSize: 4096,
-        antiAliasing: false,
+        antiAliasing: true,
     }
 }
 
@@ -101,7 +103,7 @@ export function lowGraphicsPreferences(): GraphicsPreferences {
         maxFar: 30,
         cascades: 4,
         shadowMapSize: 4096,
-        antiAliasing: false,
+        antiAliasing: true,
     }
 }
 
@@ -141,6 +143,17 @@ export type EjectorPreferences = {
     ejectorVelocity: number
     parentNode: string | undefined
     ejectOrder: "FIFO" | "LIFO"
+}
+
+export type SensorType = "gyro" | "accel"
+
+export type SensorPreferences = {
+    name: string
+    sensorType: SensorType
+    /** WPILib device this sensor feeds, e.g. "SYN AHRS[0]". */
+    device: string
+    parentNode: string | undefined
+    deltaTransformation: number[]
 }
 
 // name/id must match the robot code's UsbCamera args, key `"<name>[<id>]"`
@@ -194,6 +207,7 @@ export type RobotPreferences = {
     motors: MotorPreferences[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    sensors: SensorPreferences[]
     cameras: CameraPreferences[]
     driveVelocity: number
     driveAcceleration: number
@@ -288,6 +302,7 @@ export function defaultRobotPreferences(): RobotPreferences {
             parentNode: undefined,
             ejectOrder: "FIFO",
         },
+        sensors: [],
         cameras: [],
         driveVelocity: 0,
         driveAcceleration: 0,
