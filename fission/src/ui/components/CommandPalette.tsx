@@ -4,12 +4,12 @@ import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import EventSystem from "@/systems/EventSystem"
 import World from "@/systems/World"
-import InputSystem from "@/systems/input/InputSystem"
+import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry, { type CommandDefinition } from "@/ui/components/CommandRegistry"
 import "@/ui/panels/DebugPanel"
 import "@/ui/modals/configuring/SettingsModal"
-import "@/ui/panels/mirabuf/ImportMirabufPanel"
+import "@/ui/modals/mirabuf/LibraryModal"
 import "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import "@/ui/panels/configuring/MatchModeConfigPanel"
 
@@ -98,13 +98,15 @@ const CommandPalette: React.FC = () => {
         })
     }, [commands])
 
-    InputSystem.escapeKeyListeners[0] = () => {
-        if (isOpen) {
-            closePalette()
-            return true
-        }
-        return false
-    }
+    useEffect(
+        () =>
+            InputSystem.addEscapeHandler(() => {
+                if (!isOpen) return false
+                closePalette()
+                return true
+            }, ESCAPE_PRIORITY.COMMAND_PALETTE),
+        [isOpen, closePalette]
+    )
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase()

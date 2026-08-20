@@ -27,6 +27,7 @@ export type UserPreferences = {
     MultiplayerPort: number
     MultiplayerHost: string
     MultiplayerSecure: boolean
+    HasSeenOnboardingTour: boolean
 }
 
 export type UserPreference = keyof UserPreferences
@@ -69,6 +70,7 @@ export function defaultUserPreferences(): UserPreferences {
         MultiplayerHost: "",
         MultiplayerPort: DEFAULT_MULTIPLAYER_PORT,
         MultiplayerSecure: false,
+        HasSeenOnboardingTour: false,
     }
 }
 

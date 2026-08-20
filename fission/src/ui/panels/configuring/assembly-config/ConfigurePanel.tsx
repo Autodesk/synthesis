@@ -32,7 +32,9 @@ import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProt
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
-import { Tab, Tabs, type TabsActions } from "@mui/material"
+import { Box, Tab, Tabs, type TabsActions } from "@mui/material"
+import { tourTarget } from "@/ui/tour/TourSteps"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
@@ -169,6 +171,8 @@ const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
 
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
     const { configureScreen, closePanel, addToast } = useUIContext()
+    const configurePanelRef = useTourAnchor("configure-panel")
+
     const {
         configMode: initialConfigMode,
         selectedAssembly: initialSelectedAssembly,
@@ -307,7 +311,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     }, [configMode, selectedAssembly])
 
     return (
-        <>
+        <Box ref={configurePanelRef}>
             <Tabs
                 action={tabsActionsRef}
                 value={configurationType}
@@ -395,8 +399,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                     </>
                 )}
             </div>
-        </>
+        </Box>
     )
 }
+
+tourTarget(ConfigurePanel, "ConfigurePanel")
 
 export default ConfigurePanel
