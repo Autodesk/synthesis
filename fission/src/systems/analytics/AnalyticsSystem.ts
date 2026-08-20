@@ -49,6 +49,7 @@ export type UIInteractionType =
     | "HUD Menu Button"
     | "Mode Dropdown"
     | "Configure Dropdown"
+    | "Tour Skip"
     | "Command Palette Command"
 
 /** How a multiplayer session ended. Shared with MultiplayerSystem, which reports it */

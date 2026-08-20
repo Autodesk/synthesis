@@ -1,4 +1,5 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { reportUIInteraction } from "@/systems/analytics/AnalyticsSystem"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
@@ -69,7 +70,10 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
 
     const prev = useCallback(() => setStepIndex(i => Math.max(0, i - 1)), [])
 
-    const skip = useCallback(() => finish(), [finish])
+    const skip = useCallback(() => {
+        reportUIInteraction("Tour Skip", TOUR_STEPS[stepIndex].id)
+        finish()
+    }, [finish, stepIndex])
 
     const startedRef = useRef(false)
     useEffect(() => {
