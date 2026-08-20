@@ -15,10 +15,9 @@ import {
     CustomTargetControls,
 } from "@/systems/scene/CameraControls"
 import type { ContextData } from "@/ui/components/ContextMenuData"
-import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalOpenModal } from "@/ui/components/GlobalUIControls"
 import type { PixelSpaceCoord } from "@/components/overlays/SceneOverlayEvents.ts"
-import type { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
 import { rayCastForRigidBody } from "@/util/RaycastUtils"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import type { GraphicsPreferences } from "../preferences/PreferenceTypes"
@@ -27,6 +26,7 @@ import WorldSystem from "../WorldSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
 import type SceneObject from "./SceneObject"
 import ScreenInteractionHandler, { type InteractionEnd } from "./ScreenInteractionHandler"
+import { captureSceneThumbnail } from "./ThumbnailCapture.ts"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -404,6 +404,20 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
+    public async captureAssemblyThumbnail(target: MirabufSceneObject): Promise<Blob | undefined> {
+        try {
+            return await captureSceneThumbnail({
+                renderer: this._renderer,
+                scene: this._scene,
+                skybox: this._skybox,
+                target,
+            })
+        } catch (e) {
+            console.warn("Thumbnail capture failed", e)
+            return undefined
+        }
+    }
+
     public registerSceneObject<T extends SceneObject>(obj: T, id?: SceneObjectId): SceneObjectId {
         id ??= uuidv4() as SceneObjectId
 
@@ -597,9 +611,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel(ImportMirabufPanel, {
-                        configurationType: "ROBOTS" as ConfigurationType,
-                    })
+                    globalOpenModal(LibraryModal, undefined)
                 },
             })
         }

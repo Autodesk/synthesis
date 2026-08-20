@@ -11,11 +11,10 @@ import { deobf } from "@/util/Utility"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import APSManagementModal from "@/modals/APSManagementModal"
 import SettingsModal from "@/modals/configuring/SettingsModal"
-import type { ConfigurationType } from "@/panels/configuring/assembly-config/ConfigTypes"
 import CameraSelectionPanel from "@/panels/configuring/CameraSelectionPanel"
 import DeveloperToolPanel from "@/panels/DeveloperToolPanel"
 import DebugPanel from "@/panels/DebugPanel"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
 import { setAddToast, setCloseModal, setOpenModal, setOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { AssemblySelect } from "@/ui/components/topbar/AssemblySelect"
@@ -31,6 +30,7 @@ import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 import { useAssemblySelection } from "@/ui/components/topbar/UseConfigureAssembly"
 import UserIcon from "@/ui/components/UserIcon"
 import { getIsConnected, getSimBrain, hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 
 const TUTORIALS_URL = "https://synthesis.autodesk.com/tutorials"
 
@@ -60,6 +60,11 @@ const TopBar: React.FC = () => {
     const { appMode } = useStateContext()
     const isTouchDevice = useIsTouchDevice()
     const { assemblies, selectedAssembly, selectAssemblyById } = useAssemblySelection()
+
+    const addAssemblyRef = useTourAnchor("add-assembly")
+    const modeDropdownRef = useTourAnchor("mode-dropdown")
+    // AssemblySelect moved up from ConfigureControls in the MainHUD redesign, so its tour anchor lives here now.
+    const assemblySelectRef = useTourAnchor("configure-assembly-select")
 
     setAddToast(addToast)
     setOpenPanel(openPanel)
@@ -134,6 +139,7 @@ const TopBar: React.FC = () => {
                         disableInteractive
                     >
                         <Box
+                            ref={modeDropdownRef}
                             component="span"
                             sx={{ display: "inline-flex" }}
                             onMouseEnter={() => setModeHovered(true)}
@@ -153,20 +159,21 @@ const TopBar: React.FC = () => {
                     <TopBarButton
                         label="Add Assembly"
                         icon={<TopBarIcon name="add" size={30} />}
-                        onClick={() =>
-                            togglePanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
-                        }
+                        onClick={() => openModal(LibraryModal, undefined)}
+                        anchorRef={addAssemblyRef}
                     />
 
                     <Box sx={TOP_BAR_DIVIDER_SX} />
 
                     {(appMode === "Configure" || appMode === "Codesim") && (
-                        <AssemblySelect
-                            assemblies={assemblies}
-                            selectedAssembly={selectedAssembly}
-                            onSelect={selectAssemblyById}
-                            sx={{ borderRadius: 1, height: 34, minWidth: 195, fontSize: 12 }}
-                        />
+                        <Box ref={assemblySelectRef} component="span" sx={{ display: "inline-flex" }}>
+                            <AssemblySelect
+                                assemblies={assemblies}
+                                selectedAssembly={selectedAssembly}
+                                onSelect={selectAssemblyById}
+                                sx={{ borderRadius: 1, height: 34, minWidth: 195, fontSize: 12 }}
+                            />
+                        </Box>
                     )}
 
                     {appMode === "Configure" && <ConfigureControls selectedAssembly={selectedAssembly} />}

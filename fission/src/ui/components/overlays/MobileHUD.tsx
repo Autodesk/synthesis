@@ -8,8 +8,7 @@ import { useIsTouchDevice } from "@/ui/helpers/useIsMobile.ts"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers.ts"
 import APSManagementModal from "@/modals/APSManagementModal.tsx"
 import SettingsModal from "@/modals/configuring/SettingsModal.tsx"
-import type { ConfigurationType } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import ImportMirabufPanel from "@/panels/mirabuf/ImportMirabufPanel.tsx"
+import LibraryModal from "@/modals/mirabuf/LibraryModal.tsx"
 import { globalOpenModal, setAddToast, setOpenModal, setOpenPanel } from "../GlobalUIControls.ts"
 import { IconButton, SynthesisIcons } from "../StyledComponents.tsx"
 import { AssemblySelect } from "../topbar/AssemblySelect.tsx"
@@ -77,11 +76,7 @@ const MobileHUD: React.FC = () => {
                 <HUDMenuButton
                     label="Add Assembly"
                     iconName="add"
-                    onClick={() =>
-                        runAction(() =>
-                            openPanel(ImportMirabufPanel, { configurationType: "ROBOTS" as ConfigurationType })
-                        )
-                    }
+                    onClick={() => runAction(() => openModal(LibraryModal, undefined))}
                 />
 
                 <HUDMenuButton label="Configure" iconName="mode-configure" onClick={() => setView("configure")} />

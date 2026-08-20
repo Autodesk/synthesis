@@ -12,7 +12,8 @@ import type { ModalImplProps } from "@/ui/components/Modal"
 import StatefulSlider, { type StatefulSliderProps } from "@/ui/components/StatefulSlider"
 import { Button, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useThemeContext } from "@/ui/helpers/ThemeProviderHelpers"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import EventSystem from "@/systems/EventSystem.ts"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import {
@@ -139,91 +140,108 @@ const GeneralTabCheckbox = ({
     return <Checkbox {...props} label={label} checked={pref} onClick={setPref} />
 }
 
-const GeneralTab: React.FC = () => (
-    <Stack direction="column" gap={2}>
-        <Spacer height={5} />
-        <Label size="sm">Camera Settings</Label>
-        <GeneralTabSlider
-            preference="SceneRotationSensitivity"
-            label="Scene Rotation Sensitivity"
-            tooltip="Controls how fast the scene rotates when dragging with the mouse."
-            showValue={false}
-            min={0.1}
-            max={2.0}
-            step={0.1}
-        />
-        <Spacer height={5} />
-        <GeneralTabSlider
-            preference="ScenePanSensitivity"
-            label="Scene Pan Sensitivity"
-            tooltip="Controls how fast the scene pans when dragging with the right mouse button."
-            showValue={false}
-            min={0.1}
-            max={3.0}
-            step={0.1}
-        />
-        <Spacer height={5} />
-        <GeneralTabSlider
-            preference="ViewCubeRotationSensitivity"
-            label="ViewCube Rotation Sensitivity"
-            tooltip="Controls how fast the view changes when dragging on the view cube."
-            showValue={false}
-            min={0.06}
-            max={6.0}
-            step={0.06}
-        />
-        <GeneralTabCheckbox
-            preference="ShowViewCube"
-            label="Show View Cube"
-            tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
-        />
-        <Spacer height={10} />
-        <Label size="md" sx={{ fontWeight: 600 }}>
-            Preferences
-        </Label>
-        <Stack direction="column">
-            <GeneralTabCheckbox
-                preference="ReportAnalytics"
-                label="Report Analytics"
-                tooltip="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
-            />
-            <GeneralTabCheckbox
-                preference="SubsystemGravity"
-                label="Realistic Subsystem Gravity"
-                tooltip="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
-            />
-            <GeneralTabCheckbox
-                preference="RenderScoringZones"
-                label="Show Score Zones"
-                tooltip="If disabled, scoring zones will not be visible but will continue to function the same."
-            />
-            <GeneralTabCheckbox
-                preference="RenderProtectedZones"
-                label="Show Protected Zones"
-                tooltip="If disabled, protected zones will not be visible but will continue to function the same."
-            />
-            <GeneralTabCheckbox preference="RenderSceneTags" label="Show Scene Tags" tooltip="Name tags above robot." />
-            <GeneralTabCheckbox
-                preference="AlwaysShowScoreboard"
-                label="Always Show Scoreboard"
-                tooltip="If disabled, the scoreboard is only shown while a match is running."
-            />
-            <GeneralTabCheckbox
-                preference="ShowCenterOfMassIndicators"
-                label="Show Centers of Mass"
-                tooltip="Show a purple dot to indicate the center of mass of each robot in frame"
-            />
-            <GeneralTabCheckbox preference="MuteAllSound" label="Mute All Sound" />
+const GeneralTab: React.FC = () => {
+    const { closeModal } = useUIContext()
+
+    return (
+        <Stack direction="column" gap={2}>
+            <Spacer height={5} />
+            <Label size="sm">Camera Settings</Label>
             <GeneralTabSlider
-                preference="SFXVolume"
-                label="SFX Volume"
-                tooltip="Volume of sound effects (%)."
-                min={0}
-                max={100}
+                preference="SceneRotationSensitivity"
+                label="Scene Rotation Sensitivity"
+                tooltip="Controls how fast the scene rotates when dragging with the mouse."
+                showValue={false}
+                min={0.1}
+                max={2.0}
+                step={0.1}
             />
+            <Spacer height={5} />
+            <GeneralTabSlider
+                preference="ScenePanSensitivity"
+                label="Scene Pan Sensitivity"
+                tooltip="Controls how fast the scene pans when dragging with the right mouse button."
+                showValue={false}
+                min={0.1}
+                max={3.0}
+                step={0.1}
+            />
+            <Spacer height={5} />
+            <GeneralTabSlider
+                preference="ViewCubeRotationSensitivity"
+                label="ViewCube Rotation Sensitivity"
+                tooltip="Controls how fast the view changes when dragging on the view cube."
+                showValue={false}
+                min={0.06}
+                max={6.0}
+                step={0.06}
+            />
+            <GeneralTabCheckbox
+                preference="ShowViewCube"
+                label="Show View Cube"
+                tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
+            />
+            <Spacer height={10} />
+            <Label size="md" sx={{ fontWeight: 600 }}>
+                Preferences
+            </Label>
+            <Stack direction="column">
+                <GeneralTabCheckbox
+                    preference="ReportAnalytics"
+                    label="Report Analytics"
+                    tooltip="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
+                />
+                <GeneralTabCheckbox
+                    preference="SubsystemGravity"
+                    label="Realistic Subsystem Gravity"
+                    tooltip="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
+                />
+                <GeneralTabCheckbox
+                    preference="RenderScoringZones"
+                    label="Show Score Zones"
+                    tooltip="If disabled, scoring zones will not be visible but will continue to function the same."
+                />
+                <GeneralTabCheckbox
+                    preference="RenderProtectedZones"
+                    label="Show Protected Zones"
+                    tooltip="If disabled, protected zones will not be visible but will continue to function the same."
+                />
+                <GeneralTabCheckbox
+                    preference="RenderSceneTags"
+                    label="Show Scene Tags"
+                    tooltip="Name tags above robot."
+                />
+                <GeneralTabCheckbox
+                    preference="AlwaysShowScoreboard"
+                    label="Always Show Scoreboard"
+                    tooltip="If disabled, the scoreboard is only shown while a match is running."
+                />
+                <GeneralTabCheckbox
+                    preference="ShowCenterOfMassIndicators"
+                    label="Show Centers of Mass"
+                    tooltip="Show a purple dot to indicate the center of mass of each robot in frame"
+                />
+                <GeneralTabCheckbox preference="MuteAllSound" label="Mute All Sound" />
+                <GeneralTabSlider
+                    preference="SFXVolume"
+                    label="SFX Volume"
+                    tooltip="Volume of sound effects (%)."
+                    min={0}
+                    max={100}
+                />
+            </Stack>
+            <Spacer height={10} />
+            <Button
+                onClick={() => {
+                    closeModal(CloseType.CANCEL)
+                    EventSystem.dispatch("TourRestartEvent")
+                }}
+            >
+                Replay Onboarding Tour
+            </Button>
         </Stack>
-    </Stack>
-)
+    )
+}
 
 type GraphicsPreset = "low" | "medium" | "high" | "custom"
 

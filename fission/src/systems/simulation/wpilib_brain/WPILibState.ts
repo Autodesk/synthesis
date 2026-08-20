@@ -1,5 +1,4 @@
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { NoraTypes } from "../Nora"
 import type WPILibBrain from "./WPILibBrain"
 import { FTC_WS_URL, type SimMap, SimType, WPILIB_WS_URL, worker } from "./WPILibTypes"
 
@@ -43,6 +42,7 @@ export function getIsConnected() {
     return isConnected
 }
 
+/*
 export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.PWM]: NoraTypes.NUMBER,
     [SimType.SIM_DEVICE]: undefined,
@@ -65,8 +65,8 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.CAN_MOTOR]: undefined,
     [SimType.SOLENOID]: undefined,
     [SimType.CAN_ENCODER]: NoraTypes.NUMBER2,
-    [SimType.GYRO]: NoraTypes.NUMBER6,
-    [SimType.ACCELEROMETER]: NoraTypes.NUMBER3,
+    [SimType.GYRO]: NoraTypes.GYRO,
+    [SimType.ACCELEROMETER]: NoraTypes.ACCEL,
     [SimType.DIO]: NoraTypes.NUMBER, // ?
     [SimType.AI]: NoraTypes.NUMBER,
     [SimType.AO]: undefined,
@@ -74,3 +74,4 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.GAMEPAD]: undefined,
     [SimType.CAMERA]: undefined,
 }
+*/
