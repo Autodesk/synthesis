@@ -35,8 +35,7 @@ class InputSystem extends WorldSystem {
     }
 
     /**
-     * Maps a brain index to the logical controller slot (0 = first connected gamepad) that drives it.
-     * Controller assignment is per-robot, so this is intentionally separate from the (shared) input scheme.
+     * Maps a brain index to the  browser's logical player slot for the gamepad.
      */
     public static brainIndexPlayerSlotMap: Map<number, number> = new Map()
 
@@ -278,7 +277,7 @@ class InputSystem extends WorldSystem {
 
     /**
      * @param {number} axisNumber The joystick axis index. Must be an integer.
-     * @param {number} playerSlot The logical player slot for the gamepad (0 = first connected). Must be an integer.
+     * @param {number} playerSlot The lbrowser's logical player slot for the gamepad.
      * @returns {number} A number between -1 and 1 based on the position of this axis or 0 if no gamepad is connected or the axis is not found.
      */
     public static getGamepadAxis(axisNumber: number, playerSlot: number = 0): number {
@@ -295,7 +294,7 @@ class InputSystem extends WorldSystem {
     /**
      *
      * @param {number} buttonNumber - The gamepad button index. Must be an integer.
-     * @param {number} playerSlot - The logical player slot for the gamepad (0 = first connected). Must be an integer.
+     * @param {number} playerSlot - The browser's logical player slot for the gamepad
      * @returns {boolean} True if the button is pressed, false if not, a gamepad isn't connected, or the button can't be found.
      */
     public static isGamepadButtonPressed(buttonNumber: number, playerSlot: number = 0): boolean {
