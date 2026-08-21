@@ -1,16 +1,22 @@
+import { Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import SimDriverStation from "@/systems/simulation/wpilib_brain/sim/SimDriverStation"
+import { RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import Checkbox from "@/ui/components/Checkbox"
 import { Button } from "@/ui/components/StyledComponents"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import WiringPanel from "@/ui/panels/simulation/WiringPanel"
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
-import { Stack } from "@mui/material"
 
 const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly, panel, registerCleanupFunction }) => {
-    const { openPanel } = useUIContext()
+    const { openPanel, closePanel } = useUIContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getUserPreference("SimAutoReconnect"))
+    const [teleopEnabled, setTeleopEnabled] = useState<boolean>(() => SimDriverStation.isEnabled())
+    const supportsAutoTesting =
+        (selectedAssembly?.brain?.isWPILib() ?? false) || (selectedAssembly?.brain?.isFTC() ?? false)
 
     useEffect(() => {
         const originalAutoReconnect = PreferencesSystem.getUserPreference("SimAutoReconnect")
@@ -38,6 +44,28 @@ const SimulationInterface: ConfigurationSubpanelComponent = ({ selectedAssembly,
             >
                 Wiring Panel
             </Button>
+            <Button
+                className="self-center"
+                disabled={!supportsAutoTesting}
+                onClick={() => {
+                    openPanel(AutoTestPanel, undefined, panel)
+                    if (panel) closePanel(panel.id, CloseType.OVERWRITE)
+                }}
+            >
+                Auto Testing
+            </Button>
+            {selectedAssembly?.brain?.isFTC() && (
+                <Button
+                    className="self-center"
+                    onClick={() => {
+                        const next = !teleopEnabled
+                        SimDriverStation.setMode(next ? RobotSimMode.TELEOP : RobotSimMode.DISABLED)
+                        setTeleopEnabled(next)
+                    }}
+                >
+                    {teleopEnabled ? "Disable Robot" : "Enable FTC Teleop"}
+                </Button>
+            )}
         </Stack>
     )
 }

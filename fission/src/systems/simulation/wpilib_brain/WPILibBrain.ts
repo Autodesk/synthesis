@@ -111,14 +111,17 @@ class WPILibBrain extends Brain {
         return this._assembly.assemblyId
     }
 
+    private _brainType: "wpilib" | "ftc"
+
     public override get brainType() {
-        return "wpilib" as const
+        return this._brainType
     }
 
-    constructor(assembly: MirabufSceneObject) {
+    constructor(assembly: MirabufSceneObject, brainType: "wpilib" | "ftc" = "wpilib") {
         super(assembly.mechanism)
 
         this._assembly = assembly
+        this._brainType = brainType
 
         this._simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
 
@@ -135,7 +138,7 @@ class WPILibBrain extends Brain {
         this.loadSimConfig()
 
         World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(v => {
-            if (v.brain?.isWPILib()) {
+            if (v.brain?.isWPILib() || v.brain?.isFTC()) {
                 v.brain = new SynthesisBrain(v)
             }
         })

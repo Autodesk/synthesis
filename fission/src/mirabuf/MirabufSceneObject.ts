@@ -250,7 +250,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                         this.nameOverride ??
                         (this._brain?.isSynthesis()
                             ? this._brain.inputSchemeName
-                            : this._brain?.isWPILib()
+                            : this._brain?.isWPILib() || this._brain?.isFTC()
                               ? "Magic"
                               : "Not Configured!")
                     if (World.multiplayerSystem != null) {
