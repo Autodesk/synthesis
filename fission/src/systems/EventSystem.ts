@@ -14,6 +14,7 @@ interface EventDataMap {
     // Mirabuf
     ProgressEvent: ProgressHandle
     MirabufObjectChangeEvent: MirabufSceneObject | null
+    SpawnPendingChangeEvent: boolean
 
     // APS
     MirabufFilesUpdateEvent: Data[]
@@ -32,6 +33,8 @@ interface EventDataMap {
 
     ConfigurationSavedEvent: never
     InputSchemeChanged: { panelId?: string }
+
+    TourRestartEvent: never
 
     // Match Mode
     ScoreChangedEvent: { red: number; blue: number }

@@ -1,17 +1,12 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import { random } from "@/util/Random"
 import Brain from "../Brain"
-import { SimConfig } from "../SimConfigShared"
+import { compile } from "../wiring/Compile"
 import type { SimulationLayer } from "../SimulationSystem"
 import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import { type SimFlow, validate } from "./SimDataFlow"
 import type { SimInput } from "./SimInput"
-import { SimAnalogOutput, SimDigitalOutput, type SimOutput } from "./SimOutput"
-import { SimAccelInput } from "./sim/SimAccel"
-import { SimAnalogInput } from "./sim/SimAI"
-import { SimDigitalInput } from "./sim/SimDIO"
-import { SimGyroInput } from "./sim/SimGyro"
+import type { SimOutput } from "./SimOutput"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState"
 import { type DeviceData, type SimType, type WSMessage, worker } from "./WPILibTypes"
 import SimDriverStation from "./sim/SimDriverStation"
@@ -88,14 +83,17 @@ class WPILibBrain extends Brain {
         return this._assembly.assemblyId
     }
 
+    private _brainType: "wpilib" | "ftc"
+
     public override get brainType() {
-        return "wpilib" as const
+        return this._brainType
     }
 
-    constructor(assembly: MirabufSceneObject) {
+    constructor(assembly: MirabufSceneObject, brainType: "wpilib" | "ftc" = "wpilib") {
         super(assembly.mechanism)
 
         this._assembly = assembly
+        this._brainType = brainType
 
         this._simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
 
@@ -103,18 +101,16 @@ class WPILibBrain extends Brain {
             return
         }
 
-        // TODO: make these configurable
-        this.addSimInput(new SimGyroInput("SYN AHRS[0]", this._mechanism))
-        this.addSimInput(new SimAccelInput("SYN AHRS[0]", this._mechanism))
-        this.addSimInput(new SimDigitalInput("SYN DI[0]", () => random() > 0.5))
-        this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
-        this.addSimInput(new SimAnalogInput("SYN AI[0]", () => random() * 12))
-        this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
+        // TODO: support these
+        // this.addSimInput(new SimDigitalInput("SYN DI[0]", () => random() > 0.5))
+        // this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
+        // this.addSimInput(new SimAnalogInput("SYN AI[0]", () => random() * 12))
+        // this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
 
         this.loadSimConfig()
 
         World.sceneRenderer.mirabufSceneObjects.getRobots().forEach(v => {
-            if (v.brain?.isWPILib()) {
+            if (v.brain?.isWPILib() || v.brain?.isFTC()) {
                 v.brain = new SynthesisBrain(v)
             }
         })
@@ -141,9 +137,9 @@ class WPILibBrain extends Brain {
         const configData = this._assembly.simConfigData
         if (!configData) return false
 
-        const flows = SimConfig.compile(configData, this._assembly)
+        const { flows, error } = compile(configData, this._assembly)
         if (!flows) {
-            console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
+            console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}': ${error}`)
             return false
         }
 
@@ -169,14 +165,14 @@ class WPILibBrain extends Brain {
 
     public enable(): void {
         setSimBrain(this)
-        // worker.getValue().postMessage({ command: "enable", reconnect: RECONNECT })
+        worker.getValue().postMessage({ command: "enable", reconnect: true })
     }
 
     public disable(): void {
         if (getSimBrain() == this) {
             setSimBrain(undefined)
         }
-        // worker.getValue().postMessage({ command: "disable" })
+        worker.getValue().postMessage({ command: "disable" })
     }
 }
 

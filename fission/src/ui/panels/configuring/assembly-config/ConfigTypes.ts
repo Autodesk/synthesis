@@ -1,4 +1,4 @@
-import { MiraType } from "@/mirabuf/MirabufLoader.ts"
+import { MiraType } from "@/mirabuf/MiraType.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type React from "react"
 import type { ConfigurePanelCustomProps } from "@/panels/configuring/assembly-config/ConfigurePanel.tsx"
@@ -61,6 +61,7 @@ export enum ConfigMode {
     JOINTS,
     EJECTOR,
     INTAKE,
+    SENSORS,
     CONTROLS,
     SCORING_ZONES,
     PROTECTED_ZONES,
@@ -86,6 +87,8 @@ const baseRobotConfigModes = [
         ConfigMode.INTAKE,
         "Configure the robot’s intake position and parent node for picking up game pieces."
     ),
+
+    new ConfigModeSelectionOption("Sensors", ConfigMode.SENSORS, "Place sensors on your robot"),
 
     new ConfigModeSelectionOption(
         "Ejector",
@@ -122,10 +125,9 @@ export const wpilibRobotConfigModes = [
     new ConfigModeSelectionOption(
         "Simulation",
         ConfigMode.SIM,
-        "Configure the WPILib simulation settings for this robot."
+        "Configure the code simulation settings for this robot."
     ),
 ]
-
 export const fieldConfigModes = [
     new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of field relative to robot."),
     new ConfigModeSelectionOption(

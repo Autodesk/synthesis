@@ -3,6 +3,7 @@ import { type ChangeEvent, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { embedAssemblyThumbnail } from "@/mirabuf/MirabufThumbnail"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
 import { loadURDF } from "@/urdf/URDFLoader"
@@ -16,7 +17,7 @@ import {
     miraTypeToConfigType,
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
 import { getTargetControls } from "@/systems/scene/CameraControls"
 import { hashBuffer, hexStringToUint8Array } from "@/util/Utility.ts"
 import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
@@ -78,7 +79,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
 
     useEffect(() => {
         const onCancel = () => {
-            openPanel(ImportMirabufPanel, { configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT) })
+            // timeout required to allow this modal to close before the library is opened (synchronous)
+            setTimeout(() => globalOpenModal(LibraryModal, undefined), 0)
         }
 
         const onBeforeAccept = async () => {
@@ -124,6 +126,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
 
                 if (mirabufSceneObject) {
                     World.sceneRenderer.registerSceneObject(mirabufSceneObject)
+                    embedAssemblyThumbnail(mirabufSceneObject).catch(console.error)
 
                     if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                         openPanel(InitialConfigPanel, undefined, modal)

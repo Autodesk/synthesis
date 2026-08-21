@@ -179,14 +179,14 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                             </ul>
                         </Stack>
                         {/* Editor */}
-                        <div className="min-w-[360px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-xs text-gray-100">
+                        <div className="min-w-[480px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-xs text-gray-100">
                             {selectedKey ? (
                                 <>
                                     {/* strip off the prefix here */}
                                     <div className="font-bold text-sm mb-2">{selectedKey}</div>
                                     <textarea
                                         className={`
-                            w-full h-48 font-mono text-sm
+                            w-full h-[32rem] font-mono text-sm
                             bg-gray-700 dark:bg-gray-800
                             border border-gray-600
                             text-gray-100

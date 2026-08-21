@@ -1,5 +1,8 @@
 import Lazy from "@/util/Lazy.ts"
-import WPILibWSWorker from "./WPILibWSWorker?worker"
+import WSWorker from "../shared/WSWorker?worker"
+
+export const WPILIB_WS_URL = "ws://localhost:3300/wpilibws"
+export const FTC_WS_URL = "ws://localhost:3301/ftcsimws"
 
 export type DeviceName = string
 export type DeviceData = Map<string, number | boolean | string>
@@ -18,6 +21,7 @@ export enum SimType {
     AI = "AI",
     AO = "AO",
     DRIVERS_STATION = "DriverStation",
+    GAMEPAD = "Gamepad",
     CAMERA = "Camera",
 }
 
@@ -63,4 +67,4 @@ export const CAMERA_HEIGHT = "<height"
 export const CAMERA_FPS = "<fps"
 export const CAMERA_CONNECTED = "<connected"
 
-export const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
+export const worker: Lazy<Worker> = new Lazy<Worker>(() => new WSWorker())

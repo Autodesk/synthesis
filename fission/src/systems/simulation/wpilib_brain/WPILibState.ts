@@ -1,7 +1,6 @@
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { NoraTypes } from "../Nora"
 import type WPILibBrain from "./WPILibBrain"
-import { type SimMap, SimType, worker } from "./WPILibTypes"
+import { FTC_WS_URL, type SimMap, WPILIB_WS_URL, worker } from "./WPILibTypes"
 
 export const simMaps = new Map<string, SimMap>()
 
@@ -15,6 +14,7 @@ export function setSimBrain(brain: WPILibBrain | undefined) {
     if (simBrain)
         worker.getValue().postMessage({
             command: "enable",
+            url: simBrain.brainType === "ftc" ? FTC_WS_URL : WPILIB_WS_URL,
             reconnect: PreferencesSystem.getUserPreference("SimAutoReconnect"),
         })
 }
@@ -40,34 +40,4 @@ export function setConnected(connected: boolean) {
 
 export function getIsConnected() {
     return isConnected
-}
-
-export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
-    [SimType.PWM]: NoraTypes.NUMBER,
-    [SimType.SIM_DEVICE]: undefined,
-    [SimType.CAN_MOTOR]: NoraTypes.NUMBER,
-    [SimType.SOLENOID]: NoraTypes.NUMBER,
-    [SimType.CAN_ENCODER]: undefined,
-    [SimType.GYRO]: undefined,
-    [SimType.ACCELEROMETER]: undefined,
-    [SimType.DIO]: NoraTypes.NUMBER, // ?
-    [SimType.AI]: undefined,
-    [SimType.AO]: NoraTypes.NUMBER,
-    [SimType.DRIVERS_STATION]: undefined,
-    [SimType.CAMERA]: undefined,
-}
-
-export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
-    [SimType.PWM]: undefined,
-    [SimType.SIM_DEVICE]: undefined,
-    [SimType.CAN_MOTOR]: undefined,
-    [SimType.SOLENOID]: undefined,
-    [SimType.CAN_ENCODER]: NoraTypes.NUMBER2,
-    [SimType.GYRO]: NoraTypes.NUMBER6,
-    [SimType.ACCELEROMETER]: NoraTypes.NUMBER3,
-    [SimType.DIO]: NoraTypes.NUMBER, // ?
-    [SimType.AI]: NoraTypes.NUMBER,
-    [SimType.AO]: undefined,
-    [SimType.DRIVERS_STATION]: undefined,
-    [SimType.CAMERA]: undefined,
 }

@@ -2,7 +2,7 @@ import type Mechanism from "../physics/Mechanism"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain.ts"
 
-export type BrainType = "synthesis" | "wpilib" | "unknown"
+export type BrainType = "synthesis" | "wpilib" | "ftc" | "unknown"
 
 abstract class Brain {
     protected _mechanism: Mechanism
@@ -23,6 +23,9 @@ abstract class Brain {
     }
     public isWPILib(): this is WPILibBrain {
         return this.brainType == "wpilib"
+    }
+    public isFTC(): this is WPILibBrain {
+        return this.brainType == "ftc"
     }
 }
 
