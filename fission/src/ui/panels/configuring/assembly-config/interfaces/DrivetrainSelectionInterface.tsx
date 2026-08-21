@@ -8,6 +8,7 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 import { useEffect, useState } from "react"
 import InputSystem from "@/systems/input/InputSystem.ts"
+import World from "@/systems/World"
 
 const DrivetrainSelectionInterface: ConfigurationSubpanelComponent = ({
     selectedAssembly,
@@ -28,16 +29,27 @@ const DrivetrainSelectionInterface: ConfigurationSubpanelComponent = ({
         const originalDriveBehavior = brain.driveType
         const originalRobotCentric = brain.mecanumRobotCentric
         const originalScheme = InputSystem.getBrainIndexSchemeMapping(brain.brainIndex)
-        registerCleanupFunction(undefined, () => {
-            brain.configureDriveBehavior(originalDriveBehavior)
-            brain.setMecanumRobotCentric(originalRobotCentric)
-            if (originalScheme != null) {
-                InputSystem.setBrainIndexSchemeMapping(brain.brainIndex, originalScheme)
-            } else {
-                InputSchemeManager.applyCompatibleScheme(brain.brainIndex)
+        registerCleanupFunction(
+            () => {
+                if (brain.driveType === originalDriveBehavior && brain.mecanumRobotCentric === originalRobotCentric)
+                    return
+                World.analyticsSystem?.event("Drivetrain Configured", {
+                    driveType: brain.driveType,
+                    robotCentric: brain.mecanumRobotCentric,
+                    source: "Drivetrain Config",
+                })
+            },
+            () => {
+                brain.configureDriveBehavior(originalDriveBehavior)
+                brain.setMecanumRobotCentric(originalRobotCentric)
+                if (originalScheme != null) {
+                    InputSystem.setBrainIndexSchemeMapping(brain.brainIndex, originalScheme)
+                } else {
+                    InputSchemeManager.applyCompatibleScheme(brain.brainIndex)
+                }
+                EventSystem.dispatch("InputSchemeChanged", {})
             }
-            EventSystem.dispatch("InputSchemeChanged", {})
-        })
+        )
     }, [registerCleanupFunction, selectedAssembly])
     return (
         <Stack direction="column" gap={2}>

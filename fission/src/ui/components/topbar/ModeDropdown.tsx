@@ -2,6 +2,7 @@ import { MenuItem, Stack } from "@mui/material"
 import { IoMdArrowDropdown } from "react-icons/io"
 import type React from "react"
 import { APP_MODES, type AppMode } from "@/systems/AppMode"
+import { reportUIInteraction } from "@/systems/analytics/AnalyticsSystem"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { Select } from "@/ui/components/StyledComponents"
 import { DROPDOWN_MENU_PROPS, DROPDOWN_SELECT_SX } from "@/ui/components/topbar/TopBarConfig"
@@ -28,7 +29,11 @@ const ModeDropdown: React.FC<{ onOpenChange?: (open: boolean) => void }> = ({ on
         <Select
             value={appMode}
             disabled={blockState.blocked}
-            onChange={e => setAppMode(e.target.value as AppMode)}
+            onChange={e => {
+                const mode = e.target.value as AppMode
+                reportUIInteraction("Mode Dropdown", mode)
+                setAppMode(mode)
+            }}
             onOpen={() => onOpenChange?.(true)}
             onClose={() => onOpenChange?.(false)}
             renderValue={value => <ModeLabel mode={value as AppMode} />}

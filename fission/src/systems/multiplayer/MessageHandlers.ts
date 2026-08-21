@@ -73,6 +73,7 @@ async function handleMatchModeStateMessage(data: MatchModeStateBody) {
 async function handleInfoMessage(this: MultiplayerSystem, { info, introduceSelf }: InfoBody) {
     this.clientToObjectMap.set(info.clientId, [])
     this.clientToInfoMap.set(info.clientId, info)
+    this.recordPlayerCount()
 
     if (introduceSelf) await this.introduceSelf(false, info.clientId)
     if (this.isHost) this.sendOngoingMatchModeInfo()
