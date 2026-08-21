@@ -114,10 +114,18 @@ class SynthesisBrain extends Brain {
         if (mecanum) mecanum.robotCentric = robotCentric
     }
 
-    public resetSwerveOrientation(): void {
-        const swerve = this._behaviors.find(b => b instanceof SwerveDriveBehavior) as SwerveDriveBehavior | undefined
-        if (!swerve) return
-        swerve.resetFieldForward()
+    /** Whether this brain currently drives field-oriented. */
+    public get isFieldOriented(): boolean {
+        if (this.driveType === DriveType.SWERVE) return true
+        return this.driveType === DriveType.MECANUM && !this.mecanumRobotCentric
+    }
+
+    /** Re-zeroes field-oriented drive to the direction the robot is facing right now. */
+    public resetFieldOrientation(): void {
+        const drive = this._behaviors.find(
+            b => b instanceof SwerveDriveBehavior || b instanceof MecanumDriveBehavior
+        ) as SwerveDriveBehavior | MecanumDriveBehavior | undefined
+        drive?.resetFieldForward()
     }
 
     public configure(): void {

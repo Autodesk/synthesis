@@ -7,7 +7,6 @@ import EventSystem from "@/systems/EventSystem.ts"
 import type Mechanism from "@/systems/physics/Mechanism"
 import { LAYER_GHOST, type LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import {
     type Alliance,
     defaultFieldPreferences,
@@ -1357,11 +1356,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             })
         }
 
-        if ((this.brain as SynthesisBrain | undefined)?.driveType === DriveType.SWERVE) {
+        const synthesisBrain = this.brain as SynthesisBrain | undefined
+        if (synthesisBrain?.isFieldOriented) {
             data.items.push({
                 name: "Reset Orientation",
                 func: () => {
-                    ;(this.brain as SynthesisBrain).resetSwerveOrientation()
+                    synthesisBrain.resetFieldOrientation()
                 },
             })
         }
