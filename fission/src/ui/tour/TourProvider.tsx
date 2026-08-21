@@ -1,5 +1,5 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { reportUIInteraction } from "@/systems/analytics/AnalyticsSystem"
+import type { TourStepExit } from "@/systems/analytics/AnalyticsSystem"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
@@ -13,6 +13,9 @@ import { advanceConditionMet, reconcile, type TourRuntime, type TourSnapshot } f
 import { TourContext, type TourContextValue } from "./TourProviderHelpers"
 import type { TourAnchorId } from "./TourSteps"
 import { TOUR_STEPS, tourIdOf } from "./TourSteps"
+
+/** Reconcile can skip a step within a frame or two, which is not time the user spent on it */
+const MIN_REPORTED_STEP_SECONDS = 0.05
 
 const readWorld = () => ({
     fieldCount: World.isAlive && World.sceneRenderer.mirabufSceneObjects.getField() !== undefined ? 1 : 0,
@@ -58,7 +61,10 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
         markSeen()
     }, [markSeen])
 
+    const exitRef = useRef<TourStepExit>("Continue")
+
     const next = useCallback(() => {
+        exitRef.current = "Continue"
         setStepIndex(i => {
             if (i >= TOUR_STEPS.length - 1) {
                 finish()
@@ -68,12 +74,15 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
         })
     }, [finish])
 
-    const prev = useCallback(() => setStepIndex(i => Math.max(0, i - 1)), [])
+    const prev = useCallback(() => {
+        exitRef.current = "Back"
+        setStepIndex(i => Math.max(0, i - 1))
+    }, [])
 
     const skip = useCallback(() => {
-        reportUIInteraction("Tour Skip", TOUR_STEPS[stepIndex].id)
+        exitRef.current = "Skipped"
         finish()
-    }, [finish, stepIndex])
+    }, [finish])
 
     const startedRef = useRef(false)
     useEffect(() => {
@@ -123,6 +132,23 @@ export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) =
         if (result.stepIndex >= TOUR_STEPS.length) finish()
         else if (result.stepIndex !== stepIndex) setStepIndex(result.stepIndex)
     }, [active, stepIndex, snapshot, addToast, finish])
+
+    // times every step the user lands on, so analytics reports when they leave it or the tour ends
+    useEffect(() => {
+        if (!active) return
+        const { id } = TOUR_STEPS[stepIndex]
+        const enteredAt = Date.now()
+
+        return () => {
+            const durationSeconds = (Date.now() - enteredAt) / 1000
+            const exit = exitRef.current
+            // anything that moves the tour on its own counts as continuing
+            exitRef.current = "Continue"
+
+            if (durationSeconds < MIN_REPORTED_STEP_SECONDS) return
+            World.analyticsSystem?.event("Tour Step Duration", { stepId: id, exit, durationSeconds })
+        }
+    }, [active, stepIndex])
 
     const canAdvance = active ? advanceConditionMet(TOUR_STEPS[stepIndex], snapshot) : true
 

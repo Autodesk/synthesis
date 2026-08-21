@@ -4,6 +4,7 @@ import type { DriveType } from "@/systems/simulation/behavior/Behavior"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "@/systems/World"
 import WorldSystem from "@/systems/WorldSystem"
+import type { TourStepId } from "@/ui/tour/TourSteps"
 import { consolePrefixer } from "console-prefixer"
 
 const SAMPLE_INTERVAL = 60000 // 1 minute
@@ -49,8 +50,10 @@ export type UIInteractionType =
     | "HUD Menu Button"
     | "Mode Dropdown"
     | "Configure Dropdown"
-    | "Tour Skip"
     | "Command Palette Command"
+
+/** How the user left a tour step. Shared with TourProvider, which reports it */
+export type TourStepExit = "Continue" | "Back" | "Skipped"
 
 /** How a multiplayer session ended. Shared with MultiplayerSystem, which reports it */
 export type MultiplayerSessionEndOutcome = "User Exit" | "Disconnected"
@@ -131,6 +134,13 @@ export interface AnalyticsEvents {
     "UI Interaction": {
         interactionType: UIInteractionType
         interactionName: string
+    }
+
+    // Onboarding Tour Events
+    "Tour Step Duration": {
+        stepId: TourStepId
+        exit: TourStepExit
+        durationSeconds: number
     }
 
     // Robot Configuration Events
