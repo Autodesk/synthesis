@@ -6,6 +6,7 @@ import importlib
 import json
 import os
 import re
+import traceback
 import webbrowser
 from typing import Any
 
@@ -363,6 +364,7 @@ def export(exporterOptions: moduleExporterOptions.ExporterOptions, html_args: ad
     try:
         Parser.Parser(exporterOptions).export()
     except RuntimeError as e:
+        logger.error(f"Export failed with RuntimeError:\n{traceback.format_exc()}")
         html_args.returnData = json.dumps({"_err": str(e)})
         return
     exporterOptions.writeToDesign()
@@ -434,7 +436,8 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
 
         try:
             Parser.Parser(exporterOptions).export()
-        except:
+        except Exception:
+            logger.error(f"Export failed:\n{traceback.format_exc()}")
             jointConfigTab.reset()
             gamepieceConfigTab.reset()
 
