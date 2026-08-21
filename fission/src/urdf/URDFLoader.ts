@@ -45,20 +45,26 @@ export function applyConservativeURDFImport(assembly: mirabuf.Assembly): void {
     jointData.rigidGroups = rigidGroups
 }
 
-function validateURDFMeshFormats(urdfText: string): void {
+function fileExtension(filename: string): string {
+    const dotIndex = filename.lastIndexOf(".")
+    // No dot, a leading-dot filename, or a trailing dot means there's no usable extension
+    if (dotIndex <= 0 || dotIndex === filename.length - 1) return "unknown"
+    return filename.slice(dotIndex + 1).toLowerCase()
+}
+
+function readURDFMeshFormats(urdfText: string): string[] {
     const doc = new DOMParser().parseFromString(urdfText, "text/xml")
     const meshFilenames = [...doc.querySelectorAll("mesh[filename]")].map(el => el.getAttribute("filename")!)
-    const unsupported = meshFilenames.filter(f => {
-        const ext = f.split(".").pop()?.toLowerCase()
-        return ext !== "stl" && ext !== "obj" && ext !== "gltf"
-    })
+    const formats = [...new Set(meshFilenames.map(f => fileExtension(f)))]
+    const unsupported = formats.filter(format => format !== "stl" && format !== "obj" && format !== "gltf")
 
     if (unsupported.length > 0) {
-        const formats = [...new Set(unsupported.map(f => `.${f.split(".").pop()?.toLowerCase() ?? "unknown"}`))]
         throw new Error(
-            `Unsupported mesh format(s) in URDF: ${formats.join(", ")}. Only STL, OBJ, and glTF exports are supported.`
+            `Unsupported mesh format(s) in URDF: ${unsupported.map(format => `.${format}`).join(", ")}. Only STL, OBJ, and glTF exports are supported.`
         )
     }
+
+    return formats
 }
 
 async function buildMeshMap(zip: JSZip, urdfPath: string): Promise<Map<string, Uint8Array>> {
@@ -94,11 +100,17 @@ async function buildMeshMap(zip: JSZip, urdfPath: string): Promise<Map<string, U
     return meshFiles
 }
 
+export interface URDFImportResult {
+    assembly: mirabuf.Assembly
+    /** Mesh formats referenced by URDF. Ex: "stl", "obj" */
+    meshFormats: string[]
+}
+
 export async function loadURDF(
     buffer: ArrayBuffer,
     filename: string,
     progressHandle: ProgressHandle
-): Promise<mirabuf.Assembly> {
+): Promise<URDFImportResult> {
     const ext = filename.split(".").pop()?.toLowerCase()
 
     if (ext === "urdf") {
@@ -116,7 +128,7 @@ export async function loadURDF(
         progressHandle?.update("Loaded meshes", URDFImportProgressBar.LOAD_MESHES)
         await yieldToMain()
 
-        validateURDFMeshFormats(urdfText)
+        const meshFormats = readURDFMeshFormats(urdfText)
 
         const assembly = await convertURDF(urdfText, meshFiles, progressHandle)
         await yieldToMain()
@@ -124,7 +136,7 @@ export async function loadURDF(
         detectAndTagWheels(assembly)
         applyConservativeURDFImport(assembly)
 
-        return assembly
+        return { assembly: assembly, meshFormats: meshFormats }
     }
 
     throw new Error(`Unsupported file extension: .${ext ?? "unknown"}`)

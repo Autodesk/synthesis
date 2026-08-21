@@ -4,6 +4,7 @@ import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import EventSystem from "@/systems/EventSystem"
 import World from "@/systems/World"
+import { reportUIInteraction } from "@/systems/analytics/AnalyticsSystem"
 import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry, { type CommandDefinition } from "@/ui/components/CommandRegistry"
@@ -121,7 +122,7 @@ const CommandPalette: React.FC = () => {
     const execute = useCallback(
         (index: number) => {
             const cmd = visible[index]
-            World.analyticsSystem?.event("Command Executed", { command: cmd?.label ?? "Unknown" })
+            reportUIInteraction("Command Palette Command", cmd?.label ?? "Unknown")
             if (cmd) {
                 cmd.perform()
             } else {

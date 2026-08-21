@@ -11,6 +11,33 @@ import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState
 import { type DeviceData, type SimType, type WSMessage, worker } from "./WPILibTypes"
 import SimDriverStation from "./sim/SimDriverStation"
 
+let connectedSince: number | undefined = undefined
+let disconnectionReported = false
+
+function reportConnectionChange(connected: boolean) {
+    if (connected) {
+        if (connectedSince != undefined) return
+
+        connectedSince = Date.now()
+        disconnectionReported = false
+        World.analyticsSystem?.event("Code Sim Connected")
+        return
+    }
+
+    if (disconnectionReported) return
+    disconnectionReported = true
+
+    if (connectedSince == undefined) {
+        World.analyticsSystem?.event("Code Sim Connection Failed")
+        return
+    }
+
+    World.analyticsSystem?.event("Code Sim Disconnected", {
+        durationSeconds: 0.001 * (Date.now() - connectedSince),
+    })
+    connectedSince = undefined
+}
+
 worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     let data: WSMessage | undefined
 
@@ -31,6 +58,7 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
             default:
                 return
         }
+        reportConnectionChange(eventData.data.status == "open")
         return
     }
 
@@ -164,6 +192,7 @@ class WPILibBrain extends Brain {
     }
 
     public enable(): void {
+        disconnectionReported = false
         setSimBrain(this)
         worker.getValue().postMessage({ command: "enable", reconnect: true })
     }

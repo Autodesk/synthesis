@@ -1,4 +1,5 @@
 import type React from "react"
+import { reportUIInteraction } from "@/systems/analytics/AnalyticsSystem"
 import { useMemo } from "react"
 import SplitButtonDropdown from "@/ui/components/SplitButtonDropdown"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -31,7 +32,10 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject; 
             label,
             icon: <ConfigureIcon icon={icon} size={DROPDOWN_MENU_ICON_SIZE} />,
             disabled: disabledMessage != null,
-            onSelect: () => openConfig(mode),
+            onSelect: () => {
+                reportUIInteraction("Configure Dropdown", label)
+                openConfig(mode)
+            },
         }))
     }, [configureButtons, isField, disabledMessage, openConfig])
 
@@ -42,7 +46,10 @@ const ConfigureSplitDropdown: React.FC<{ selectedAssembly?: MirabufSceneObject; 
             caretTooltip={disabledMessage ?? "Configure options"}
             caretDisabled={disabledMessage != null || blockState.blocked}
             iconDisabled={disabledMessage != null || blockState.blocked}
-            onIconClick={() => togglePanel(ConfigurePanel, { selectedAssembly, configurationType })}
+            onIconClick={() => {
+                reportUIInteraction("Top Bar Button", "Configure Asset")
+                togglePanel(ConfigurePanel, { selectedAssembly, configurationType })
+            }}
             items={items}
         />
     )

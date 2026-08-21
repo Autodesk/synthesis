@@ -12,6 +12,7 @@ import { mirabuf } from "@/proto/mirabuf"
 import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 import MatchMode from "../match_mode/MatchMode.ts"
 import type { MultiplayerCommunicationProvider } from "@/systems/multiplayer/MultiplayerCommunicationInterface.ts"
+import type { MultiplayerSessionEndOutcome } from "@/systems/analytics/AnalyticsSystem.ts"
 
 export const COLLISION_TIMEOUT = 500
 
@@ -41,6 +42,12 @@ class MultiplayerSystem {
     private _lastPingTs: number = 0
     private _hasPendingPing: boolean = false
 
+    // Session analytics accumulators
+    private _peakPlayers: number = 1
+    private _latencySumMS: number = 0
+    private _latencySamples: number = 0
+    private _sessionEndReported: boolean = false
+
     public fieldTransferLock?: { ts: number; id: SceneObjectId }
 
     public isHost: boolean
@@ -59,6 +66,11 @@ class MultiplayerSystem {
         const system = new MultiplayerSystem(ws, displayName, isHost)
         const initResult = await system._initializationPromise
         World.setMultiplayerSystem(system)
+
+        World.analyticsSystem?.event("Multiplayer Session Start", {
+            role: isHost ? "Host" : "Client",
+            outcome: initResult ? "Success" : "Failure",
+        })
 
         console.groupEnd()
 
@@ -99,7 +111,7 @@ class MultiplayerSystem {
                 }
                 this.client.onClose = () => {
                     globalAddToast("error", "Multiplayer disconnected")
-                    this.destroy()
+                    this.destroy("Disconnected")
                     EventSystem.dispatch("MultiplayerStateJoinRoom")
                 }
                 this.registerExistingSceneObjects()
@@ -156,6 +168,8 @@ class MultiplayerSystem {
                 this._lastRTT = Date.now() - message.client_send_ts
                 this._clientTimeDeltaMS = Date.now() - this._lastRTT / 2 - message.server_ts
                 this._hasPendingPing = false
+                this._latencySumMS += this._lastRTT / 2
+                this._latencySamples++
                 this.send({
                     type: "latencyInfo",
                     data: {
@@ -271,6 +285,10 @@ class MultiplayerSystem {
             .filter(obj => obj instanceof MirabufSceneObject)
     }
 
+    recordPlayerCount() {
+        this._peakPlayers = Math.max(this._peakPlayers, this.clientToInfoMap.size + 1)
+    }
+
     registerOwnSceneObject(objectId: SceneObjectId) {
         const list = this.clientToObjectMap.get(this.clientId)
         if (list?.includes(objectId)) {
@@ -351,7 +369,20 @@ class MultiplayerSystem {
         return time + this._clientTimeDeltaMS
     }
 
-    public destroy() {
+    private reportSessionEnd(outcome: MultiplayerSessionEndOutcome) {
+        if (this._info.creationTime == null || this._sessionEndReported) return
+        this._sessionEndReported = true
+
+        World.analyticsSystem?.event("Multiplayer Session End", {
+            outcome: outcome,
+            durationSeconds: 0.001 * (Date.now() - this._info.creationTime),
+            peakPlayers: this._peakPlayers,
+            avgLatencyMS: this._latencySamples > 0 ? this._latencySumMS / this._latencySamples : -1,
+        })
+    }
+
+    public destroy(outcome: MultiplayerSessionEndOutcome = "User Exit") {
+        this.reportSessionEnd(outcome)
         this.client.close()
         World.setMultiplayerSystem(undefined)
         World.reset("own")
