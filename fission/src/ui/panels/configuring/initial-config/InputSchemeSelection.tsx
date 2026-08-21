@@ -220,7 +220,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                                 EventSystem.dispatch("InputSchemeChanged", { panelId })
                             }}
                         >
-                            {gamepads.map((gamepad,slot) => {
+                            {gamepads.map((gamepad, slot) => {
                                 if (gamepad == null) return null
                                 return (
                                     <MenuItem key={`controller-${slot}`} value={slot}>
