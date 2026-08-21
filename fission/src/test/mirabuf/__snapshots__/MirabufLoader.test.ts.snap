@@ -2,8 +2,8 @@
 
 exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/fields/FRC Field 2023 v10.m…') 1`] = `"FRC Field 2023 v10"`;
 
-exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/fields/FRC Field 2023 v10.m…') 2`] = `"fe16305baac7b85ca9351bf9a2ba6b47153aa3f2"`;
+exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/fields/FRC Field 2023 v10.m…') 2`] = `"956a4dc4b17f2eb95d38ca36c8d987c37ea5ecc2"`;
 
 exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/robots/Dozer v12.mira') 1`] = `"Dozer v12"`;
 
-exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/robots/Dozer v12.mira') 2`] = `"35ce7106a387c922a6fbae30c141b571cb5da37d"`;
+exports[`MirabufLoader > Real Fetch > Loads Asset ('/api/mira/robots/Dozer v12.mira') 2`] = `"7f3536c7919e741e210910e8f20b1f9d634f3d6f"`;
