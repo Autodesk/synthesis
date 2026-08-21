@@ -86,8 +86,8 @@ export interface AnalyticsEvents {
     }
 
     // APS Events
-    "APS Calls per Minute": unknown
-    "APS Login": unknown
+    "APS Calls per Minute": Record<string, number>
+    "APS Login": undefined
     "APS Download": MiraEvent
 
     // Cache Events
@@ -125,7 +125,7 @@ export interface AnalyticsEvents {
     }
 
     // Scene Interaction Events
-    "Drag Mode Enabled": unknown
+    "Drag Mode Enabled": undefined
     "Drag Mode Disabled": {
         durationSeconds: number
     }
@@ -167,8 +167,8 @@ export interface AnalyticsEvents {
     }
 
     // Code Simulation Events
-    "Code Sim Connected": unknown
-    "Code Sim Connection Failed": unknown
+    "Code Sim Connected": undefined
+    "Code Sim Connection Failed": undefined
     "Code Sim Disconnected": {
         durationSeconds: number
     }

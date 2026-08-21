@@ -31,9 +31,8 @@ const DrivetrainSelectionInterface: ConfigurationSubpanelComponent = ({
         const originalScheme = InputSystem.getBrainIndexSchemeMapping(brain.brainIndex)
         registerCleanupFunction(
             () => {
-                if (brain.driveType === originalDriveBehavior && brain.mecanumRobotCentric === originalRobotCentric) {
+                if (brain.driveType === originalDriveBehavior && brain.mecanumRobotCentric === originalRobotCentric)
                     return
-                }
                 World.analyticsSystem?.event("Drivetrain Configured", {
                     driveType: brain.driveType,
                     robotCentric: brain.mecanumRobotCentric,
