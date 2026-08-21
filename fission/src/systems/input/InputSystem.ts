@@ -21,7 +21,6 @@ class InputSystem extends WorldSystem {
     /** Whether the command palette is currently open, which blocks robot input */
     private static _isCommandPaletteOpen: boolean = false
 
-    private static _gpIndexes: (number | null)[] = []
     public static gamepads: (Gamepad | null)[] = []
 
     /** Normalized joystick positions (-1 to 1) set by TouchControls component via react-joystick-component */
@@ -141,19 +140,7 @@ class InputSystem extends WorldSystem {
     public update(_: number): void {
         const rawGamepads = navigator.getGamepads()
 
-        for (let i = 0; i < InputSystem._gpIndexes.length; i++) {
-            const lookupIndex = InputSystem._gpIndexes[i]
-
-            // Safely verify the index is a valid number slot before querying rawGamepads
-            if (lookupIndex !== null && lookupIndex !== undefined) {
-                if (rawGamepads[lookupIndex] == null) {
-                    InputSystem.gamepads[lookupIndex] = null
-                } else {
-                    InputSystem.gamepads[lookupIndex] = rawGamepads[lookupIndex]
-                }
-            }
-        }
-
+        InputSystem.gamepads = Array.from(navigator.getGamepads())
         if (!document.hasFocus()) this.clearKeyData()
 
         // Update the current modifier state to be checked against target stats when getting input values
@@ -215,16 +202,13 @@ class InputSystem extends WorldSystem {
         }
 
         const index = event.gamepad.index
-        InputSystem._gpIndexes[index] = index
         InputSystem.gamepads[index] = event.gamepad
     }
 
     /* Called once when a gamepad is first disconnected */
     private gamepadDisconnected(event: GamepadEvent) {
         const index = event.gamepad.index
-
         InputSystem.gamepads[index] = null
-        InputSystem._gpIndexes[index] = null
     }
 
     /**
@@ -281,9 +265,7 @@ class InputSystem extends WorldSystem {
 
     /** @returns An array of all currently connected, active Gamepad objects. */
     public static getConnectedGamepads(): Gamepad[] {
-        return this._gpIndexes
-            .map(index => (index !== null ? this.gamepads[index] : null))
-            .filter((gamepad): gamepad is Gamepad => gamepad != null)
+        return InputSystem.gamepads.filter((gp): gp is Gamepad => gp != null)
     }
 
     /**
@@ -291,9 +273,7 @@ class InputSystem extends WorldSystem {
      * @returns {Gamepad | null} The gamepad in that slot, or null if the slot is unoccupied.
      */
     public static getGamepadBySlot(playerSlot: number): Gamepad | null {
-        const rawIndex = InputSystem._gpIndexes[playerSlot]
-        if (rawIndex == null) return null
-        return InputSystem.gamepads[rawIndex] ?? null
+        return InputSystem.gamepads[playerSlot] ?? null
     }
 
     /**
@@ -330,7 +310,7 @@ class InputSystem extends WorldSystem {
      * @returns {number} The true number of currently connected, usable gamepads.
      */
     public static getConnectedPlayerCount(): number {
-        return InputSystem._gpIndexes.filter(index => index !== null && index !== undefined).length
+        return InputSystem.gamepads.filter(gp => gp != null).length
     }
 
     /** Returns a number between -1 and 1 from the touch controls */

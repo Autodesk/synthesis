@@ -98,9 +98,8 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
         SynthesisBrain.brainIndexMap.get(brainIndex)?.mecanumRobotCentric ?? false
     )
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
-    const [connectedPlayerCount, setConnectedPlayerCount] = useState(InputSystem.getConnectedPlayerCount())
+    const [gamepads, setGamepads] = useState(InputSystem.gamepads)
     const [selectedSlot, setSelectedSlot] = useState(InputSystem.getPlayerSlot(brainIndex))
-    // Controller slots currently supplying input, used to help identify which controller is which
     const [activeControllers, setActiveControllers] = useState<number[]>([])
 
     const refreshAvailableSchemes = useCallback(() => {
@@ -121,7 +120,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
 
     useEffect(() => {
         // Keep the controller list in sync as gamepads connect/disconnect
-        const refreshGamepads = () => setConnectedPlayerCount(InputSystem.getConnectedPlayerCount())
+        const refreshGamepads = () => setGamepads([...InputSystem.gamepads])
         window.addEventListener("gamepadconnected", refreshGamepads)
         window.addEventListener("gamepaddisconnected", refreshGamepads)
 
@@ -132,8 +131,6 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
     }, [])
 
     useEffect(() => {
-        // Poll each frame for which controllers are actively supplying input, so users can
-        // physically identify a controller by pressing a button or moving a stick on it.
         const deadband = 0.15
         let frame: number
         let previousKey = ""
@@ -141,8 +138,8 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
         const poll = () => {
             const active: number[] = []
             const count = InputSystem.getConnectedPlayerCount()
-            for (let slot = 0; slot < count; slot++) {
-                const gamepad = InputSystem.getGamepadBySlot(slot)
+            for (let slot = 0; slot < InputSystem.gamepads.length; slot++) {
+                const gamepad = InputSystem.gamepads[slot]
                 if (gamepad == null) continue
                 const isActive =
                     gamepad.buttons.some(button => button.pressed) ||
@@ -150,7 +147,6 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                 if (isActive) active.push(slot)
             }
 
-            // Only re-render when the active set actually changes
             const key = active.join(",")
             if (key !== previousKey) {
                 previousKey = key
@@ -209,7 +205,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
             )}
             <Divider />
             {/** Controller assignment for this robot (only relevant for gamepad schemes) */}
-            {connectedPlayerCount > 0 ? (
+            {gamepads.some(gamepad => gamepad != null) ? (
                 <>
                     <FormControl fullWidth>
                         <InputLabel id="input-scheme-controller-label">Controller</InputLabel>
@@ -224,11 +220,14 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                                 EventSystem.dispatch("InputSchemeChanged", { panelId })
                             }}
                         >
-                            {Array.from({ length: connectedPlayerCount }, (_unused, slot) => (
-                                <MenuItem key={`controller-${slot}`} value={slot}>
-                                    {`Controller ${slot + 1}`}
-                                </MenuItem>
-                            ))}
+                            {gamepads.map((gamepad,slot) => {
+                                if (gamepad == null) return null
+                                return (
+                                    <MenuItem key={`controller-${slot}`} value={slot}>
+                                        {`Controller ${slot + 1}`}
+                                    </MenuItem>
+                                )
+                            })}
                         </Select>
                     </FormControl>
                     {/** Live readout of which controllers are supplying input, to identify them */}
