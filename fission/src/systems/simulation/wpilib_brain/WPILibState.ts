@@ -41,35 +41,3 @@ export function setConnected(connected: boolean) {
 export function getIsConnected() {
     return isConnected
 }
-
-/*
-export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
-    [SimType.PWM]: NoraTypes.NUMBER,
-    [SimType.SIM_DEVICE]: undefined,
-    [SimType.CAN_MOTOR]: NoraTypes.NUMBER,
-    [SimType.SOLENOID]: NoraTypes.NUMBER,
-    [SimType.CAN_ENCODER]: undefined,
-    [SimType.GYRO]: undefined,
-    [SimType.ACCELEROMETER]: undefined,
-    [SimType.DIO]: NoraTypes.NUMBER, // ?
-    [SimType.AI]: undefined,
-    [SimType.AO]: NoraTypes.NUMBER,
-    [SimType.DRIVERS_STATION]: undefined,
-    [SimType.CAMERA]: undefined,
-}
-
-export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
-    [SimType.PWM]: undefined,
-    [SimType.SIM_DEVICE]: undefined,
-    [SimType.CAN_MOTOR]: undefined,
-    [SimType.SOLENOID]: undefined,
-    [SimType.CAN_ENCODER]: NoraTypes.NUMBER2,
-    [SimType.GYRO]: NoraTypes.GYRO,
-    [SimType.ACCELEROMETER]: NoraTypes.ACCEL,
-    [SimType.DIO]: NoraTypes.NUMBER, // ?
-    [SimType.AI]: NoraTypes.NUMBER,
-    [SimType.AO]: undefined,
-    [SimType.DRIVERS_STATION]: undefined,
-    [SimType.CAMERA]: undefined,
-}
-*/
