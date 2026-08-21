@@ -1,0 +1,33 @@
+#!/usr/bin/env sh
+#
+# Pre-commit hook: block commits that fail Biome format/lint in fission/.
+
+set -e
+
+repo_root=$(git rev-parse --show-toplevel)
+fission_dir="$repo_root/fission"
+
+export GIT_WORK_TREE="$repo_root"
+
+if ! command -v bun >/dev/null 2>&1; then
+  echo "pre-commit: bun not found on PATH, skipping Biome check." >&2
+  exit 0
+fi
+
+cd "$fission_dir"
+
+staged_list=$(mktemp)
+trap 'rm -f "$staged_list"' EXIT
+git diff --cached --name-only --diff-filter=ACMR --relative -z -- . >"$staged_list"
+
+if [ ! -s "$staged_list" ]; then
+  exit 0
+fi
+
+if ! xargs -0 bun x biome check --no-errors-on-unmatched --files-ignore-unknown=true <"$staged_list"; then
+  echo "" >&2
+  echo "pre-commit: Biome found issues in staged fission/ files (see above)." >&2
+  echo "  Fix them with:  cd fission && bun run style:fix" >&2
+  echo "  Then re-stage and commit again." >&2
+  exit 1
+fi
