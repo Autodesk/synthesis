@@ -12,22 +12,22 @@ import { type DeviceData, type SimType, type WSMessage, worker } from "./WPILibT
 import SimDriverStation from "./sim/SimDriverStation"
 
 let connectedSince: number | undefined = undefined
-let failureReported = false
+let disconnectionReported = false
 
 function reportConnectionChange(connected: boolean) {
     if (connected) {
         if (connectedSince != undefined) return
 
         connectedSince = Date.now()
-        failureReported = false
+        disconnectionReported = false
         World.analyticsSystem?.event("Code Sim Connected")
         return
     }
 
-    if (connectedSince == undefined) {
-        if (failureReported) return
+    if (disconnectionReported) return
+    disconnectionReported = true
 
-        failureReported = true
+    if (connectedSince == undefined) {
         World.analyticsSystem?.event("Code Sim Connection Failed")
         return
     }
@@ -189,7 +189,7 @@ class WPILibBrain extends Brain {
     }
 
     public enable(): void {
-        failureReported = false
+        disconnectionReported = false
         setSimBrain(this)
         worker.getValue().postMessage({ command: "enable", reconnect: true })
     }

@@ -45,10 +45,17 @@ export function applyConservativeURDFImport(assembly: mirabuf.Assembly): void {
     jointData.rigidGroups = rigidGroups
 }
 
+function fileExtension(filename: string): string {
+    const dotIndex = filename.lastIndexOf(".")
+    // No dot, a leading-dot filename, or a trailing dot means there's no usable extension
+    if (dotIndex <= 0 || dotIndex === filename.length - 1) return "unknown"
+    return filename.slice(dotIndex + 1).toLowerCase()
+}
+
 function readURDFMeshFormats(urdfText: string): string[] {
     const doc = new DOMParser().parseFromString(urdfText, "text/xml")
     const meshFilenames = [...doc.querySelectorAll("mesh[filename]")].map(el => el.getAttribute("filename")!)
-    const formats = [...new Set(meshFilenames.map(f => f.split(".").pop()?.toLowerCase() ?? "unknown"))]
+    const formats = [...new Set(meshFilenames.map(f => fileExtension(f)))]
     const unsupported = formats.filter(format => format !== "stl" && format !== "obj" && format !== "gltf")
 
     if (unsupported.length > 0) {
