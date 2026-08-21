@@ -24,9 +24,12 @@ export default abstract class Input {
     }
 
     // Returns the current value of the input. Range depends on input type
-    abstract getValue(useGamepad: boolean, useTouchControls: boolean): number
+    abstract getValue(useGamepad: boolean, useTouchControls: boolean, playerSlot?: number): number
 
-    abstract get keysUsed(): KeyDescriptor[]
+    /**
+     * @param {number} playerSlot - The logical player slot the owning scheme reads from.
+     */
+    abstract keysUsed(playerSlot?: number): KeyDescriptor[]
 
     protected describeKey(id: KeyCode, modifiers?: ModifierState): KeyDescriptor {
         if (id == "") {
@@ -42,17 +45,17 @@ export default abstract class Input {
         }
         return `${inputDriveTypeAssociations[this.inputName] ?? ""}_${id}` as KeyDescriptor
     }
-    protected describeGamepadBtn(button: number): KeyDescriptor {
+    protected describeGamepadBtn(button: number, playerSlot: number = 0): KeyDescriptor {
         if (button == -1) {
             return null
         }
-        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadBtn${button}` as KeyDescriptor
+        return `slot${playerSlot}_${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadBtn${button}` as KeyDescriptor
     }
-    protected describeGamepadAxis(axis: number): KeyDescriptor {
+    protected describeGamepadAxis(axis: number, playerSlot: number = 0): KeyDescriptor {
         if (axis == -1) {
             return null
         }
-        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadAxis${axis}` as KeyDescriptor
+        return `slot${playerSlot}_${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadAxis${axis}` as KeyDescriptor
     }
     protected describeTouchAxis(axis: TouchControlsAxes): KeyDescriptor {
         if (axis == TouchControlsAxes.NONE) {

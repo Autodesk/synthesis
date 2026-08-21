@@ -74,6 +74,20 @@ class SynthesisBrain extends Brain {
         return scheme.schemeName
     }
 
+    /**
+     * @returns The scheme name for display, suffixed with the controller number when a gamepad is in use
+     * (e.g. "Jax | 1"), so robots sharing a scheme on different controllers are distinguishable.
+     */
+    public get inputSchemeLabel(): string {
+        const scheme = InputSystem.getBrainIndexSchemeMapping(this._brainIndex)
+        if (scheme == undefined) return "Not Configured"
+
+        if (scheme.usesGamepad) {
+            return `${scheme.schemeName} | ${InputSystem.getPlayerSlot(this._brainIndex) + 1}`
+        }
+        return scheme.schemeName
+    }
+
     /** @returns {number} The unique index used to identify this brain. */
     public get brainIndex(): number {
         return this._brainIndex

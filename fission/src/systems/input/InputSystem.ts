@@ -1,4 +1,5 @@
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
@@ -25,8 +26,8 @@ class InputSystem extends WorldSystem {
     /** Whether the command palette is currently open, which blocks robot input */
     private static _isCommandPaletteOpen: boolean = false
 
-    private static _gpIndex: number | null
-    public static gamepad: Gamepad | null
+    private static _gpIndexes: (number | null)[] = []
+    public static gamepads: (Gamepad | null)[] = []
 
     /** Normalized joystick positions (-1 to 1) set by TouchControls component via react-joystick-component */
     private static _leftJoystickPos: { x: number; y: number } = { x: 0, y: 0 }
@@ -39,12 +40,51 @@ class InputSystem extends WorldSystem {
         return this._brainIndexSchemeMap
     }
 
+    /**
+     * Maps a brain index to the logical controller slot (0 = first connected gamepad) that drives it.
+     * Controller assignment is per-robot, so this is intentionally separate from the (shared) input scheme.
+     */
+    public static brainIndexPlayerSlotMap: Map<number, number> = new Map()
+
     public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
         this.brainIndexSchemeMap.set(index, scheme)
         World.analyticsSystem?.event("Scheme Applied", {
             isCustomized: scheme.customized,
             schemeName: scheme.schemeName,
         })
+
+        InputSystem.warnIfControllerShared(index)
+    }
+
+    /** @returns the controller slot assigned to the given brain, defaulting to slot 0. */
+    public static getPlayerSlot(brainIndex: number): number {
+        return InputSystem.brainIndexPlayerSlotMap.get(brainIndex) ?? 0
+    }
+
+    /** Assigns a controller slot to a brain and warns if that controller now drives multiple robots. */
+    public static setPlayerSlot(brainIndex: number, slot: number) {
+        InputSystem.brainIndexPlayerSlotMap.set(brainIndex, slot)
+        InputSystem.warnIfControllerShared(brainIndex)
+    }
+
+    /**
+     * Warns the user when a brain's gamepad scheme results in a single physical controller
+     * driving more than one robot. Gamepad schemes are intentionally shareable, so this is an
+     * informational heads-up rather than a block.
+     */
+    private static warnIfControllerShared(brainIndex: number) {
+        const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        if (scheme == null || !scheme.usesGamepad) return
+
+        const slot = InputSystem.getPlayerSlot(brainIndex)
+        let robotsOnSlot = 0
+        for (const [boundIndex, boundScheme] of InputSystem.brainIndexSchemeMap) {
+            if (boundScheme.usesGamepad && InputSystem.getPlayerSlot(boundIndex) === slot) robotsOnSlot++
+        }
+
+        if (robotsOnSlot >= 2) {
+            globalAddToast("warning", `Controller ${slot + 1} is now controlling ${robotsOnSlot} robots.`)
+        }
     }
     public static getBrainIndexSchemeMapping(index: number): InputScheme | undefined {
         return this.brainIndexSchemeMap.get(index)
@@ -114,9 +154,20 @@ class InputSystem extends WorldSystem {
     }
 
     public update(_: number): void {
-        // Fetch current gamepad information
-        if (InputSystem._gpIndex == null) InputSystem.gamepad = null
-        else InputSystem.gamepad = navigator.getGamepads()[InputSystem._gpIndex]
+        const rawGamepads = navigator.getGamepads()
+
+        for (let i = 0; i < InputSystem._gpIndexes.length; i++) {
+            const lookupIndex = InputSystem._gpIndexes[i]
+
+            // Safely verify the index is a valid number slot before querying rawGamepads
+            if (lookupIndex !== null && lookupIndex !== undefined) {
+                if (rawGamepads[lookupIndex] == null) {
+                    InputSystem.gamepads[lookupIndex] = null
+                } else {
+                    InputSystem.gamepads[lookupIndex] = rawGamepads[lookupIndex]
+                }
+            }
+        }
 
         if (!document.hasFocus()) this.clearKeyData()
 
@@ -177,16 +228,17 @@ class InputSystem extends WorldSystem {
             )
         }
 
-        InputSystem._gpIndex = event.gamepad.index
+        const index = event.gamepad.index
+        InputSystem._gpIndexes[index] = index
+        InputSystem.gamepads[index] = event.gamepad
     }
 
     /* Called once when a gamepad is first disconnected */
     private gamepadDisconnected(event: GamepadEvent) {
-        if (LOG_GAMEPAD_EVENTS) {
-            console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
-        }
+        const index = event.gamepad.index
 
-        InputSystem._gpIndex = null
+        InputSystem.gamepads[index] = null
+        InputSystem._gpIndexes[index] = null
     }
 
     /**
@@ -218,7 +270,11 @@ class InputSystem extends WorldSystem {
 
         if (targetScheme == null || targetInput == null) return 0
 
-        return targetInput.getValue(targetScheme.usesGamepad, targetScheme.usesTouchControls)
+        return targetInput.getValue(
+            targetScheme.usesGamepad,
+            targetScheme.usesTouchControls,
+            InputSystem.getPlayerSlot(brainIndex)
+        )
     }
 
     /**
@@ -237,16 +293,34 @@ class InputSystem extends WorldSystem {
         )
     }
 
+    /** @returns An array of all currently connected, active Gamepad objects. */
+    public static getConnectedGamepads(): Gamepad[] {
+        return this._gpIndexes
+            .map(index => (index !== null ? this.gamepads[index] : null))
+            .filter((gamepad): gamepad is Gamepad => gamepad != null)
+    }
+
+    /**
+     * @param {number} playerSlot The logical player slot.
+     * @returns {Gamepad | null} The gamepad in that slot, or null if the slot is unoccupied.
+     */
+    public static getGamepadBySlot(playerSlot: number): Gamepad | null {
+        const rawIndex = InputSystem._gpIndexes[playerSlot]
+        if (rawIndex == null) return null
+        return InputSystem.gamepads[rawIndex] ?? null
+    }
+
     /**
      * @param {number} axisNumber The joystick axis index. Must be an integer.
+     * @param {number} playerSlot The logical player slot for the gamepad (0 = first connected). Must be an integer.
      * @returns {number} A number between -1 and 1 based on the position of this axis or 0 if no gamepad is connected or the axis is not found.
      */
-    public static getGamepadAxis(axisNumber: number): number {
-        if (InputSystem.gamepad == null) return 0
+    public static getGamepadAxis(axisNumber: number, playerSlot: number = 0): number {
+        const targetGamepad = InputSystem.getGamepadBySlot(playerSlot)
+        if (targetGamepad == null) return 0
+        if (axisNumber < 0 || axisNumber >= targetGamepad.axes.length) return 0
 
-        if (axisNumber < 0 || axisNumber >= InputSystem.gamepad.axes.length) return 0
-
-        const value = InputSystem.gamepad.axes[axisNumber]
+        const value = targetGamepad.axes[axisNumber]
 
         // Return value with a deadband
         return Math.abs(value) < 0.15 ? 0 : value
@@ -255,17 +329,22 @@ class InputSystem extends WorldSystem {
     /**
      *
      * @param {number} buttonNumber - The gamepad button index. Must be an integer.
+     * @param {number} playerSlot - The logical player slot for the gamepad (0 = first connected). Must be an integer.
      * @returns {boolean} True if the button is pressed, false if not, a gamepad isn't connected, or the button can't be found.
      */
-    public static isGamepadButtonPressed(buttonNumber: number): boolean {
-        if (InputSystem.gamepad == null) return false
+    public static isGamepadButtonPressed(buttonNumber: number, playerSlot: number = 0): boolean {
+        const targetGamepad = InputSystem.getGamepadBySlot(playerSlot)
+        if (targetGamepad == null) return false
+        if (buttonNumber < 0 || buttonNumber >= targetGamepad.buttons.length) return false
 
-        if (buttonNumber < 0 || buttonNumber >= InputSystem.gamepad.buttons.length) return false
+        return targetGamepad.buttons[buttonNumber].pressed
+    }
 
-        const button = InputSystem.gamepad.buttons[buttonNumber]
-        if (button == null) return false
-
-        return button.pressed
+    /**
+     * @returns {number} The true number of currently connected, usable gamepads.
+     */
+    public static getConnectedPlayerCount(): number {
+        return InputSystem._gpIndexes.filter(index => index !== null && index !== undefined).length
     }
 
     /** Returns a number between -1 and 1 from the touch controls */

@@ -39,21 +39,35 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
     )
 
     useEffect(() => {
-        const checkGamepadState = () => {
-            if (InputSystem.gamepad !== null) {
-                const pressedButtons = InputSystem.gamepad.buttons
-                    .map((button, index) => (button.pressed ? index : null))
-                    .filter(index => index !== null)
-                    .map(index => index!)
+        let frameId: number
+        let wasPressedLastFrame = false
 
-                if (pressedButtons.length > 0) setChosenButton(pressedButtons[0])
-                else if (chosenButton !== -1) setChosenButton(-1)
+        const checkGamepadState = () => {
+            const activeGamepads = InputSystem.getConnectedGamepads()
+            let currentlyPressedButton = -1
+
+            for (const gamepad of activeGamepads) {
+                const pressedIndex = gamepad.buttons.findIndex(button => button.pressed)
+                if (pressedIndex !== -1) {
+                    currentlyPressedButton = pressedIndex
+                    break
+                }
             }
-            requestAnimationFrame(checkGamepadState)
+            if (currentlyPressedButton !== -1) {
+                if (!wasPressedLastFrame) {
+                    setChosenButton(currentlyPressedButton)
+                    wasPressedLastFrame = true
+                }
+            } else {
+                wasPressedLastFrame = false
+            }
+
+            frameId = requestAnimationFrame(checkGamepadState)
         }
 
-        checkGamepadState()
-    })
+        frameId = requestAnimationFrame(checkGamepadState)
+        return () => cancelAnimationFrame(frameId)
+    }, [])
 
     /** Input detection for setting inputs */
     useEffect(() => {

@@ -152,7 +152,7 @@ export default class AxisInput extends Input {
      * @returns {number} KEYBOARD: 1 if positive pressed, -1 if negative pressed, or 0 if none or both are pressed.
      * @returns {number} GAMEPAD: a number between -1 and 1 with a deadband in the middle.
      */
-    getValue(useGamepad: boolean, useTouchControls: boolean): number {
+    getValue(useGamepad: boolean, useTouchControls: boolean, playerSlot: number = 0): number {
         const matchModeType = MatchMode.getInstance().getMatchModeType()
         if (matchModeType === MatchModeType.MATCH_ENDED || matchModeType === MatchModeType.AUTONOMOUS) {
             return 0
@@ -161,12 +161,12 @@ export default class AxisInput extends Input {
         if (useGamepad) {
             // Gamepad joystick axis
             if (!this.useGamepadButtons)
-                return InputSystem.getGamepadAxis(this.gamepadAxisNumber) * (this.joystickInverted ? -1 : 1)
+                return InputSystem.getGamepadAxis(this.gamepadAxisNumber, playerSlot) * (this.joystickInverted ? -1 : 1)
 
             // Gamepad button axis
             return (
-                (InputSystem.isGamepadButtonPressed(this.posGamepadButton) ? 1 : 0) -
-                (InputSystem.isGamepadButtonPressed(this.negGamepadButton) ? 1 : 0)
+                (InputSystem.isGamepadButtonPressed(this.posGamepadButton, playerSlot) ? 1 : 0) -
+                (InputSystem.isGamepadButtonPressed(this.negGamepadButton, playerSlot) ? 1 : 0)
             )
         }
 
@@ -181,13 +181,13 @@ export default class AxisInput extends Input {
         )
     }
 
-    get keysUsed(): KeyDescriptor[] {
+    keysUsed(playerSlot: number = 0): KeyDescriptor[] {
         return [
             this.describeKey(this.posKeyCode, this.posKeyModifiers),
             this.describeKey(this.negKeyCode, this.negKeyModifiers),
-            this.describeGamepadBtn(this.posGamepadButton),
-            this.describeGamepadBtn(this.negGamepadButton),
-            this.describeGamepadAxis(this.gamepadAxisNumber),
+            this.describeGamepadBtn(this.posGamepadButton, playerSlot),
+            this.describeGamepadBtn(this.negGamepadButton, playerSlot),
+            this.describeGamepadAxis(this.gamepadAxisNumber, playerSlot),
             this.describeTouchAxis(this.touchControlAxis),
         ]
     }

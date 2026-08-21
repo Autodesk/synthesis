@@ -98,22 +98,70 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
         SynthesisBrain.brainIndexMap.get(brainIndex)?.mecanumRobotCentric ?? false
     )
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
+    const [connectedPlayerCount, setConnectedPlayerCount] = useState(InputSystem.getConnectedPlayerCount())
+    const [selectedSlot, setSelectedSlot] = useState(InputSystem.getPlayerSlot(brainIndex))
+    // Controller slots currently supplying input, used to help identify which controller is which
+    const [activeControllers, setActiveControllers] = useState<number[]>([])
 
     const refreshAvailableSchemes = useCallback(() => {
-        const schemes = [...InputSchemeManager.availableInputSchemesByType(robotDriveType)]
+        const schemes = [...InputSchemeManager.availableInputSchemesByType(robotDriveType, brainIndex, selectedSlot)]
         if (matchMedia("(hover: none)").matches) {
             // showing input schemes that support touch controls first (on mobile devices)
             schemes.sort((a, b) => (b.scheme.usesTouchControls ? 1 : 0) - (a.scheme.usesTouchControls ? 1 : 0))
         }
         setAvailableSchemes(schemes)
-    }, [robotDriveType])
+    }, [robotDriveType, brainIndex, selectedSlot])
 
     useEffect(() => {
-        // Initial load and when robotDriveType changes
+        // Initial load and when the drivetrain or selected controller slot changes
         refreshAvailableSchemes()
 
         return EventSystem.listen("InputSchemeChanged", () => refreshAvailableSchemes())
     }, [refreshAvailableSchemes])
+
+    useEffect(() => {
+        // Keep the controller list in sync as gamepads connect/disconnect
+        const refreshGamepads = () => setConnectedPlayerCount(InputSystem.getConnectedPlayerCount())
+        window.addEventListener("gamepadconnected", refreshGamepads)
+        window.addEventListener("gamepaddisconnected", refreshGamepads)
+
+        return () => {
+            window.removeEventListener("gamepadconnected", refreshGamepads)
+            window.removeEventListener("gamepaddisconnected", refreshGamepads)
+        }
+    }, [])
+
+    useEffect(() => {
+        // Poll each frame for which controllers are actively supplying input, so users can
+        // physically identify a controller by pressing a button or moving a stick on it.
+        const deadband = 0.15
+        let frame: number
+        let previousKey = ""
+
+        const poll = () => {
+            const active: number[] = []
+            const count = InputSystem.getConnectedPlayerCount()
+            for (let slot = 0; slot < count; slot++) {
+                const gamepad = InputSystem.getGamepadBySlot(slot)
+                if (gamepad == null) continue
+                const isActive =
+                    gamepad.buttons.some(button => button.pressed) ||
+                    gamepad.axes.some(axis => Math.abs(axis) > deadband)
+                if (isActive) active.push(slot)
+            }
+
+            // Only re-render when the active set actually changes
+            const key = active.join(",")
+            if (key !== previousKey) {
+                previousKey = key
+                setActiveControllers(active)
+            }
+            frame = requestAnimationFrame(poll)
+        }
+
+        frame = requestAnimationFrame(poll)
+        return () => cancelAnimationFrame(frame)
+    }, [])
 
     const onSchemeSelected = useCallback(() => {
         onSelect?.()
@@ -156,6 +204,44 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                         setRobotCentric(checked)
                     }}
                 />
+            )}
+            <Divider />
+            {/** Controller assignment for this robot (only relevant for gamepad schemes) */}
+            {connectedPlayerCount > 0 ? (
+                <>
+                    <FormControl fullWidth>
+                        <InputLabel id="input-scheme-controller-label">Controller</InputLabel>
+                        <Select
+                            label="Controller"
+                            labelId="input-scheme-controller-label"
+                            value={selectedSlot}
+                            onChange={e => {
+                                const slot = Number(e.target.value)
+                                setSelectedSlot(slot)
+                                InputSystem.setPlayerSlot(brainIndex, slot)
+                                EventSystem.dispatch("InputSchemeChanged", { panelId })
+                            }}
+                        >
+                            {Array.from({ length: connectedPlayerCount }, (_unused, slot) => (
+                                <MenuItem key={`controller-${slot}`} value={slot}>
+                                    {`Controller ${slot + 1}`}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                    {/** Live readout of which controllers are supplying input, to identify them */}
+                    <Label size="sm" className="text-center mt-[4pt] mx-[5%]">
+                        {`Current Input: ${
+                            activeControllers.length > 0
+                                ? activeControllers.map(slot => `Controller ${slot + 1}`).join(", ")
+                                : "None"
+                        }`}
+                    </Label>
+                </>
+            ) : (
+                <Label size="sm" className="text-center">
+                    No controllers detected
+                </Label>
             )}
             <Divider />
             <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">

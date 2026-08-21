@@ -273,7 +273,8 @@ describe("Gamepad Input Check", () => {
     test("Disconnect event", () => {
         // The connection event is implicitly tested by registering a fake gamepad
         window.dispatchEvent(Object.assign(new Event("gamepaddisconnected"), { gamepad: fakeGamepad }))
-        expect(InputSystem["_gpIndex"]).toBeNull()
+        expect(InputSystem["_gpIndexes"][0]).toBeNull()
+        expect(InputSystem.getConnectedPlayerCount()).toBe(0)
     })
 
     test("Get input with gamepad scheme", () => {
@@ -299,7 +300,8 @@ describe("Default Input Scheme Checks", () => {
         DefaultInputs.defaultInputCopies.forEach(scheme => {
             const usedKeys = new Map<KeyDescriptor, number>()
             scheme.inputs.forEach(input => {
-                input.keysUsed
+                input
+                    .keysUsed()
                     .filter(key => key != null)
                     .forEach(key => usedKeys.set(key, (usedKeys.get(key) ?? 0) + 1))
                 usedKeys.forEach((count, key) => {
