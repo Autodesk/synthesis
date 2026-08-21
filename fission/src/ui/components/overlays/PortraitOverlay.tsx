@@ -39,7 +39,7 @@ const PortraitOverlay: React.FC = () => {
             <Stack alignItems="center" gap={3} sx={{ px: 4, textAlign: "center" }}>
                 <Box
                     component="img"
-                    src="/synthesis-logo.svg"
+                    src={`${import.meta.env.BASE_URL}synthesis-logo.svg`}
                     alt="Synthesis"
                     sx={{ width: 80, height: 80, objectFit: "contain" }}
                 />
