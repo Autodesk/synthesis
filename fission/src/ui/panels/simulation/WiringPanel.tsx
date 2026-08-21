@@ -226,8 +226,9 @@ const SimIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCon
     )
 }
 
-const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
+const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig, selectedAssembly }) => {
     const theme = useTheme()
+    const ftcActive = selectedAssembly.brain?.isFTC() ?? false
 
     const [refreshHook, refreshCheckboxes] = useReducer(x => !x, false)
 
@@ -284,20 +285,28 @@ const RobotIoComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simC
                 <Stack>
                     <Label size="md">Input</Label>
                     <ScrollView>
-                        <Label size="md">CAN Encoders</Label>
+                        <Label size="md">{ftcActive ? "Encoders" : "CAN Encoders"}</Label>
                         {canEncoders}
-                        <Label size="md">Accelerometers</Label>
-                        {accelerometers}
+                        {!ftcActive && (
+                            <>
+                                <Label size="md">Accelerometers</Label>
+                                {accelerometers}
+                            </>
+                        )}
                     </ScrollView>
                 </Stack>
                 <Box sx={{ backgroundColor: theme.palette.text.primary, height: "100%" }} />
                 <Stack>
                     <Label size="md">Output</Label>
                     <ScrollView>
-                        <Label size="md">CAN Motors</Label>
+                        <Label size="md">{ftcActive ? "Motors" : "CAN Motors"}</Label>
                         {canMotors}
-                        <Label size="md">PWM Devices</Label>
-                        {pwmDevices}
+                        {!ftcActive && (
+                            <>
+                                <Label size="md">PWM Devices</Label>
+                                {pwmDevices}
+                            </>
+                        )}
                     </ScrollView>
                 </Stack>
             </Box>

@@ -1,11 +1,14 @@
 import { Mutex } from "async-mutex"
 
+// Generic WebSocket worker shared by WPILib and FTC codesim connections.
+
 let socket: WebSocket | undefined = undefined
 
 const connectMutex = new Mutex()
 
 let intervalHandle: NodeJS.Timeout | undefined = undefined
 let reconnect = false
+let connectionUrl: string | undefined = undefined
 const RECONNECT_INTERVAL = 1000
 
 function socketOpen(): boolean {
@@ -16,13 +19,14 @@ function socketConnecting(): boolean {
     return (socket && socket.readyState == WebSocket.CONNECTING) ?? false
 }
 
-async function tryConnect(port?: number): Promise<void> {
+async function tryConnect(): Promise<void> {
     await connectMutex.runExclusive(() => {
+        if (!connectionUrl) return
         if ((socket?.readyState ?? WebSocket.CLOSED) == WebSocket.OPEN) {
             return
         }
 
-        socket = new WebSocket(`ws://localhost:${port ?? 3300}/wpilibws`)
+        socket = new WebSocket(connectionUrl)
 
         socket.addEventListener("open", () => {
             self.postMessage({ status: "open" })
@@ -47,15 +51,14 @@ async function tryDisconnect(): Promise<void> {
     })
 }
 
-// Posts incoming messages
 function onMessage(event: MessageEvent) {
     self.postMessage(event.data)
 }
 
-// Sends outgoing messages
 self.addEventListener("message", e => {
     switch (e.data.command) {
         case "enable": {
+            connectionUrl = e.data.url ?? connectionUrl
             reconnect = e.data.reconnect ?? false
             const intervalFunc = () => {
                 if (intervalHandle != undefined && !socketOpen() && !socketConnecting()) {

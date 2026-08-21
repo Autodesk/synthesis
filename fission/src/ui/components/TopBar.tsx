@@ -29,7 +29,7 @@ import { TopBarFitProvider } from "@/ui/components/topbar/TopBarFitProvider"
 import { TopBarIcon } from "@/ui/components/topbar/TopBarIcons"
 import { useAssemblySelection } from "@/ui/components/topbar/UseConfigureAssembly"
 import UserIcon from "@/ui/components/UserIcon"
-import { hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
+import { getIsConnected, hasSimBrain } from "@/systems/simulation/wpilib_brain/WPILibState"
 import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 
 const TUTORIALS_URL = "https://synthesis.autodesk.com/tutorials"
@@ -183,7 +183,7 @@ const TopBar: React.FC = () => {
 
                     {hasSimBrain() && (
                         <>
-                            <CodeConnectionIndicator />
+                            <CodeConnectionIndicator label="Code connection" getIsConnected={getIsConnected} />
                             <Box sx={TOP_BAR_DIVIDER_SX} />
                         </>
                     )}

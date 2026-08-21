@@ -13,7 +13,9 @@ function createBrain(assembly: MirabufSceneObject, brainType: BrainType): Brain 
         case "synthesis":
             return new SynthesisBrain(assembly)
         case "wpilib":
-            return new WPILibBrain(assembly)
+            return new WPILibBrain(assembly, "wpilib")
+        case "ftc":
+            return new WPILibBrain(assembly, "ftc")
         default:
             return
     }
@@ -58,6 +60,7 @@ const BrainSelectionInterface: ConfigurationSubpanelComponent = ({ selectedAssem
         >
             <ToggleButton value={"synthesis"}>Synthesis Brain</ToggleButton>
             <ToggleButton value={"wpilib"}>WPILib Brain</ToggleButton>
+            <ToggleButton value={"ftc"}>FTC Brain</ToggleButton>
         </ToggleButtonGroup>
     )
 }
