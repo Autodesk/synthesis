@@ -2,10 +2,12 @@ import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import { afterEach, assert, beforeEach, describe, expect, test } from "vitest"
 import { GAMEPIECE_SUFFIX } from "@/mirabuf/MirabufParser"
+import { mirabuf } from "@/proto/mirabuf"
 import { BodyAssociate } from "@/systems/physics/BodyAssociate"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem, { LayerReserve } from "../../systems/physics/PhysicsSystem"
 import type MirabufParser from "../../mirabuf/MirabufParser"
+import type Mechanism from "../../systems/physics/Mechanism"
 
 describe("Physics Sanity Checks", () => {
     let system: PhysicsSystem
@@ -16,6 +18,52 @@ describe("Physics Sanity Checks", () => {
 
     afterEach(() => {
         system.destroy()
+    })
+
+    test("Manual wheel radius takes precedence over shared body bounds", () => {
+        const mainBody = system.createBox(new THREE.Vector3(1, 1, 1), 1, undefined, undefined)
+        const wheelBody = system.createBox(new THREE.Vector3(0.3, 0.4, 0.5), 1, undefined, undefined)
+        system.addBodyToSystem(mainBody.GetID(), true)
+        system.addBodyToSystem(wheelBody.GetID(), true)
+
+        const parser = {
+            assembly: {
+                info: { version: 6 },
+                data: {
+                    parts: { userData: { data: { urdfImport: "true" } } },
+                    joints: {
+                        jointInstances: {
+                            wheel: {
+                                parentPart: "main-part",
+                                childPart: "wheel-part",
+                                jointReference: "wheel-definition",
+                            },
+                        },
+                        jointDefinitions: {
+                            "wheel-definition": {
+                                info: { name: "Manual Wheel 1" },
+                                jointMotionType: mirabuf.joint.JointMotion.REVOLUTE,
+                                userData: { data: { wheel: "true", wheelRadius: "6.8" } },
+                            },
+                        },
+                    },
+                },
+            },
+            partToNodeMap: new Map([
+                ["main-part", { id: "main-node" }],
+                ["wheel-part", { id: "wheel-node" }],
+            ]),
+            directedGraph: { getAdjacencyList: (id: string) => (id === "main-node" ? ["wheel-node"] : []) },
+        } as unknown as MirabufParser
+        const mechanism = {
+            getBodyByNodeId: (id: string) => (id === "main-node" ? mainBody.GetID() : wheelBody.GetID()),
+        } as unknown as Mechanism
+        const resolveWheelRadii = Reflect.get(system, "resolveWheelRadii") as (
+            parser: MirabufParser,
+            mechanism: Mechanism
+        ) => Map<string, number>
+
+        expect(resolveWheelRadii.call(system, parser, mechanism).get("wheel")).toBeCloseTo(0.068, 5)
     })
 
     test("Convex Hull Shape (Cube)", () => {
