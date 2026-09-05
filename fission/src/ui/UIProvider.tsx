@@ -121,6 +121,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         }
     }, [refreshDep, panels])
 
+    // configureScreen forces a render after mutating a screen. Keep the latest blocking
+    // state available without changing action callback identities on that refresh.
     const blockStateRef = useRef<UIBlockState>(blockState)
     blockStateRef.current = blockState
 
