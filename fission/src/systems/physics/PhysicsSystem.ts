@@ -132,7 +132,7 @@ const SUSPENSION_MAX_FACTOR = 0.0001
 // Manually-assigned wheels need more suspension travel to tolerate circle-fit origin error.
 const MANUAL_WHEEL_SUSPENSION_MAX_FACTOR = 0.2
 
-// Wheels whose inferred radii fall within this relative tolerance of each other are treated as the
+// Wheels whose resolved radii fall within this relative tolerance of each other are treated as the
 // same size and snapped to a common radius. Sits well above mesh-tessellation noise (<1%) and well
 // below the gap between genuinely different wheel sizes, so distinct sizes stay in separate groups.
 const WHEEL_RADIUS_CLUSTER_TOLERANCE = 0.03
@@ -759,12 +759,16 @@ class PhysicsSystem extends WorldSystem {
                 ? this.getBody(bodyIdB)!
                 : this.getBody(bodyIdA)!
 
-            const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
-            const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
-            const axis = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
-            const wheelBounds = bodyWheel.GetShape().GetLocalBounds() // STATIC_ALIAS
-            const radius = inferWheelRadius(urdfImport, wheelBounds, axis)
-            JOLT.destroy(axis)
+            const explicitRadius = getExplicitWheelRadius(jDef)
+            let radius = explicitRadius
+            if (radius === undefined) {
+                const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
+                const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
+                const axis = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
+                const wheelBounds = bodyWheel.GetShape().GetLocalBounds() // STATIC_ALIAS
+                radius = inferWheelRadius(urdfImport, wheelBounds, axis)
+                JOLT.destroy(axis)
+            }
 
             wheels.push({ guid: jointGuid, radius })
         }
