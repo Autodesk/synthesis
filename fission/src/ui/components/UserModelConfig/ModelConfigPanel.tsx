@@ -94,11 +94,13 @@ const ModelConfigPanel: React.FC<PanelImplProps<void, { sceneObject: MirabufScen
             },
             {
                 onCancel: () => {
+                    World.wheelAssignmentMode.cancel()
+                    World.partDeletionMode.cancel()
                     World.sceneRenderer.removeSceneObject(sceneObject.id)
                 },
             }
         )
-    }, [configureScreen, panel, screen])
+    }, [configureScreen, panel, screen, sceneObject.id])
 
     const closeCallback = useCallback(async () => {
         closePanel(panel!.id, CloseType.ACCEPT)
