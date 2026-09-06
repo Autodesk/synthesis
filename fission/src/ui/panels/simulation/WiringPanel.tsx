@@ -5,6 +5,7 @@ import {
     type FinalConnectionState,
     type Edge as FlowEdge,
     type Node as FlowNode,
+    type OnNodeDrag,
     ReactFlow,
     ReactFlowProvider,
     useEdgesState,
@@ -339,8 +340,8 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
         [simConfig]
     )
 
-    const onNodeDragStop = useCallback(
-        (_event: React.MouseEvent, node: FlowNode, _nodes: FlowNode[]) => {
+    const onNodeDragStop = useCallback<OnNodeDrag<FlowNode>>(
+        (_event, node, _nodes) => {
             const nodeInfo = simConfig.nodes[node.id]
             if (!nodeInfo) {
                 console.warn(`Unregistered Node detected: ${node.id}`)
