@@ -63,7 +63,9 @@ function addWheelSeparatorJoints(assembly: mirabuf.Assembly, assignments: WheelA
             return jDef && isWheel(jDef)
         })
         .map(inst => inst.childPart!)
-    const wheelParts = [...existingWheelParts, ...assignments.map(a => a.wheelPartGuid)]
+    // Re-applying an assignment can include a wheel that already has a manual wheel joint.
+    // Separator joints need distinct endpoints: a self-joint has no ancestral break and makes the parser throw.
+    const wheelParts = [...new Set([...existingWheelParts, ...assignments.map(a => a.wheelPartGuid)])]
 
     for (let i = 0; i < wheelParts.length; i++) {
         for (let j = i + 1; j < wheelParts.length; j++) {
