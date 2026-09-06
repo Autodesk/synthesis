@@ -340,7 +340,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     )
 
     const onNodeDragStop = useCallback(
-        (_event: MouseEvent | TouchEvent, node: FlowNode, _nodes: FlowNode[]) => {
+        (_event: React.MouseEvent, node: FlowNode, _nodes: FlowNode[]) => {
             const nodeInfo = simConfig.nodes[node.id]
             if (!nodeInfo) {
                 console.warn(`Unregistered Node detected: ${node.id}`)
