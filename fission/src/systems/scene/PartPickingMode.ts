@@ -38,6 +38,19 @@ export function toKey(a?: PartHighlight): HighlightKey | undefined {
 const raycaster = new THREE.Raycaster()
 const ndc = new THREE.Vector2()
 
+/** Converts client-space pointer coordinates to NDC relative to the rendered canvas. */
+export function setPointerNdc(
+    target: THREE.Vector2,
+    mousePos: [number, number],
+    canvasRect: Pick<DOMRect, "left" | "top" | "width" | "height">
+): THREE.Vector2 {
+    target.set(
+        ((mousePos[0] - canvasRect.left) / canvasRect.width) * 2 - 1,
+        -((mousePos[1] - canvasRect.top) / canvasRect.height) * 2 + 1
+    )
+    return target
+}
+
 type HighlightStyler = (isSelected: boolean, highlight: PartHighlight) => void
 
 /** Tracks a set of picked parts and tints their meshes; a hovered pending part keeps `selectedColor`. */
@@ -108,7 +121,7 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     private _latestMousePos: [number, number] | undefined
     private _lastProcessedMousePos: [number, number] | undefined
 
-    // Rebuilt on enable and after finishApply() to avoid rescanning every mesh entry per raycast.
+    // Rebuilt on enable and after finishApply(rebuilt) to avoid rescanning every mesh entry per raycast.
     private _candidateBatches: THREE.BatchedMesh[] = []
     private _pickIndex = new Map<THREE.BatchedMesh, Map<number, string>>()
 
@@ -134,7 +147,18 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     }
 
     public enable(object: MirabufSceneObject) {
-        if (this.enabled) return
+        if (this._object === object) return
+
+        if (this.enabled) {
+            // A rebuild can replace the scene object while React keeps this mode mounted.
+            // Drop selections tied to the old batches before targeting the replacement.
+            this.clearHover()
+            this.pending.clearSilently()
+            this._object = object
+            this.rebuildPickIndex()
+            return
+        }
+
         this._object = object
         this.hookInteractionHandlers()
     }
@@ -219,7 +243,8 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
     /** Raycasts the cached candidate batches for the part-instance GUID under the mouse. */
     protected pickPart(mousePos: [number, number]): PartPick | undefined {
         const camera = World.sceneRenderer.mainCamera
-        ndc.set((mousePos[0] / window.innerWidth) * 2 - 1, -(mousePos[1] / window.innerHeight) * 2 + 1)
+        const canvasRect = World.sceneRenderer.renderer.domElement.getBoundingClientRect()
+        setPointerNdc(ndc, mousePos, canvasRect)
         raycaster.setFromCamera(ndc, camera)
 
         const hits = raycaster.intersectObjects<THREE.BatchedMesh>(this._candidateBatches, false)
@@ -326,9 +351,19 @@ abstract class PartPickingMode<T extends PartSelection> extends WorldSystem {
         return [...this.pending.values()]
     }
 
-    public finishApply(): void {
+    /** Clears pending picks after a failed/cancelled configuration without touching old batches. */
+    public cancel(): void {
         this.pending.clearSilently()
-        if (this.enabled) this.rebuildPickIndex()
+        this.disable()
+    }
+
+    /** Clears old picks and retargets the mode to the scene object created by a successful rebuild. */
+    public finishApply(rebuilt: MirabufSceneObject): void {
+        this.pending.clearSilently()
+        if (this.enabled) {
+            this._object = rebuilt
+            this.rebuildPickIndex()
+        }
     }
 
     public get sceneObject() {

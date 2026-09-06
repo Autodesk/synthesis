@@ -1,4 +1,5 @@
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { applyPartDeletions } from "@/mirabuf/PartDeletionBuilder"
 import { applyWheelAssignments } from "@/mirabuf/WheelJointBuilder"
 import World from "../World"
@@ -18,30 +19,44 @@ export async function applyModelConfigChanges(): Promise<boolean> {
     wheelMode.clearHover()
     deleteMode.clearHover()
 
-    const sceneObject = World.wheelAssignmentMode.sceneObject ?? World.partDeletionMode.sceneObject
+    const sceneObject = wheelMode.sceneObject ?? deleteMode.sceneObject
     if (sceneObject == null) {
         console.warn("Missing part handler")
         return false
     }
-    const sceneId = sceneObject.id
 
-    const assembly = sceneObject.mirabufInstance.parser.assembly
+    let rebuilt: MirabufSceneObject | undefined
+    try {
+        const sceneId = sceneObject.id
+        const assembly = sceneObject.mirabufInstance.parser.assembly
 
-    if (assignments) applyWheelAssignments(assembly, assignments)
-    if (deletions) applyPartDeletions(assembly, deletions)
+        if (assignments.length > 0) applyWheelAssignments(assembly, assignments)
+        if (deletions.length > 0) applyPartDeletions(assembly, deletions)
 
-    World.sceneRenderer.removeSceneObject(sceneId)
+        World.sceneRenderer.removeSceneObject(sceneId)
 
-    const rebuilt = await createMirabuf(assembly.info!.GUID!, assembly)
-    if (!rebuilt) {
-        console.warn("Create mirabuf failed")
+        rebuilt = await createMirabuf(assembly.info!.GUID!, assembly)
+        if (!rebuilt) {
+            console.warn("Create mirabuf failed")
+            return false
+        }
+        World.sceneRenderer.registerSceneObject(rebuilt, sceneId)
+
+        wheelMode.isMismatched(assignments, rebuilt)
+        return true
+    } catch (error) {
+        console.error("Applying model config failed", error)
         return false
+    } finally {
+        // Never leave selections pointing at batches that a rebuild disposed.
+        const current = World.sceneRenderer.sceneObjects.get(sceneObject.id)
+        const liveObject = rebuilt ?? (current === sceneObject ? sceneObject : undefined)
+        if (liveObject) {
+            wheelMode.finishApply(liveObject)
+            deleteMode.finishApply(liveObject)
+        } else {
+            wheelMode.cancel()
+            deleteMode.cancel()
+        }
     }
-    World.sceneRenderer.registerSceneObject(rebuilt, sceneId)
-
-    wheelMode.isMismatched(assignments, rebuilt)
-    wheelMode.finishApply()
-    deleteMode.finishApply()
-
-    return true
 }

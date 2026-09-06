@@ -168,8 +168,11 @@ export const ProgressButton: React.FC<
 
     const onClickReal = useCallback(async () => {
         setInProgress(true)
-        await onClick()
-        setInProgress(false)
+        try {
+            await onClick()
+        } finally {
+            setInProgress(false)
+        }
     }, [onClick])
     return (
         <Button onClick={onClickReal} {...props} disabled={disabled || inProgress}>
