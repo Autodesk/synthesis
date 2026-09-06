@@ -1,5 +1,5 @@
 import { Stack, styled } from "@mui/material"
-import { type ChangeEvent, useEffect, useState } from "react"
+import { type ChangeEvent, useCallback, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
@@ -78,6 +78,10 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
         }
     }
 
+    const onTypeChanged = useCallback((_: unknown, value: MiraType | null) => {
+        if (value != null) setSelectedType(value)
+    }, [])
+
     useEffect(() => {
         const onCancel = () => {
             // timeout required to allow this modal to close before the library is opened (synchronous)
@@ -124,10 +128,10 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     reportUpload("urdf-zip", hash, meshFormats)
 
                     mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
-                    progressHandle.done("Import complete!")
                 } else {
                     const result = await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
                     if (!result) {
+                        progressHandle.fail("Import failed!")
                         globalOpenModal(ImportLocalMirabufModal, {
                             configurationType: miraTypeToConfigType(miraType),
                         })
@@ -139,6 +143,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 }
 
                 if (mirabufSceneObject) {
+                    progressHandle.done("Import complete!")
                     World.sceneRenderer.registerSceneObject(mirabufSceneObject)
                     embedAssemblyThumbnail(mirabufSceneObject).catch(console.error)
 
@@ -151,6 +156,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     }
                     closeModal(CloseType.OVERWRITE)
                 } else {
+                    progressHandle.fail("Import failed!")
                     globalOpenModal(ImportLocalMirabufModal, {
                         configurationType: miraTypeToConfigType(miraType),
                     })
@@ -184,12 +190,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
     return (
         <Stack className="items-center" gap={5}>
             {!isUrdf && (
-                <ToggleButtonGroup
-                    value={miraType}
-                    exclusive
-                    onChange={(_, v) => v != null && setSelectedType(v)}
-                    sx={{ alignSelf: "center" }}
-                >
+                <ToggleButtonGroup value={miraType} exclusive onChange={onTypeChanged} sx={{ alignSelf: "center" }}>
                     <ToggleButton value={MiraType.ROBOT}>Robot</ToggleButton>
                     <ToggleButton value={MiraType.FIELD}>Field</ToggleButton>
                 </ToggleButtonGroup>
@@ -198,12 +199,14 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 Upload File
                 <VisuallyHiddenInput type="file" onChange={onInputChanged} multiple accept=".mira,.urdf,.zip" />
             </Button>
-            {importError && (
+            {importError ? (
                 <Label className="text-center" size="sm" style={{ color: "red" }}>
                     {importError}
                 </Label>
-            )}
-            {selectedFile && <Label className="text-center" size="sm">{`Selected File: ${selectedFile.name}`}</Label>}
+            ) : null}
+            {selectedFile ? (
+                <Label className="text-center" size="sm">{`Selected File: ${selectedFile.name}`}</Label>
+            ) : null}
         </Stack>
     )
 }
