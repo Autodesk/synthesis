@@ -54,9 +54,16 @@
           exporter = pkgs.mkShell {
             packages = with pkgs; [
               python3
+              python3Packages.mypy
+              python3Packages.protobuf
+              python3Packages.requests
+              python3Packages.types-protobuf
+              python3Packages.types-requests
+              python3Packages.urllib3
               black
               isort
               bun
+              protobuf
             ];
           };
           glueball = pkgs.mkShell {
