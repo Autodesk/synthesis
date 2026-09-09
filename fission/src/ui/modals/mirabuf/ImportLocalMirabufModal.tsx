@@ -3,22 +3,26 @@ import { type ChangeEvent, useEffect, useState } from "react"
 import { globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { embedAssemblyThumbnail } from "@/mirabuf/MirabufThumbnail"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
+import type { UploadFileFormat } from "@/systems/analytics/AnalyticsSystem"
 import { loadURDF } from "@/urdf/URDFLoader"
 import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { Button, ToggleButton, ToggleButtonGroup } from "@/ui/components/StyledComponents"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import {
-    type ConfigurationType,
     configTypeToMiraType,
+    type ConfigurationType,
     miraTypeToConfigType,
 } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import LibraryModal from "@/ui/modals/mirabuf/LibraryModal"
 import { getTargetControls } from "@/systems/scene/CameraControls"
-import { hashBuffer } from "@/util/Utility.ts"
+import { hashBuffer, hexStringToUint8Array } from "@/util/Utility.ts"
+import { ProgressHandle } from "@/components/ProgressNotificationData.ts"
+import { v4 as uuidV4 } from "uuid"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -76,7 +80,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
 
     useEffect(() => {
         const onCancel = () => {
-            openPanel(ImportMirabufPanel, { configurationType: miraTypeToConfigType(miraType ?? MiraType.ROBOT) })
+            // timeout required to allow this modal to close before the library is opened (synchronous)
+            setTimeout(() => globalOpenModal(LibraryModal, undefined), 0)
         }
 
         const onBeforeAccept = async () => {
@@ -85,13 +90,41 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             const buffer = await selectedFile.arrayBuffer()
             World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
 
+            const reportUpload = (fileFormat: UploadFileFormat, key: string, meshFormats?: string[]) =>
+                World.analyticsSystem?.event("Local Upload", {
+                    key: key,
+                    type: miraType === MiraType.ROBOT ? "robot" : "field",
+                    fileSize: buffer.byteLength,
+                    fileFormat: fileFormat,
+                    meshFormats: meshFormats?.join(","),
+                })
+
+            const progressHandle = new ProgressHandle(`Importing ${selectedFile.name}`)
             try {
                 let mirabufSceneObject
 
                 if (isURDFFile(selectedFile.name)) {
-                    const assembly = await loadURDF(buffer, selectedFile.name)
-                    const hash = await hashBuffer(buffer)
-                    mirabufSceneObject = await createMirabuf(hash, assembly, undefined)
+                    const inputHash = await hashBuffer(buffer)
+                    const uuid = uuidV4({ random: hexStringToUint8Array(inputHash).slice(0, 16) })
+                    const { assembly, meshFormats } = await loadURDF(buffer, selectedFile.name, progressHandle)
+                    // Default is the assembly name, which is often Assembly 1 or something else similarly non-descriptive. People will (likely) name the files something useful
+                    assembly.info!.name = selectedFile.name.split(".")[0]
+                    assembly.info!.GUID = uuid
+
+                    let hash: string = inputHash
+
+                    const res = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
+
+                    if (res == null) {
+                        console.warn("Caching URDF failed!")
+                    } else {
+                        hash = res.hash
+                    }
+
+                    reportUpload("urdf-zip", hash, meshFormats)
+
+                    mirabufSceneObject = await createMirabuf(hash, assembly, progressHandle)
+                    progressHandle.done("Import complete!")
                 } else {
                     const result = await MirabufCachingService.cacheLocalAndReturn(buffer, miraType)
                     if (!result) {
@@ -100,11 +133,14 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                         })
                         return
                     }
+                    reportUpload("mira", result.cacheInfo.hash)
+
                     mirabufSceneObject = await createMirabuf(result.cacheInfo.hash, result.assembly, undefined)
                 }
 
                 if (mirabufSceneObject) {
                     World.sceneRenderer.registerSceneObject(mirabufSceneObject)
+                    embedAssemblyThumbnail(mirabufSceneObject).catch(console.error)
 
                     if (mirabufSceneObject.miraType == MiraType.ROBOT) {
                         openPanel(InitialConfigPanel, undefined, modal)
@@ -113,7 +149,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                     if (targetControls && (miraType === MiraType.ROBOT || !targetControls.focusProvider)) {
                         targetControls.focusProvider = mirabufSceneObject
                     }
-                    closeModal(CloseType.Overwrite)
+                    closeModal(CloseType.OVERWRITE)
                 } else {
                     globalOpenModal(ImportLocalMirabufModal, {
                         configurationType: miraTypeToConfigType(miraType),
@@ -121,6 +157,10 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
                 }
             } catch (e) {
                 console.error("[Import]", e)
+                progressHandle.fail("Import failed!")
+                World.analyticsSystem?.exception(
+                    `Failed to import ${isURDFFile(selectedFile.name) ? "urdf-zip" : "mira"} file`
+                )
                 globalOpenModal(ImportLocalMirabufModal, {
                     configurationType: miraTypeToConfigType(miraType),
                     errorMessage: e instanceof Error ? e.message : "An unknown error occurred during import.",
@@ -135,7 +175,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void, ImportLocalMirabufP
             { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
             { onBeforeAccept, onCancel }
         )
-    }, [selectedFile, miraType, isUrdf, openPanel, modal, closeModal, configureScreen])
+    }, [selectedFile, miraType, openPanel, modal, closeModal, configureScreen])
 
     useEffect(() => {
         setSelectedType(configTypeToMiraType(configurationType))

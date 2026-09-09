@@ -1,6 +1,6 @@
 import * as THREE from "three"
 import World from "@/systems/World.ts"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
+import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
 import type { mirabuf } from "../proto/mirabuf"
 import type MirabufParser from "./MirabufParser.ts"
 import { ParseErrorSeverity } from "./MirabufParser.ts"
@@ -93,8 +93,8 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
 class MirabufInstance {
     private _mirabufParser: MirabufParser
     private _materials: Map<string, THREE.Material>
-    private _meshes: Map<MirabufPartInstanceGUID, Array<[THREE.BatchedMesh, number]>>
-    private _batches: Array<THREE.BatchedMesh>
+    private _meshes: Map<MirabufPartInstanceGUID, [THREE.BatchedMesh, number][]>
+    private _batches: THREE.BatchedMesh[]
 
     public get parser() {
         return this._mirabufParser
@@ -133,8 +133,11 @@ class MirabufInstance {
             ([appearanceId, appearance]) => {
                 const { A, B, G, R } = appearance.albedo ?? {}
                 const [hex, opacity] =
-                    A && B && G && R ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0] : [0xe32b50, 1.0]
+                    A != null && B != null && G != null && R != null
+                        ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0]
+                        : [0xe32b50, 1.0]
 
+                const isTransparent = opacity < 1.0
                 const material =
                     materialStyle === MaterialStyle.REGULAR
                         ? new THREE.MeshStandardMaterial({
@@ -144,7 +147,9 @@ class MirabufInstance {
                               metalness: appearance.metallic ?? 0.0,
                               shadowSide: THREE.DoubleSide,
                               opacity: opacity,
-                              transparent: opacity < 1.0,
+                              transparent: isTransparent,
+                              // Don't want transparent materials (driver station poly) to hide zones behind them
+                              depthWrite: !isTransparent,
                           })
                         : materialStyle === MaterialStyle.NORMAL
                           ? new THREE.MeshNormalMaterial()
@@ -172,7 +177,7 @@ class MirabufInstance {
             maxIndices: number
         }
 
-        const batchMap = new Map<THREE.Material, Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>>()
+        const batchMap = new Map<THREE.Material, Map<string, [mirabuf.IBody, mirabuf.IPartInstance[]]>>()
         const countMap = new Map<THREE.Material, BatchCounts>()
 
         // Filter all instances by first material, then body
@@ -192,7 +197,7 @@ class MirabufInstance {
 
                 let materialBodyMap = batchMap.get(material)
                 if (!materialBodyMap) {
-                    materialBodyMap = new Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>()
+                    materialBodyMap = new Map<string, [mirabuf.IBody, mirabuf.IPartInstance[]]>()
                     batchMap.set(material, materialBodyMap)
                 }
 

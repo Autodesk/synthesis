@@ -78,6 +78,8 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     backgroundColor: "#2e2e2e",
                     boxShadow: 6,
                     maxHeight: "85vh",
+                    width: props.width,
+                    height: props.height,
                     flexDirection: "column",
                 }}
                 ref={nodeRef}
@@ -102,12 +104,13 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     sx={{
                         p: 2,
                         flex: "1 1 auto",
+                        minHeight: 0,
                         overflowY: "auto",
                         "&:last-child": { pb: 2 },
                         backgroundColor: "inherit",
                     }}
                 >
-                    <div className="panel-contents">
+                    <div className="panel-contents" style={{ height: "100%" }}>
                         {React.Children.map(children, child => {
                             if (React.isValidElement(child)) return React.cloneElement(child, { panel, parent })
                         })}
@@ -126,7 +129,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     >
                         {!props.hideCancel && (
                             <Button
-                                onClick={() => closePanel(panel.id, CloseType.Cancel)}
+                                onClick={() => closePanel(panel.id, CloseType.CANCEL)}
                                 variant="outlined"
                                 color="secondary"
                             >
@@ -135,7 +138,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                         )}
                         {!props.hideAccept && (
                             <Button
-                                onClick={() => closePanel(panel.id, CloseType.Accept)}
+                                onClick={() => closePanel(panel.id, CloseType.ACCEPT)}
                                 variant="contained"
                                 color="primary"
                                 disabled={props.disableAccept}

@@ -12,20 +12,23 @@ import RobotPositionTracker from "./simulation/RobotPositionTracker"
 import SimulationSystem from "./simulation/SimulationSystem"
 
 class World {
-    private static _isAlive: boolean = false
-    private static _clock: THREE.Clock
-    private static _currentDeltaT: number = 0
+    private static _instance?: World
 
-    private static _sceneRenderer: SceneRenderer
-    private static _physicsSystem: PhysicsSystem
-    private static _simulationSystem: SimulationSystem
-    private static _inputSystem: InputSystem
-    private static _multiplayerSystem?: MultiplayerSystem
-    private static _analyticsSystem: AnalyticsSystem | undefined = undefined
-    private static _dragModeSystem: DragModeSystem
-    private static _performanceMonitorSystem: PerformanceMonitoringSystem
+    private _isAlive: boolean = false
+    private _clock: THREE.Clock
+    private _currentDeltaT: number = 0
 
-    private static _accumTimes: AccumTimes = {
+    private _sceneRenderer: SceneRenderer
+    private _physicsSystem: PhysicsSystem
+    private _simulationSystem: SimulationSystem
+    private _inputSystem: InputSystem
+    private _multiplayerSystem?: MultiplayerSystem
+    private _analyticsSystem: AnalyticsSystem | undefined = undefined
+    private _dragModeSystem: DragModeSystem
+    private _performanceMonitorSystem: PerformanceMonitoringSystem
+    private _scoreTracker: ScoreTracker = new ScoreTracker()
+
+    private _accumTimes: AccumTimes = {
         frames: 0,
         sceneTime: 0,
         physicsTime: 0,
@@ -35,35 +38,38 @@ class World {
     }
 
     public static get accumTimes() {
-        return World._accumTimes
+        return this._instance?._accumTimes!
     }
 
     public static get isAlive() {
-        return World._isAlive
+        return this._instance?._isAlive ?? false
     }
 
     public static get sceneRenderer() {
-        return World._sceneRenderer
+        return this._instance?._sceneRenderer!
     }
 
     public static get physicsSystem() {
-        return World._physicsSystem
+        return this._instance?._physicsSystem!
     }
 
     public static get simulationSystem() {
-        return World._simulationSystem
+        return this._instance?._simulationSystem!
     }
     public static get inputSystem() {
-        return World._inputSystem
+        return this._instance?._inputSystem!
     }
     public static get multiplayerSystem() {
-        return World._multiplayerSystem
+        return this._instance?._multiplayerSystem
     }
     public static get analyticsSystem() {
-        return World._analyticsSystem
+        return this._instance?._analyticsSystem
     }
     public static get dragModeSystem() {
-        return World._dragModeSystem
+        return this._instance?._dragModeSystem!
+    }
+    public static get scoreTracker() {
+        return this._instance?._scoreTracker!
     }
 
     public static getOwnRobots() {
@@ -75,7 +81,7 @@ class World {
     }
 
     public static resetAccumTimes() {
-        this._accumTimes = {
+        this._instance!._accumTimes! = {
             frames: 0,
             sceneTime: 0,
             physicsTime: 0,
@@ -86,76 +92,99 @@ class World {
     }
 
     public static setMultiplayerSystem(multiplayerSystem?: MultiplayerSystem) {
-        World._multiplayerSystem = multiplayerSystem
+        this._instance!._multiplayerSystem = multiplayerSystem
     }
 
-    public static async initWorld() {
-        if (World._isAlive) return
+    public constructor() {
+        this._clock = new THREE.Clock()
+        this._isAlive = true
 
-        World._clock = new THREE.Clock()
-        World._isAlive = true
-
-        World._sceneRenderer = new SceneRenderer()
-        World._physicsSystem = new PhysicsSystem()
-        World._simulationSystem = new SimulationSystem()
-        World._inputSystem = new InputSystem()
-        World._dragModeSystem = new DragModeSystem()
-        World._performanceMonitorSystem = new PerformanceMonitoringSystem()
+        this._sceneRenderer = new SceneRenderer()
+        this._physicsSystem = new PhysicsSystem()
+        this._simulationSystem = new SimulationSystem()
+        this._inputSystem = new InputSystem()
+        this._dragModeSystem = new DragModeSystem()
+        this._performanceMonitorSystem = new PerformanceMonitoringSystem()
 
         try {
-            World._analyticsSystem = new AnalyticsSystem()
+            this._analyticsSystem = new AnalyticsSystem()
         } catch (_) {
-            World._analyticsSystem = undefined
+            this._analyticsSystem = undefined
         }
+    }
 
-        ScoreTracker.resetScores()
-
-        if (import.meta.env.DEV) {
-            window.World = World
+    public static reset(keepAssets: "all" | "own" | "none" = "none") {
+        if (keepAssets == "none") {
+            this._instance?._sceneRenderer.removeAllSceneObjects()
+        } else if (keepAssets == "own") {
+            this._instance?._sceneRenderer.mirabufSceneObjects
+                .getAll()
+                .filter(obj => !obj.isOwnObject)
+                .forEach(obj => World.sceneRenderer.removeSceneObject(obj.id))
         }
+        this._instance?._scoreTracker.resetScores()
+    }
+
+    public static initWorld() {
+        if (this._instance == null) {
+            this._instance = new World()
+
+            if (import.meta.env.DEV) {
+                window.World = World
+            }
+        }
+    }
+
+    public destroy() {
+        if (!this._isAlive) return
+
+        this._isAlive = false
+
+        this._physicsSystem.destroy()
+        this._sceneRenderer.destroy()
+        this._simulationSystem.destroy()
+        this._inputSystem.destroy()
+        this._multiplayerSystem?.destroy()
+        this._dragModeSystem.destroy()
+
+        this._performanceMonitorSystem.destroy()
+        this._analyticsSystem?.destroy()
     }
 
     public static destroyWorld() {
-        if (!World._isAlive) return
-
-        World._isAlive = false
-
-        World.physicsSystem.destroy()
-        World._sceneRenderer.destroy()
-        World._simulationSystem.destroy()
-        World._inputSystem.destroy()
-        // World._multiplayerSystem.destroy()
-        World._dragModeSystem.destroy()
-
-        World._performanceMonitorSystem.destroy()
-        World._analyticsSystem?.destroy()
+        this._instance?.destroy()
+        this._instance = undefined
     }
 
-    public static updateWorld() {
-        this._currentDeltaT = World._clock.getDelta()
+    public update() {
+        this._currentDeltaT = this._clock.getDelta()
 
         this._accumTimes.frames++
 
         this._accumTimes.totalTime += this.time(() => {
-            this._accumTimes.simulationTime += this.time(() => World._simulationSystem.update(this._currentDeltaT))
-            this._accumTimes.physicsTime += this.time(() => World.physicsSystem.update(this._currentDeltaT))
-            this._accumTimes.inputTime += this.time(() => World._inputSystem.update(this._currentDeltaT))
-            this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.update(this._currentDeltaT))
-            World._dragModeSystem.update(this._currentDeltaT)
+            this._accumTimes.simulationTime += this.time(() => this._simulationSystem.update(this._currentDeltaT))
+            this._accumTimes.physicsTime += this.time(() => this._physicsSystem.update(this._currentDeltaT))
+            this._accumTimes.inputTime += this.time(() => this._inputSystem.update(this._currentDeltaT))
+            this._accumTimes.sceneTime += this.time(() => this._sceneRenderer.update(this._currentDeltaT))
+            this._dragModeSystem.update(this._currentDeltaT)
         })
 
-        World._analyticsSystem?.update(this._currentDeltaT)
-        World._performanceMonitorSystem?.update(this._currentDeltaT)
+        this._analyticsSystem?.update(this._currentDeltaT)
+        this._performanceMonitorSystem?.update(this._currentDeltaT)
 
         RobotDimensionTracker.update()
         RobotPositionTracker.update()
     }
 
-    public static get currentDeltaT(): number {
-        return this._currentDeltaT
+    public static updateWorld() {
+        this._instance?.update()
     }
 
-    private static time(func: () => void): number {
+    public static get currentDeltaT(): number {
+        return this._instance?._currentDeltaT!
+    }
+
+    private time(func: () => void): number {
         const start = Date.now()
         func()
         return Date.now() - start
@@ -163,3 +192,15 @@ class World {
 }
 
 export default World
+
+if (import.meta.hot) {
+    // Restore the instance that survived the HMR reload
+    if (import.meta.hot.data.world) {
+        World["_instance"] = import.meta.hot.data.world
+    }
+
+    // Stash the instance before the module is replaced
+    import.meta.hot.on("vite:beforeUpdate", () => {
+        import.meta.hot!.data.world = World["_instance"]
+    })
+}

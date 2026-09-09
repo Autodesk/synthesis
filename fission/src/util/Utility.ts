@@ -1,6 +1,7 @@
-import Jolt from "@synthesis.adsk/jolt-physics"
+import type Jolt from "@synthesis.adsk/jolt-physics"
 import Pako from "pako"
 import JOLT from "./loading/JoltSyncLoader"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFalse: () => B): B {
     return obj ? ifTrue(obj) : ifFalse()
@@ -9,6 +10,10 @@ export function ternaryOnce<A, B>(obj: A | undefined, ifTrue: (x: A) => B, ifFal
 export function getFontSize(element: Element): number {
     const str = window.getComputedStyle(element).fontSize
     return Number(str.substring(0, str.length - 2))
+}
+
+export function capitalize(word: string): string {
+    return word[0].toUpperCase() + word.slice(1)
 }
 
 export function clamp(num: number, min: number, max: number): number {
@@ -42,6 +47,16 @@ export async function hashBuffer(buffer: ArrayBuffer, fallbackHash?: string): Pr
         .join("")
 }
 
+export function hashBufferSync(str: string): number {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i)
+        hash |= 0
+    }
+
+    return hash >>> 0
+}
+
 export function forPair<T, U>(listOne: T[], listTwo: U[], predicate: (one: T, two: U) => void): void {
     listOne.forEach(a => listTwo.forEach(b => predicate(a, b)))
 }
@@ -61,6 +76,13 @@ export function hexStringToUint8Array(hexString: string) {
         arrayBuffer[i / 2] = parseInt(hexString.substring(i, i + 2), 16)
     }
     return arrayBuffer
+}
+
+export function titleCase(str: string): string {
+    return str
+        .split(" ")
+        .map((s: string) => s.substring(0, 1).toUpperCase() + s.substring(1))
+        .join(" ")
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: JSON.parse returns `any`
@@ -92,4 +114,57 @@ export function downloadBlob(filename: string, data: BlobPart): void {
 
 export function copyVec3(vec: Jolt.Vec3): Jolt.Vec3 {
     return new JOLT.Vec3(vec.GetX(), vec.GetY(), vec.GetZ())
+}
+
+/**
+ * Returns a promise that will resolve in the next event loop iteration.
+ * Useful in long, blocking functions to allow the UI to update
+ */
+export const yieldToMain = () => new Promise<void>(resolve => setTimeout(resolve, 0))
+
+export async function waitUntil(condition: () => boolean, interval: number = 1000, timeout?: number) {
+    let handle: NodeJS.Timeout | string | number | undefined
+    try {
+        return await new Promise<boolean>(resolve => {
+            if (timeout != null) {
+                setTimeout(() => resolve(false), timeout)
+            }
+
+            handle = setInterval(() => {
+                if (condition()) {
+                    resolve(true)
+                }
+            }, interval)
+        })
+    } finally {
+        clearInterval(handle)
+    }
+}
+
+export async function withTimeout(promise: Promise<boolean>, timeoutMessage: string, duration: number = 5000) {
+    let timeout: NodeJS.Timeout
+    return await Promise.race([
+        promise,
+        new Promise<boolean>(res => {
+            timeout = setTimeout(() => {
+                globalAddToast("warning", timeoutMessage)
+                res(false)
+            }, duration)
+        }),
+    ]).then(v => {
+        clearTimeout(timeout)
+        return v
+    })
+}
+
+export function isDefined<T>(item: T | undefined): item is T {
+    return item !== undefined
+}
+
+export type RecursivePartial<T> = {
+    [P in keyof T]?: T[P] extends (infer U)[]
+        ? RecursivePartial<U>[]
+        : T[P] extends object | undefined
+          ? RecursivePartial<T[P]>
+          : T[P]
 }

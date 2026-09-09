@@ -1,4 +1,5 @@
 import InfoIcon from "@mui/icons-material/Info"
+import { forwardRef } from "react"
 import {
     Box,
     type ButtonProps,
@@ -26,7 +27,9 @@ import { BsCodeSquare } from "react-icons/bs"
 import {
     FaAngleRight,
     FaArrowLeft,
+    FaArrowsUpDownLeftRight,
     FaBasketball,
+    FaBrain,
     FaBug,
     FaCamera,
     FaCar,
@@ -37,10 +40,12 @@ import {
     FaGear,
     FaInfinity,
     FaMagnifyingGlass,
+    FaMicrochip,
     FaMinus,
     FaPlus,
     FaQuestion,
     FaScrewdriverWrench,
+    FaTags,
     FaWrench,
     FaXmark,
 } from "react-icons/fa6"
@@ -48,8 +53,9 @@ import { FaHandPaper, FaUnlink } from "react-icons/fa"
 import { GiPerspectiveDiceSixFacesOne, GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
 import { HiDownload, HiUser } from "react-icons/hi"
+import { IoMdArrowDropdown } from "react-icons/io"
 import { IoCheckmark, IoPencil, IoPeople, IoPlayOutline, IoTrashBin } from "react-icons/io5"
-import { MdExpandMore, MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
+import { MdExpandMore, MdFitScreen, MdZoomInMap, MdZoomOutMap, MdCode, MdCodeOff, MdScoreboard } from "react-icons/md"
 import type { IconBaseProps, IconType } from "react-icons"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import Label from "./Label"
@@ -95,6 +101,15 @@ export class SynthesisIcons {
     public static readonly INFINITY = FaInfinity
     public static readonly UNLINK = FaUnlink
     public static readonly DICE = GiPerspectiveDiceSixFacesOne
+    public static readonly DROPDOWN_CARET = IoMdArrowDropdown
+    public static readonly BRAIN = FaBrain
+    public static readonly MOVE = FaArrowsUpDownLeftRight
+    public static readonly METADATA = FaTags
+    public static readonly MICROCHIP = FaMicrochip
+    public static readonly CODE_CONNECTION = MdCode
+    public static readonly NO_CODE_CONNECTION = MdCodeOff
+    public static readonly SCOREBOARD = MdScoreboard
+    public static readonly REFRESH = BiRefresh
 
     /** Large icons: used for icon buttons */
     public static readonly DELETE_LARGE = withDefaultProps(IoTrashBin, { size: "1.25rem" })
@@ -134,29 +149,41 @@ export const Spacer: React.FC<SpacerProps> = ({ height = 0, width = 0 }) => {
     return <Box minHeight={`${height}px`} minWidth={`${width}px`} />
 }
 
-export const Button: React.FC<ButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiButton>
-    )
-}
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+    ({ children, onClick, onMouseDown, onMouseUp, ...props }, ref) => {
+        return (
+            <MuiButton ref={ref} onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
+                {children}
+            </MuiButton>
+        )
+    }
+)
 
-export const IconButton: React.FC<IconButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiIconButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiIconButton>
-    )
-}
+export type IconButtonSound = "button" | "dropdown"
 
-export const ToggleButton: React.FC<ToggleButtonProps> = ({ children, onClick, onMouseDown, onMouseUp, ...props }) => {
-    return (
-        <MuiToggleButton onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
-            {children}
-        </MuiToggleButton>
-    )
-}
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps & { sound?: IconButtonSound }>(
+    ({ children, onClick, onMouseDown, onMouseUp, sound = "button", ...props }, ref) => {
+        const soundPlayer = SoundPlayer.getInstance()
+        const soundEffects =
+            sound === "dropdown" ? soundPlayer.dropdownSoundEffects() : soundPlayer.buttonSoundEffects()
+        return (
+            <MuiIconButton ref={ref} onClick={onClick} {...soundEffects} {...props}>
+                {children}
+            </MuiIconButton>
+        )
+    }
+)
+IconButton.displayName = "IconButton"
+
+export const ToggleButton = React.forwardRef<HTMLButtonElement, ToggleButtonProps>(
+    ({ children, onClick, onMouseDown, onMouseUp, ...props }, ref) => {
+        return (
+            <MuiToggleButton ref={ref} onClick={onClick} {...SoundPlayer.getInstance().buttonSoundEffects()} {...props}>
+                {children}
+            </MuiToggleButton>
+        )
+    }
+)
 
 export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, ...props }) => {
     // The sound is played by the individual ToggleButton that was clicked
@@ -206,7 +233,7 @@ export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClic
 export const DownloadButton: React.FC<IconButtonProps> = ({ onClick, ...props }) => {
     return (
         <PositiveIconButton onClick={onClick} {...props}>
-            <SynthesisIcons.DELETE_LARGE />
+            <SynthesisIcons.DOWNLOAD_LARGE />
         </PositiveIconButton>
     )
 }

@@ -2,17 +2,19 @@ import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { Data } from "@/aps/APSDataManagement.ts"
 import type { ContextData } from "@/components/ContextMenuData.ts"
 import type { ProgressHandle } from "@/components/ProgressNotificationData.ts"
-import type { SceneOverlayTag } from "@/components/SceneOverlayEvents.ts"
+import type { SceneOverlayTag } from "@/components/overlays/SceneOverlayEvents.ts"
 import type { MatchModeType } from "@/systems/match_mode/MatchModeTypes.ts"
 import type { CurrentContactData, OnContactValidateData } from "@/systems/physics/ContactEvents.ts"
 import type TaskStatus from "@/util/TaskStatus.ts"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import type { CameraPoint } from "@/systems/preferences/PreferenceTypes.ts"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
 
 interface EventDataMap {
     // Mirabuf
     ProgressEvent: ProgressHandle
     MirabufObjectChangeEvent: MirabufSceneObject | null
+    SpawnPendingChangeEvent: boolean
 
     // APS
     MirabufFilesUpdateEvent: Data[]
@@ -32,6 +34,8 @@ interface EventDataMap {
     ConfigurationSavedEvent: never
     InputSchemeChanged: { panelId?: string }
 
+    TourRestartEvent: never
+
     // Match Mode
     ScoreChangedEvent: { red: number; blue: number }
     TimeChangedEvent: { time: number }
@@ -39,6 +43,7 @@ interface EventDataMap {
 
     // Code Sim
     SimMapUpdateEvent: { internalUpdate: boolean }
+    RobotCamerasChangeEvent: never
 
     // Context Menu
     ContextSupplierEvent: { data: ContextData; mousePosition: [number, number] }
@@ -47,13 +52,14 @@ interface EventDataMap {
     SetPlaceAssetButtonVisibleEvent: boolean
     ToggleTouchControlsVisibilityEvent: never
     SetTouchControlsVisibilityEvent: boolean
+    TouchControlsVisibilityChangedEvent: { visible: boolean }
 
-    DragModeToggled: { enabled: boolean }
+    SetDragModeEvent: { enabled: boolean }
 
     CameraModeChangedEvent: { mode: string }
     CameraFocusChangedEvent: { focusProvider: MirabufSceneObject | undefined }
     // Field View: the active camera point changed (the selected point, or undefined when none).
-    CameraViewChangedEvent: { point: CameraPoint | undefined; focusedRobotId?: number }
+    CameraViewChangedEvent: { point: CameraPoint | undefined; focusedRobotId?: SceneObjectId }
     // The active camera control scheme changed (e.g. "Target" or "FieldView").
     CameraControlsTypeChangedEvent: { controlsType: string }
 

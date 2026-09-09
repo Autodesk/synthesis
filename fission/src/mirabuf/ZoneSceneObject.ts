@@ -12,18 +12,25 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
 import {
+    createBoxMesh,
     deltaFieldTransformsPhysicalProp as deltaAndFieldTransformsToVisualProp,
     type VisualProperties,
 } from "@/util/threejs/MeshCreation"
 import type MirabufSceneObject from "./MirabufSceneObject"
 
-export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
-    private static readonly transparentMaterial = new THREE.MeshPhongMaterial({
-        color: 0x0000,
+export function createZoneMaterial(color: THREE.ColorRepresentation, opacity: number): THREE.MeshPhongMaterial {
+    return new THREE.MeshPhongMaterial({
+        color,
+        opacity,
         shininess: 0.0,
-        opacity: 0.0,
         transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide, // Keeps the zone visible when the camera moves inside of it
     })
+}
+
+export default abstract class ZoneSceneObject<P extends object> extends SceneObject {
+    private static readonly TRANSPARENT_MATERIAL = createZoneMaterial(0x0000, 0.0)
 
     private _parentAssembly: MirabufSceneObject
     public parentBodyId?: Jolt.BodyID
@@ -31,10 +38,10 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     // Visual Properties Cache
     private _deltaTransformation?: THREE.Matrix4
     private _deltaTransHasUpdated: boolean = false
-    private _cachedFieldTransformation?: Jolt.RMat44
+    private _cachedFieldTransformation?: THREE.Matrix4
 
     public prefs: ZonePreferencesShared & P
-    private preferenceKey: keyof UserPreferences
+    private _preferenceKey: keyof UserPreferences
 
     public toRender: boolean | undefined
     public mesh?: THREE.Mesh
@@ -57,7 +64,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
 
         this._parentAssembly = parentAssembly
         this.prefs = prefs
-        this.preferenceKey = preferenceKey
+        this._preferenceKey = preferenceKey
         this.toRender = PreferencesSystem.getUserPreference(preferenceKey) as boolean | undefined
     }
 
@@ -69,9 +76,11 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         if (!this.parentBodyId) return
 
         this._deltaTransformation = convertArrayToThreeMatrix4(this.prefs.deltaTransformation)
-        this._cachedFieldTransformation = World.physicsSystem.getBody(this.parentBodyId)!.GetWorldTransform()
 
-        const fieldTransformation = convertJoltMat44ToThreeMatrix4(this._cachedFieldTransformation)
+        const worldTransform = World.physicsSystem.getBody(this.parentBodyId)!.GetWorldTransform() // STATIC_ALIAS
+        const fieldTransformation = convertJoltMat44ToThreeMatrix4(worldTransform)
+        this._cachedFieldTransformation = fieldTransformation
+
         const props: VisualProperties = deltaAndFieldTransformsToVisualProp(
             this._deltaTransformation,
             fieldTransformation
@@ -91,14 +100,15 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
         if (this.bounding) JOLT.destroy(this.bounding)
 
         const halfExtent = convertThreeVector3ToJoltVec3(props.scale).Div(2)
-        const transform = new JOLT.Mat44().sRotationTranslation(
-            convertThreeQuaternionToJoltQuat(props.rotation),
-            convertThreeVector3ToJoltVec3(props.translation)
-        )
+        const rotation = convertThreeQuaternionToJoltQuat(props.rotation)
+        const translation = convertThreeVector3ToJoltVec3(props.translation)
+        const transform = new JOLT.Mat44().sRotationTranslation(rotation, translation)
 
         this.bounding = new JOLT.OrientedBox(transform, halfExtent)
 
         JOLT.destroy(transform)
+        JOLT.destroy(rotation)
+        JOLT.destroy(translation)
         JOLT.destroy(halfExtent)
     }
 
@@ -116,7 +126,7 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
     private createVisualMesh(props: VisualProperties) {
         const unitVector = new JOLT.Vec3(1, 1, 1)
 
-        this.mesh = World.sceneRenderer.createBox(unitVector, ZoneSceneObject.transparentMaterial)
+        this.mesh = createBoxMesh(unitVector, ZoneSceneObject.TRANSPARENT_MATERIAL)
         World.sceneRenderer.addObject(this.mesh)
 
         this.setMeshProperties(props)
@@ -131,29 +141,25 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
             return
         }
 
-        this.toRender = PreferencesSystem.getUserPreference(this.preferenceKey) as boolean | undefined
-        this.mesh.material = this.toRender ? this.material() : ZoneSceneObject.transparentMaterial
+        this.toRender = PreferencesSystem.getUserPreference(this._preferenceKey) as boolean | undefined
+        this.mesh.material = this.toRender ? this.material() : ZoneSceneObject.TRANSPARENT_MATERIAL
     }
 
     /**
      * @returns `undefined` when the visual properties for this zone have not changed
      */
     private generateVisualProperties(): VisualProperties | undefined {
-        // NOTE I believe that `GetWorldTransform` returns a copy
-        // Source: https://github.com/jrouwe/JoltPhysics/blob/master/Jolt/Physics/Body/Body.inl
-        const newTransform = World.physicsSystem.getBody(this.parentBodyId!)!.GetWorldTransform()
+        const worldTransform = World.physicsSystem.getBody(this.parentBodyId!)!.GetWorldTransform() // STATIC_ALIAS
+        const fieldTransformation = convertJoltMat44ToThreeMatrix4(worldTransform)
         const transformHasNotUpdated =
-            this._cachedFieldTransformation && newTransform.Equals(this._cachedFieldTransformation)
+            this._cachedFieldTransformation && fieldTransformation.equals(this._cachedFieldTransformation)
 
         // Update translation, rotation, and scale only if the field has moved
         if (transformHasNotUpdated && !this._deltaTransHasUpdated) return undefined
 
-        if (this._cachedFieldTransformation) JOLT.destroy(this._cachedFieldTransformation)
-        this._cachedFieldTransformation = newTransform
-
+        this._cachedFieldTransformation = fieldTransformation
         this._deltaTransHasUpdated = false
 
-        const fieldTransformation = convertJoltMat44ToThreeMatrix4(this._cachedFieldTransformation)
         return deltaAndFieldTransformsToVisualProp(this._deltaTransformation!, fieldTransformation)
     }
 
@@ -187,10 +193,5 @@ export default abstract class ZoneSceneObject<P extends object> extends SceneObj
             World.sceneRenderer.removeObject(this.mesh)
             this.mesh.geometry.dispose()
         }
-
-        // TODO
-        // I think we need to free `this._cachedFieldTransformation`, but there's some bug with doing so
-        // I think this is related to the fact that we're destroying and re-creating zones every time we update their preferences.
-        // For reviewers: This PR should still be merged, and this question should be resolved in another PR
     }
 }

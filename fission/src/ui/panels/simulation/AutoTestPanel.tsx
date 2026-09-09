@@ -150,7 +150,9 @@ function captureBodies(): BodyCapture[] {
 function resetBodies(captures: BodyCapture[]) {
     const zero = new JOLT.Vec3(0, 0, 0)
     captures.forEach(x => {
-        World.physicsSystem.setBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
+        const position = new JOLT.RVec3(x.pos.GetX(), x.pos.GetY(), x.pos.GetZ())
+        const rotation = new JOLT.Quat(x.rot.GetX(), x.rot.GetY(), x.rot.GetZ(), x.rot.GetW())
+        World.physicsSystem.setBodyPositionRotationAndVelocity(x.id, position, rotation, zero, zero)
     })
     JOLT.destroy(zero)
 }
@@ -276,7 +278,7 @@ const Staging: React.FC<StagingProps> = ({ assembly, setPlaying }) => {
                     label="Game Data"
                     placeholder="..."
                     defaultValue={gameData}
-                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => setGameData(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setGameData(e.target.value)}
                 />
             </Stack>
             <Stack>
@@ -297,13 +299,16 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
-        () => World.sceneRenderer.mirabufSceneObjects.findWhere(x => x.brain?.brainType === "wpilib"),
+        () =>
+            World.sceneRenderer.mirabufSceneObjects.findWhere(
+                x => (x.brain?.isWPILib() ?? false) || (x.brain?.isFTC() ?? false)
+            ),
         []
     )
 
     useEffect(() => {
         configureScreen(panel!, { title: "Auto Testing", hideCancel: true, acceptText: "Done" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     useEffect(() => {
         SimDriverStation.setMode(RobotSimMode.DISABLED)
@@ -315,7 +320,7 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     useEffect(() => {
         World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
         if (assembly == null) {
-            console.warn("Couldn't find assembly with wpilib brain")
+            console.warn("Couldn't find assembly with a codesim brain")
             return
         }
         setActiveProps({
@@ -342,15 +347,15 @@ const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                         setEnd={setActiveProps}
                         state="Playing"
                     />
-                ) : activeProps.state === "End" ? (
-                    <End
-                        assembly={activeProps.assembly}
-                        setStaging={setActiveProps}
-                        captures={activeProps.captures}
-                        state="End"
-                    />
                 ) : (
-                    <></>
+                    activeProps.state === "End" && (
+                        <End
+                            assembly={activeProps.assembly}
+                            setStaging={setActiveProps}
+                            captures={activeProps.captures}
+                            state="End"
+                        />
+                    )
                 ))}
         </Stack>
     )

@@ -1,0 +1,169 @@
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import type { TourStepExit } from "@/systems/analytics/AnalyticsSystem"
+import EventSystem from "@/systems/EventSystem.ts"
+import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem.ts"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
+import World from "@/systems/World.ts"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useIsMobile } from "@/ui/helpers/useIsMobile"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { hasPendingSpawn } from "@/ui/modals/mirabuf/LibrarySpawnActions"
+import type { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
+import { advanceConditionMet, reconcile, type TourRuntime, type TourSnapshot } from "./TourConditions"
+import { TourContext, type TourContextValue } from "./TourProviderHelpers"
+import type { TourAnchorId } from "./TourSteps"
+import { TOUR_STEPS, tourIdOf } from "./TourSteps"
+
+/** Reconcile can skip a step within a frame or two, which is not time the user spent on it */
+const MIN_REPORTED_STEP_SECONDS = 0.05
+
+const readWorld = () => ({
+    fieldCount: World.isAlive && World.sceneRenderer.mirabufSceneObjects.getField() !== undefined ? 1 : 0,
+    robotCount: World.isAlive ? World.sceneRenderer.mirabufSceneObjects.getRobots().length : 0,
+})
+
+export const TourProvider: React.FC<{ children?: ReactNode }> = ({ children }) => {
+    const { panels, modal, addToast } = useUIContext()
+    const { appMode } = useStateContext()
+    const isMobile = useIsMobile()
+
+    const [active, setActive] = useState(false)
+    const [stepIndex, setStepIndex] = useState(0)
+    const [world, setWorld] = useState(readWorld)
+
+    useEffect(() => EventSystem.listen("MirabufObjectChangeEvent", () => setWorld(readWorld())), [])
+
+    const [spawnPending, setSpawnPending] = useState(hasPendingSpawn)
+
+    useEffect(() => EventSystem.listen("SpawnPendingChangeEvent", setSpawnPending), [])
+
+    // map in a ref so its identity is stable, counter is what tells the overlay to re-resolve
+    const anchorsRef = useRef(new Map<TourAnchorId, HTMLElement>())
+    const [anchorVersion, setAnchorVersion] = useState(0)
+
+    const registerAnchor = useCallback((id: TourAnchorId, element: HTMLElement | null) => {
+        const anchors = anchorsRef.current
+        if (element) anchors.set(id, element)
+        else anchors.delete(id)
+        setAnchorVersion(v => v + 1)
+    }, [])
+
+    const getAnchor = useCallback((id: TourAnchorId) => anchorsRef.current.get(id) ?? null, [])
+
+    const markSeen = useCallback(() => {
+        PreferencesSystem.setUserPreference("HasSeenOnboardingTour", true)
+        PreferencesSystem.savePreferences()
+    }, [])
+
+    const finish = useCallback(() => {
+        setActive(false)
+        setStepIndex(0)
+        markSeen()
+    }, [markSeen])
+
+    const exitRef = useRef<TourStepExit>("Continue")
+
+    const next = useCallback(() => {
+        exitRef.current = "Continue"
+        setStepIndex(i => {
+            if (i >= TOUR_STEPS.length - 1) {
+                finish()
+                return i
+            }
+            return i + 1
+        })
+    }, [finish])
+
+    const prev = useCallback(() => {
+        exitRef.current = "Back"
+        setStepIndex(i => Math.max(0, i - 1))
+    }, [])
+
+    const skip = useCallback(() => {
+        exitRef.current = "Skipped"
+        finish()
+    }, [finish])
+
+    const startedRef = useRef(false)
+    useEffect(() => {
+        if (isMobile) {
+            // also kills a running tour if the viewport shrinks into mobile mid-run
+            setActive(false)
+            return
+        }
+        if (startedRef.current) return
+        if (!PreferencesSystem.getUserPreference("HasSeenOnboardingTour")) {
+            startedRef.current = true
+            setActive(true)
+        }
+    }, [isMobile])
+
+    const runtimeRef = useRef<TourRuntime>({ step: -1 })
+
+    useEffect(() => {
+        if (isMobile) return
+        return EventSystem.listen("TourRestartEvent", () => {
+            runtimeRef.current = { step: -1 }
+            setStepIndex(0)
+            setActive(true)
+        })
+    }, [isMobile])
+
+    const snapshot = useMemo<TourSnapshot>(
+        () => ({
+            modal: tourIdOf(modal?.content),
+            panels: panels.map(p => ({
+                id: tourIdOf(p.content),
+                configMode: (p.props.custom as { configMode?: ConfigMode } | undefined)?.configMode,
+            })),
+            appMode,
+            ...world,
+            spawnPending,
+        }),
+        [modal, panels, appMode, world, spawnPending]
+    )
+
+    useEffect(() => {
+        if (!active) return
+        const result = reconcile(stepIndex, snapshot, runtimeRef.current)
+        runtimeRef.current = result.runtime
+
+        if (result.toast) addToast("warning", result.toast)
+        if (result.stepIndex >= TOUR_STEPS.length) finish()
+        else if (result.stepIndex !== stepIndex) setStepIndex(result.stepIndex)
+    }, [active, stepIndex, snapshot, addToast, finish])
+
+    // times every step the user lands on, so analytics reports when they leave it or the tour ends
+    useEffect(() => {
+        if (!active) return
+        const { id } = TOUR_STEPS[stepIndex]
+        const enteredAt = Date.now()
+
+        return () => {
+            const durationSeconds = (Date.now() - enteredAt) / 1000
+            const exit = exitRef.current
+            // anything that moves the tour on its own counts as continuing
+            exitRef.current = "Continue"
+
+            if (durationSeconds < MIN_REPORTED_STEP_SECONDS) return
+            World.analyticsSystem?.event("Tour Step Duration", { stepId: id, exit, durationSeconds })
+        }
+    }, [active, stepIndex])
+
+    const canAdvance = active ? advanceConditionMet(TOUR_STEPS[stepIndex], snapshot) : true
+
+    useEffect(() => {
+        if (!active) return
+        return InputSystem.addEscapeHandler(() => {
+            skip()
+            return true
+        }, ESCAPE_PRIORITY.TOUR)
+    }, [active, skip])
+
+    const value = useMemo<TourContextValue>(
+        () => ({ active, stepIndex, canAdvance, next, prev, skip, registerAnchor, getAnchor, anchorVersion }),
+        [active, stepIndex, canAdvance, next, prev, skip, registerAnchor, getAnchor, anchorVersion]
+    )
+
+    return <TourContext.Provider value={value}>{children}</TourContext.Provider>
+}

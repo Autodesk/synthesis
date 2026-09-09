@@ -5,9 +5,9 @@ import type { PanelImplProps } from "../components/Panel"
 import type { UICallback } from "../UICallbacks"
 
 export enum CloseType {
-    Accept = 0,
-    Cancel = 1,
-    Overwrite = 2,
+    ACCEPT = 0,
+    CANCEL = 1,
+    OVERWRITE = 2,
 }
 
 export interface UIScreenCallbacks<T> {
@@ -30,6 +30,8 @@ export interface UIScreenProps<P> {
     acceptText?: string
     blocking?: boolean // if true, will prevent other panels from opening while this panel is open
     blockingMessage?: string
+    width?: number | string
+    height?: number | string
     custom: P
 }
 
@@ -47,6 +49,10 @@ export interface ModalProps<P> extends UIScreenProps<P> {
  */
 export interface PanelProps<P> extends UIScreenProps<P> {
     type: "panel"
+    /**
+     * When a panel is opened, any panels with the same exclusiveGroup will be closed.
+     */
+    exclusiveGroup?: "assembly-init"
     position?: PanelPosition
 }
 
@@ -87,14 +93,19 @@ export type OpenModalFn = <T, P>(
     customProps: P,
     parent?: UIScreen<any, any>,
     props?: Omit<ModalProps<P>, "type" | "configured" | "custom"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept">
-) => string
+) => string | null
 export type OpenPanelFn = <T, P>(
     content: FunctionComponent<PanelImplProps<T, P>>,
     customProps: P,
     parent?: UIScreen<any, any>,
     props?: Omit<PanelProps<P>, "type" | "configured" | "custom"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept">
 ) => string | null
-export type CloseModalFn = (closeType: CloseType) => void
+export type TogglePanelFn = <T, P>(
+    content: FunctionComponent<PanelImplProps<T, P>>,
+    customProps: P,
+    matchesOpen?: (openCustomProps: P) => boolean
+) => string | null
+export type CloseModalFn = (closeType: CloseType, id?: string) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
 export type AddToastFn = (variant: VariantType, ...contents: ReactNode[]) => void
 export type ConfigureScreenFn = <T extends UIScreen<any, any>>(
@@ -111,11 +122,20 @@ export type ConfigureScreenFn = <T extends UIScreen<any, any>>(
           : never
 ) => void
 
+export type UIBlockState =
+    | {
+          blocked: true
+          blockMessage: string
+      }
+    | { blocked: false }
+
 export type UIContextProps = {
     modal?: Modal<any, any>
     panels: Panel<any, any>[]
+    blockState: UIBlockState
     openModal: OpenModalFn
     openPanel: OpenPanelFn
+    togglePanel: TogglePanelFn
     closeModal: CloseModalFn
     closePanel: ClosePanelFn
     addToast: AddToastFn
@@ -126,16 +146,18 @@ export type UIContextProps = {
 
 export const UIContext = createContext<UIContextProps>({
     panels: [],
-    openModal: (_content, _customProps, _parent, _props = { hideAccept: false, hideCancel: false }) => "",
+    blockState: { blocked: false },
+    openModal: (_content, _customProps, _parent, _props = { hideAccept: false, hideCancel: false }) => null,
     openPanel: (
         _content,
         _customProps,
         _parent,
         _props = { hideAccept: false, hideCancel: false, position: "center" }
-    ) => "",
-    closeModal: _closeType => {},
+    ) => null,
+    togglePanel: (_content, _customProps, _matchesOpen) => null,
+    closeModal: (_closeType, _id) => {},
     closePanel: (_id, _closeType) => {},
-    addToast: (_variant, ..._msg) => "",
+    addToast: (_variant, ..._msg) => null,
     configureScreen: (_screen, _props) => {},
 })
 
