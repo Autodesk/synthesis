@@ -1,7 +1,7 @@
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 import * as THREE from "three"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
-import autodeskLogo from "@/assets/autodesk_symbol.png"
+import autodeskLogo from "@/assets/autodesk_symbol.svg"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import fragmentShader from "@/shaders/fragment.glsl"
