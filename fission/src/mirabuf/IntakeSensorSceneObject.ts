@@ -1,6 +1,7 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import * as THREE from "three"
 import EventSystem from "@/systems/EventSystem.ts"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -20,7 +21,9 @@ class IntakeSensorSceneObject extends SceneObject {
 
     private _joltBodyId?: Jolt.BodyID
     private _collisionUnsubscriber?: () => void
+    private _renderPreferenceUnsubscriber?: () => void
     private _visualIndicator?: THREE.Mesh
+    private _visualIndicatorVisible = true
 
     public constructor(parentAssembly: MirabufSceneObject) {
         super()
@@ -60,19 +63,19 @@ class IntakeSensorSceneObject extends SceneObject {
             })
         }
 
+        this._renderPreferenceUnsubscriber = PreferencesSystem.addPreferenceEventListener("RenderIntakeZones", event =>
+            this.updateVisualIndicator(event.prefValue)
+        )
+
         // Create visual indicator if showZoneAlways is enabled
         this.updateVisualIndicator()
     }
 
-    public updateVisualIndicator(): void {
-        // Remove existing visual indicator
-        if (this._visualIndicator) {
-            World.sceneRenderer.scene.remove(this._visualIndicator)
-            this._visualIndicator = undefined
-        }
+    public updateVisualIndicator(renderIntakeZones = PreferencesSystem.getUserPreference("RenderIntakeZones")): void {
+        this.removeVisualIndicator()
 
-        // Create new visual indicator if showZoneAlways is enabled
-        if (this._parentAssembly.intakePreferences?.showZoneAlways) {
+        // Create new visual indicator if showZoneAlways is enabled for this robot and intake zones are enabled locally.
+        if (this._parentAssembly.intakePreferences?.showZoneAlways && renderIntakeZones) {
             const geometry = new THREE.SphereGeometry(this._parentAssembly.intakePreferences.zoneDiameter / 2.0)
             const material = new THREE.MeshBasicMaterial({
                 color: 0x00ff00, // Green color for intake zone
@@ -83,11 +86,20 @@ class IntakeSensorSceneObject extends SceneObject {
             this._visualIndicator = new THREE.Mesh(geometry, material)
             World.sceneRenderer.scene.add(this._visualIndicator)
         }
+
+        this.updateVisualIndicatorVisibility(renderIntakeZones)
     }
 
     public setVisualIndicatorVisible(visible: boolean): void {
+        this._visualIndicatorVisible = visible
+        this.updateVisualIndicatorVisibility()
+    }
+
+    private updateVisualIndicatorVisibility(
+        renderIntakeZones = PreferencesSystem.getUserPreference("RenderIntakeZones")
+    ): void {
         if (this._visualIndicator) {
-            this._visualIndicator.visible = visible && (this._parentAssembly.intakePreferences?.showZoneAlways ?? false)
+            this._visualIndicator.visible = this._visualIndicatorVisible && renderIntakeZones
         }
     }
 
@@ -119,12 +131,21 @@ class IntakeSensorSceneObject extends SceneObject {
         }
 
         this._collisionUnsubscriber?.()
+        this._renderPreferenceUnsubscriber?.()
 
-        // Clean up visual indicator
-        if (this._visualIndicator) {
-            World.sceneRenderer.scene.remove(this._visualIndicator)
-            this._visualIndicator = undefined
-        }
+        this.removeVisualIndicator()
+    }
+
+    private removeVisualIndicator(): void {
+        if (!this._visualIndicator) return
+
+        World.sceneRenderer.scene.remove(this._visualIndicator)
+        this._visualIndicator.geometry.dispose()
+        const materials = Array.isArray(this._visualIndicator.material)
+            ? this._visualIndicator.material
+            : [this._visualIndicator.material]
+        materials.forEach(material => material.dispose())
+        this._visualIndicator = undefined
     }
 
     private intakeCollision(gpID: Jolt.BodyID) {

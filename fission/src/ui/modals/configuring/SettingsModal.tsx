@@ -207,6 +207,11 @@ const GeneralTab: React.FC = () => {
                     tooltip="If disabled, protected zones will not be visible but will continue to function the same."
                 />
                 <GeneralTabCheckbox
+                    preference="RenderIntakeZones"
+                    label="Show Intake Zones"
+                    tooltip="If disabled, intake zone indicators will not be visible but will continue to function the same."
+                />
+                <GeneralTabCheckbox
                     preference="RenderSceneTags"
                     label="Show Scene Tags"
                     tooltip="Name tags above robot."

@@ -13,6 +13,7 @@ export type UserPreferences = {
     ReportAnalytics: boolean
     RenderScoringZones: boolean
     RenderProtectedZones: boolean
+    RenderIntakeZones: boolean
     InputSchemes: InputScheme[]
     RenderSceneTags: boolean
     AlwaysShowScoreboard: boolean
@@ -56,6 +57,7 @@ export function defaultUserPreferences(): UserPreferences {
         ReportAnalytics: false,
         RenderScoringZones: true,
         RenderProtectedZones: true,
+        RenderIntakeZones: true,
         InputSchemes: [],
         RenderSceneTags: true,
         AlwaysShowScoreboard: true,
