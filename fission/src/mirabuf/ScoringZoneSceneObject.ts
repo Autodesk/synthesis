@@ -63,10 +63,20 @@ class ScoringZoneSceneObject extends ZoneSceneObject<ScoringZonePreferences> {
 
         const { added, removed } = findListDifference(this._prevGPs, gamePiecesContacting)
 
-        added.forEach(gpID => this.zoneCollision(gpID))
-        if (!this.prefs.shouldPointsAccumulate) removed.forEach(gpID => this.zoneCollisionRemovedNoAccumulation(gpID))
+        const destroyedGamePieces = new Set<Jolt.BodyID>()
+        added.forEach(gpID => {
+            this.zoneCollision(gpID)
+            if (this.prefs.destroyGamepiece) {
+                World.physicsSystem.destroyBodiesById(gpID)
+                destroyedGamePieces.add(gpID)
+            }
+        })
+        if (!this.prefs.shouldPointsAccumulate)
+            removed
+                .filter(gpID => !destroyedGamePieces.has(gpID))
+                .forEach(gpID => this.zoneCollisionRemovedNoAccumulation(gpID))
 
-        this._prevGPs = gamePiecesContacting
+        this._prevGPs = gamePiecesContacting.filter(gpID => !destroyedGamePieces.has(gpID))
     }
 
     public override update(): void {
