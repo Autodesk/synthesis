@@ -566,10 +566,10 @@ const ThemeEditorTab: React.FC<ThemeEditorTabProps> = ({ onActionsChange }) => {
                     setTempPrimary("#90caf9")
                     setTempSecondary("#ce93d8")
                     setTempBlue("#0066b3")
-                    setTempRed("#ed1c24")
+                    setTempRed("#c62828")
                     setTempTopBar("#3d4352")
                     setTempSurface("#2a3340")
-                    setTempTopBarText("#b5bcca")
+                    setTempTopBarText("#bfc5ce")
                 }}
             >
                 Reset
