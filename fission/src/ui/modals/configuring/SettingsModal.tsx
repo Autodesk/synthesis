@@ -17,6 +17,7 @@ import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { randomColor } from "@/util/Random"
 import CommandRegistry from "@/ui/components/CommandRegistry"
 import {
+    defaultGraphicsPreferences,
     mediumGraphicsPreferences,
     lowGraphicsPreferences,
     highGraphicsPreferences,
@@ -248,10 +249,11 @@ const GeneralTab: React.FC = () => {
     )
 }
 
-type GraphicsPreset = "low" | "medium" | "high" | "custom"
+type GraphicsPreset = "default" | "low" | "medium" | "high" | "custom"
 
 const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
     return (
+        a.lightIntensity === b.lightIntensity &&
         a.fancyShadows === b.fancyShadows &&
         a.maxFar === b.maxFar &&
         a.cascades === b.cascades &&
@@ -261,12 +263,12 @@ const prefsEqual = (a: GraphicsPreferences, b: GraphicsPreferences) => {
 }
 
 const getGraphicsPreset = (prefs: GraphicsPreferences): GraphicsPreset => {
+    const defaultPrefs = defaultGraphicsPreferences()
     const lowPrefs = lowGraphicsPreferences()
-    if (prefs.fancyShadows === lowPrefs.fancyShadows && prefs.antiAliasing === lowPrefs.antiAliasing) {
-        return "low"
-    }
 
-    const presets: Array<{ key: GraphicsPreset; prefs: GraphicsPreferences }> = [
+    const presets: Array<{ key: Exclude<GraphicsPreset, "custom">; prefs: GraphicsPreferences }> = [
+        ...(prefsEqual(defaultPrefs, lowPrefs) ? [] : [{ key: "default" as const, prefs: defaultPrefs }]),
+        { key: "low", prefs: lowPrefs },
         { key: "medium", prefs: mediumGraphicsPreferences() },
         { key: "high", prefs: highGraphicsPreferences() },
     ]
@@ -289,6 +291,7 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
     const [cascades, setCascades] = useState<number>(PreferencesSystem.getGraphicsPreferences().cascades)
     const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
     const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
+    const defaultAndLowGraphicsMatch = prefsEqual(defaultGraphicsPreferences(), lowGraphicsPreferences())
 
     const applyGraphicsPreferencesLocally = (prefs: ReturnType<typeof PreferencesSystem.getGraphicsPreferences>) => {
         setLightIntensity(prefs.lightIntensity)
@@ -361,13 +364,15 @@ const GraphicsTab: React.FC<GraphicsTabProps> = ({ onActionsChange }) => {
                 onChange={e => {
                     const preset = e.target.value as GraphicsPreset
                     setSelectedGraphicsPreset(preset)
-                    if (preset === "low") applyGraphicsPreferencesLocally(lowGraphicsPreferences())
+                    if (preset === "default") applyGraphicsPreferencesLocally(defaultGraphicsPreferences())
+                    else if (preset === "low") applyGraphicsPreferencesLocally(lowGraphicsPreferences())
                     else if (preset === "medium") applyGraphicsPreferencesLocally(mediumGraphicsPreferences())
                     else if (preset === "high") applyGraphicsPreferencesLocally(highGraphicsPreferences())
                 }}
                 sx={{ width: "100%" }}
             >
-                <MenuItem value="low">Low Graphics (Default)</MenuItem>
+                {!defaultAndLowGraphicsMatch && <MenuItem value="default">Default Graphics</MenuItem>}
+                <MenuItem value="low">Low Graphics{defaultAndLowGraphicsMatch ? " (Default)" : ""}</MenuItem>
                 <MenuItem value="medium">Medium Graphics</MenuItem>
                 <MenuItem value="high">High Graphics</MenuItem>
                 <MenuItem value="custom" disabled>
