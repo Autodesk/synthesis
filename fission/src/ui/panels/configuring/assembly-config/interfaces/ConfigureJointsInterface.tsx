@@ -6,13 +6,15 @@ import EventSystem from "@/systems/EventSystem.ts"
 import { defaultSequentialConfig, type SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
-import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Label from "@/ui/components/Label"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { Button, Spacer } from "@/ui/components/StyledComponents"
 import { buildJointConfigGroups, type JointConfigGroup } from "../jointConfigGroups"
 import SubsystemRowInterface from "./SubsystemRowInterface"
-import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
+import type {
+    ConfigurationSubpanelComponent,
+    ConfigurationSubpanelProps,
+} from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
 class JointGroupSelectionOption extends SelectMenuOption {
     group: JointConfigGroup
@@ -122,17 +124,24 @@ function sortBehaviors(behaviors: SequentialBehaviorPreferences[]): SequentialBe
     return sortedBehaviors
 }
 
+function getSequentialBehaviors(
+    selectedAssembly: ConfigurationSubpanelProps["selectedAssembly"]
+): SequentialBehaviorPreferences[] {
+    const configuredBehaviors = selectedAssembly.robotPreferences.sequentialConfig
+    if (configuredBehaviors !== undefined) return configuredBehaviors
+
+    const brain = selectedAssembly.brain
+    if (!brain?.isSynthesis()) return []
+
+    return brain.behaviors
+        .filter(b => b instanceof SequenceableBehavior)
+        .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator"))
+}
+
 const ConfigureJointsInterface: ConfigurationSubpanelComponent = ({ selectedAssembly, registerCleanupFunction }) => {
     const [selectedGroup, setSelectedGroup] = useState<JointGroupSelectionOption | undefined>(undefined)
 
-    const behaviors = useMemo<SequentialBehaviorPreferences[]>(
-        () =>
-            selectedAssembly.robotPreferences.sequentialConfig ??
-            (selectedAssembly.brain as SynthesisBrain).behaviors
-                .filter(b => b instanceof SequenceableBehavior)
-                .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
-        [selectedAssembly]
-    )
+    const behaviors = useMemo(() => getSequentialBehaviors(selectedAssembly), [selectedAssembly])
 
     // Covers both sections below: motor config mutates `unstickStrength` and the
     // `inverted` flags inside `sequentialConfig`, sequencing mutates `parentJointIndex`.
@@ -169,11 +178,8 @@ const ConfigureJointsInterface: ConfigurationSubpanelComponent = ({ selectedAsse
         [jointNamesByIndex]
     )
 
-    const [seqBehaviors, setSeqBehaviors] = useState<SequentialBehaviorPreferences[]>(
-        selectedAssembly.robotPreferences.sequentialConfig ??
-            (selectedAssembly.brain as SynthesisBrain).behaviors
-                .filter(b => b instanceof SequenceableBehavior)
-                .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator"))
+    const [seqBehaviors, setSeqBehaviors] = useState<SequentialBehaviorPreferences[]>(() =>
+        getSequentialBehaviors(selectedAssembly)
     )
     const [lookingForParent, setLookingForParent] = useState<SequentialBehaviorPreferences | undefined>(undefined)
 
