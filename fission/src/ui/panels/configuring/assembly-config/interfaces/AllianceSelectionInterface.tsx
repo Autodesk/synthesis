@@ -1,5 +1,5 @@
 import { Box, Stack } from "@mui/material"
-import { useEffect, useState } from "react"
+import { type MouseEvent, useCallback, useEffect, useState } from "react"
 
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
@@ -9,6 +9,14 @@ import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assemb
 const AllianceSelectionInterface: ConfigurationSubpanelComponent = ({ selectedAssembly, registerCleanupFunction }) => {
     const [alliance, setAlliance] = useState<Alliance>(selectedAssembly.alliance ?? "red")
     const [station, setStation] = useState<Station>(selectedAssembly.station ?? 1)
+    const allianceColor = alliance === "red" ? "redAlliance.main" : "blueAlliance.main"
+    const toggleAlliance = useCallback(() => {
+        setAlliance(current => (current === "blue" ? "red" : "blue"))
+    }, [])
+    const selectStation = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+        const value = Number(event.currentTarget.value)
+        if (value === 1 || value === 2 || value === 3) setStation(value)
+    }, [])
 
     useEffect(() => {
         selectedAssembly.station = station
@@ -32,10 +40,8 @@ const AllianceSelectionInterface: ConfigurationSubpanelComponent = ({ selectedAs
                 <Label size="md">Alliance: </Label>
                 <Button
                     value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
-                    onClick={() => {
-                        setAlliance(alliance == "blue" ? "red" : "blue")
-                    }}
-                    sx={{ bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" }}
+                    onClick={toggleAlliance}
+                    sx={{ bgcolor: allianceColor }}
                 >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
             </Box>
             <div>
@@ -45,10 +51,8 @@ const AllianceSelectionInterface: ConfigurationSubpanelComponent = ({ selectedAs
                         <Button
                             value={v}
                             key={v}
-                            onClick={() => {
-                                setStation(v)
-                            }}
-                            sx={station === v ? { bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                            onClick={selectStation}
+                            sx={station === v ? { bgcolor: allianceColor } : {}}
                         >
                             {v}
                         </Button>
