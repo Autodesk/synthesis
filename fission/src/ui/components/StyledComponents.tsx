@@ -190,9 +190,19 @@ export const ToggleButtonGroup: React.FC<ToggleButtonGroupProps> = ({ children, 
     return <MuiToggleButtonGroup {...props}>{children}</MuiToggleButtonGroup>
 }
 
-export const Select: React.FC<SelectProps> = ({ children, ...props }) => {
+export const Select: React.FC<SelectProps> = ({ children, onClose, ...props }) => {
+    const handleClose: NonNullable<SelectProps["onClose"]> = event => {
+        onClose?.(event)
+        requestAnimationFrame(() => {
+            const activeElement = document.activeElement
+            if (activeElement instanceof HTMLElement && activeElement.getAttribute("role") === "combobox") {
+                activeElement.blur()
+            }
+        })
+    }
+
     return (
-        <MuiSelect {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props}>
+        <MuiSelect {...SoundPlayer.getInstance().dropdownSoundEffects()} {...props} onClose={handleClose}>
             {children}
         </MuiSelect>
     )
