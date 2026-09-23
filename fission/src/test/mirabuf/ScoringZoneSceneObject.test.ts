@@ -126,14 +126,19 @@ describe("ScoringZoneSceneObject", () => {
     })
 
     describe("checkObjectsInZone", () => {
-        const createZoneWithBounding = (alliance: "red" | "blue", points: number) => {
+        const createZoneWithBounding = (
+            alliance: "red" | "blue",
+            points: number,
+            options: { destroyGamepiece?: boolean; shouldPointsAccumulate?: boolean } = {}
+        ) => {
             const parent = {} as unknown as MirabufSceneObject
             Reflect.set(parent, "fieldPreferences", {
                 scoringZones: [
                     {
-                        shouldPointsAccumulate: true,
+                        shouldPointsAccumulate: options.shouldPointsAccumulate ?? true,
                         alliance,
                         points,
+                        destroyGamepiece: options.destroyGamepiece ?? false,
                         name: "Test",
                         parentNode: undefined,
                         deltaTransformation: [],
@@ -174,6 +179,35 @@ describe("ScoringZoneSceneObject", () => {
             mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ robotLastInContactWith: undefined }))
 
             const zone = createZoneWithBounding("red", 10)
+            zone["checkObjectsInZone"]()
+
+            expect(World.scoreTracker.redScore).toBe(10)
+        })
+
+        test("destroys a game piece after scoring without removing points", () => {
+            const mockBodyId = {} as unknown as Jolt.BodyID
+            mockSceneRenderer.mirabufSceneObjects.getField = vi.fn(() => makeField(mockBodyId))
+
+            mockPhysicsSystem.getBody = vi.fn((_bodyId: Jolt.BodyID) => {
+                const bodyMock = createBodyMock()
+                bodyMock.GetWorldSpaceBounds = vi.fn(
+                    () => new JOLT.AABox(new JOLT.Vec3(-0.2, -0.2, -0.2), new JOLT.Vec3(0.2, 0.2, 0.2))
+                )
+
+                return bodyMock as unknown as Jolt.Body
+            })
+            mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ robotLastInContactWith: undefined }))
+
+            const zone = createZoneWithBounding("red", 10, {
+                destroyGamepiece: true,
+                shouldPointsAccumulate: false,
+            })
+            zone["checkObjectsInZone"]()
+
+            expect(World.scoreTracker.redScore).toBe(10)
+            expect(mockPhysicsSystem.destroyBodiesById).toHaveBeenCalledWith(mockBodyId)
+
+            mockPhysicsSystem.getBody = vi.fn((_bodyId: Jolt.BodyID) => undefined as unknown as Jolt.Body)
             zone["checkObjectsInZone"]()
 
             expect(World.scoreTracker.redScore).toBe(10)
