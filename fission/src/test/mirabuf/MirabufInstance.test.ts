@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import MirabufInstance from "../../mirabuf/MirabufInstance"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { ParseErrorSeverity } from "../../mirabuf/MirabufParser"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 const mockSceneRenderer = {
     createToonMaterial: vi.fn(() => new THREE.MeshStandardMaterial({ color: 0x123456 })),
@@ -18,11 +19,6 @@ vi.mock("@/systems/World", () => ({
 }))
 
 describe("MirabufInstance", () => {
-    const originalConsoleLog = console.log
-    const originalConsoleError = console.error
-    const originalConsoleWarn = console.warn
-    const originalConsoleDebug = console.debug
-
     let parser: MirabufParser
     let scene: THREE.Scene
 
@@ -68,18 +64,11 @@ describe("MirabufInstance", () => {
         } as unknown as MirabufParser
         scene = new THREE.Scene()
 
-        console.log = vi.fn()
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.debug = vi.fn()
+        mockConsole()
     })
 
     afterEach(() => {
-        vi.clearAllMocks()
-        console.log = originalConsoleLog
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.debug = originalConsoleDebug
+        vi.restoreAllMocks()
     })
 
     test("throws if parser has unimportable errors", () => {

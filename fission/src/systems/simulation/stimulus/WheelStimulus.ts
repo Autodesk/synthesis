@@ -1,27 +1,30 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { mirabuf } from "@/proto/mirabuf"
-import { type NoraNumber2, NoraTypes } from "../Nora"
+import { BaseUnit, DerivativeOrder, noraType, num, type NoraValueOf } from "../Nora"
 import EncoderStimulus from "./EncoderStimulus"
 import type { StimulusID } from "./Stimulus"
 
-/**
- *
- */
-class WheelRotationStimulus extends EncoderStimulus {
+export const WHEEL_STIMULUS_TYPE = noraType([
+    num(BaseUnit.ANGLE, DerivativeOrder.ZERO, "Angle"),
+    num(BaseUnit.ANGLE, DerivativeOrder.ONE, "Velocity"),
+])
+
+class WheelRotationStimulus extends EncoderStimulus<typeof WHEEL_STIMULUS_TYPE> {
     private _accum: boolean = true
     private _wheelRotationAccum = 0.0
     private _wheel: Jolt.Wheel
 
-    public get positionValue(): number {
-        if (this._accum) {
-            return this._wheelRotationAccum
-        } else {
-            return this._wheel.GetRotationAngle()
+    public get positionValue() {
+        let value = this._wheelRotationAccum
+        if (!this._accum) {
+            value = this._wheel.GetRotationAngle()
         }
+
+        return { value, baseType: num(BaseUnit.ANGLE, DerivativeOrder.ZERO) }
     }
 
-    public get velocityValue(): number {
-        return this._wheel.GetAngularVelocity()
+    public get velocityValue() {
+        return { value: this._wheel.GetAngularVelocity(), baseType: num(BaseUnit.ANGLE, DerivativeOrder.ONE) }
     }
 
     public set accum(shouldAccum: boolean) {
@@ -47,12 +50,14 @@ class WheelRotationStimulus extends EncoderStimulus {
         this._wheelRotationAccum = 0.0
     }
 
-    public getSupplierType(): NoraTypes {
-        return NoraTypes.NUMBER2
+    public get supplierType() {
+        return WHEEL_STIMULUS_TYPE
     }
-    public getSupplierValue(): NoraNumber2 {
+
+    public supplyValue(): NoraValueOf<typeof WHEEL_STIMULUS_TYPE> {
         return [this.positionValue, this.velocityValue]
     }
+
     public displayName(): string {
         return `${this.info?.name ?? "-"} [Encoder]`
     }

@@ -268,9 +268,18 @@ def _addJointInstance(
 
 
 def _addRigidGroup(joint: adsk.fusion.Joint, assembly: assembly_pb2.Assembly) -> None:
-    if joint.jointMotion.jointType != 0 or not (
-        joint.occurrenceOne.isLightBulbOn and joint.occurrenceTwo.isLightBulbOn
-    ):
+    if joint.jointMotion.jointType != 0:
+        return
+
+    if joint.occurrenceOne is None or joint.occurrenceTwo is None:
+        # A rigid joint can end up with a broken/orphaned occurrence reference (e.g. after copy-pasting
+        # a component that carried a joint along with it) - skip it rather than crashing the export.
+        _: Err[None] = Err(
+            f"Rigid joint '{joint.name}' has a missing occurrence, skipping rigid group", ErrorSeverity.Warning
+        )
+        return
+
+    if not (joint.occurrenceOne.isLightBulbOn and joint.occurrenceTwo.isLightBulbOn):
         return
 
     mira_group = joint_pb2.RigidGroup()

@@ -236,6 +236,14 @@ class JointParser:
         # populate all joints
         self.dynamicJoints: dict[str, adsk.fusion.Joint] = dict()
 
+        # Maps an occurrence's entityToken to every joint touching it, along with that joint's two
+        # resolved occurrences. Populated once in __getAllJoints() and consulted from _populateNode()
+        # Avoids using `occ.joints` accessor, which is a documented Fusion API crash
+        # (native access violation) on certain occurrences (e.g. large/derived components).
+        self.occurrenceJoints: dict[
+            str, list[tuple[adsk.fusion.Joint, adsk.fusion.Occurrence, adsk.fusion.Occurrence]]
+        ] = dict()
+
         self.simulationNodesRef: dict[str, SimulationNode] = dict()
 
         # TODO: need to look through every single joint and find the starting point that is connected to ground
@@ -243,6 +251,7 @@ class JointParser:
         self.__getAllJoints()
 
         # dynamic joint node for grounded components and static components
+        logger.log(10, f"Populating node tree for grounded occurrence '{self.grounded.name}'")
         populate_node_result = self._populateNode(self.grounded, None, None, is_ground=True)
         if populate_node_result.is_err():  # We need the value to proceed
             message = populate_node_result.unwrap_err()[0]
@@ -256,9 +265,11 @@ class JointParser:
         self.simulationNodesRef["GROUND"] = self.groundSimNode
 
         # combine all ground prior to this possibly
+        logger.log(10, f"Looking for grounded joints ({len(self.groundedConnections)} grounded connection(s))")
         _ = self._lookForGroundedJoints()
 
         # creates the axis elements - adds all elements to axisNodes
+        logger.log(10, f"Populating {len(self.dynamicJoints)} axis/axes")
         for key, value in self.dynamicJoints.items():
             populate_axis_result = self._populateAxis(key, value)
             if populate_axis_result.is_err():
@@ -267,63 +278,109 @@ class JointParser:
                 ___: Err[None] = Err(message, ErrorSeverity.Fatal)
                 raise RuntimeError()
 
+        logger.log(10, "Linking all axis/axes")
         __ = self._linkAllAxis()
 
+        logger.log(10, "JointParser initialization complete")
         # self.groundSimNode.printLink()
+
+    def _resolveOccurrenceFromGeometry(self, entity: Any, jointName: str, label: str) -> adsk.fusion.Occurrence | None:
+        try:
+            resolved = entity.assemblyContext if entity is not None else None
+        except Exception as e:
+            resolved = None
+            _: Err[None] = Err(f"Exception resolving {label} for joint '{jointName}': {e}", ErrorSeverity.Warning)
+
+        if resolved is None:
+            __: Err[None] = Err(
+                f"Could not resolve {label} for joint '{jointName}' "
+                "(geometry/origin reference is broken or orphaned, e.g. from a copy-paste)",
+                ErrorSeverity.Warning,
+            )
+
+        return resolved
 
     def __getAllJoints(self) -> Result[None]:
         logger.log(10, "Getting Joints")
-        for joint in list(self.design.rootComponent.allJoints) + list(self.design.rootComponent.allAsBuiltJoints):
+        allJoints = list(self.design.rootComponent.allJoints) + list(self.design.rootComponent.allAsBuiltJoints)
+        logger.log(10, f"Found {len(allJoints)} total joints/as-built-joints in design")
+
+        for index, joint in enumerate(allJoints):
+            jointName = joint.name if joint else "None"
+            logger.log(10, f"[{index + 1}/{len(allJoints)}] Resolving occurrences for joint '{jointName}'")
+
+            occurrenceOne: adsk.fusion.Occurrence | None = None
+            occurrenceTwo: adsk.fusion.Occurrence | None = None
+
             if joint and joint.occurrenceOne and joint.occurrenceTwo:
                 occurrenceOne = joint.occurrenceOne
                 occurrenceTwo = joint.occurrenceTwo
             else:
                 # Non-fatal since it's recovered in the next two statements
-                _: Err[None] = Err("Found joint without two occurrences", ErrorSeverity.Warning)
+                _ = Err(f"Joint '{jointName}' found without two occurrences", ErrorSeverity.Warning)
 
             if occurrenceOne is None:
-                if joint.geometryOrOriginOne.entityOne.assemblyContext is None:
-                    ____: Err[None] = Err(
-                        "occurrenceOne and entityOne's assembly context are None", ErrorSeverity.Fatal
+                try:
+                    geometryOrOriginOne = joint.geometryOrOriginOne
+                    entityOne = geometryOrOriginOne.entityOne if geometryOrOriginOne is not None else None
+                except Exception as e:
+                    entityOne = None
+                    _ = Err(
+                        f"Exception accessing geometryOrOriginOne for joint '{jointName}': {e}", ErrorSeverity.Warning
                     )
-                occurrenceOne = joint.geometryOrOriginOne.entityOne.assemblyContext
+                occurrenceOne = self._resolveOccurrenceFromGeometry(entityOne, jointName, "occurrenceOne")
 
             if occurrenceTwo is None:
-                if joint.geometryOrOriginTwo.entityTwo.assemblyContext is None:
-                    __: Err[None] = Err("occurrenceOne and entityTwo's assembly context are None", ErrorSeverity.Fatal)
-                occurrenceTwo = joint.geometryOrOriginTwo.entityTwo.assemblyContext
+                try:
+                    geometryOrOriginTwo = joint.geometryOrOriginTwo
+                    entityTwo = geometryOrOriginTwo.entityTwo if geometryOrOriginTwo is not None else None
+                except Exception as e:
+                    entityTwo = None
+                    _ = Err(
+                        f"Exception accessing geometryOrOriginTwo for joint '{jointName}': {e}", ErrorSeverity.Warning
+                    )
+                occurrenceTwo = self._resolveOccurrenceFromGeometry(entityTwo, jointName, "occurrenceTwo")
 
             oneEntityToken = ""
             twoEntityToken = ""
 
             # TODO: Fix change to if statement with Result returning
-            try:
-                oneEntityToken = occurrenceOne.entityToken
-            except:
-                oneEntityToken = occurrenceOne.name
+            if occurrenceOne is not None:
+                try:
+                    oneEntityToken = occurrenceOne.entityToken
+                except Exception:
+                    oneEntityToken = occurrenceOne.name
 
-            try:
-                twoEntityToken = occurrenceTwo.entityToken
-            except:
-                twoEntityToken = occurrenceTwo.name
+            if occurrenceTwo is not None:
+                try:
+                    twoEntityToken = occurrenceTwo.entityToken
+                except Exception:
+                    twoEntityToken = occurrenceTwo.name
+
+            if occurrenceOne is None or occurrenceTwo is None:
+                # Already logged above (either missing both occurrences, or an unresolvable geometry/origin
+                # reference) - skip this joint rather than aborting the whole export
+                continue
+
+            self.occurrenceJoints.setdefault(oneEntityToken, []).append((joint, occurrenceOne, occurrenceTwo))
+            if twoEntityToken != oneEntityToken:
+                self.occurrenceJoints.setdefault(twoEntityToken, []).append((joint, occurrenceOne, occurrenceTwo))
 
             typeJoint = joint.jointMotion.jointType
 
             if typeJoint != 0:
                 if oneEntityToken not in self.dynamicJoints.keys():
                     self.dynamicJoints[oneEntityToken] = joint
-
-                # TODO: Check if this is fatal or not
-                if occurrenceTwo is None and occurrenceOne is None:
-                    ___: Err[None] = Err(
-                        f"Occurrences that connect joints could not be found\n\t1: {occurrenceOne}\n\t2: {occurrenceTwo}",
-                        ErrorSeverity.Fatal,
-                    )
             else:
                 if oneEntityToken == self.grounded.entityToken:
                     self.groundedConnections.append(occurrenceTwo)
                 elif twoEntityToken == self.grounded.entityToken:
                     self.groundedConnections.append(occurrenceOne)
+        logger.log(
+            10,
+            f"Finished Getting Joints: {len(self.dynamicJoints)} dynamic joint(s), "
+            f"{len(self.groundedConnections)} grounded connection(s)",
+        )
         return Ok(None)
 
     def _linkAllAxis(self) -> Result[None]:
@@ -415,37 +472,32 @@ class JointParser:
             if populate_result.is_fatal():
                 return populate_result
 
-        # if not is_ground:  # THIS IS A BUG - OCCURRENCE ACCESS VIOLATION
-        # this is the current reason for wrapping in try except pass
-        for joint in occ.joints:
-            if joint and joint.occurrenceOne and joint.occurrenceTwo:
-                occurrenceOne = joint.occurrenceOne
-                occurrenceTwo = joint.occurrenceTwo
-                connection = None
-                rigid = joint.jointMotion.jointType == 0
+        # Deliberately not using the `occ.joints` accessor here as it is a documented Fusion API
+        # crash. Instead look up joints touching occurrences from the map built once in __getAllJoints()
+        occJoints = self.occurrenceJoints.get(occ.entityToken, [])
+        for joint, occurrenceOne, occurrenceTwo in occJoints:
+            connection = None
+            rigid = joint.jointMotion.jointType == 0
 
-                if rigid:
-                    if joint.occurrenceOne == occ:
-                        connection = joint.occurrenceTwo
-                    if joint.occurrenceTwo == occ:
-                        connection = joint.occurrenceOne
-                else:
-                    if joint.occurrenceOne != occ:
-                        connection = joint.occurrenceOne
-
-                if connection is not None:
-                    if prev is None or connection.entityToken != prev.data.entityToken:
-                        populate_result = self._populateNode(
-                            connection,
-                            node,
-                            (OccurrenceRelationship.CONNECTION if rigid else OccurrenceRelationship.NEXT),
-                            is_ground=is_ground,
-                        )
-                        if populate_result.is_fatal():
-                            return populate_result
+            if rigid:
+                if occurrenceOne.entityToken == occ.entityToken:
+                    connection = occurrenceTwo
+                if occurrenceTwo.entityToken == occ.entityToken:
+                    connection = occurrenceOne
             else:
-                # Check if this joint occurance violation is really a fatal error or just something we should filter on
-                return Err("Joint without two occurrences", ErrorSeverity.Fatal)
+                if occurrenceOne.entityToken != occ.entityToken:
+                    connection = occurrenceOne
+
+            if connection is not None:
+                if prev is None or connection.entityToken != prev.data.entityToken:
+                    populate_result = self._populateNode(
+                        connection,
+                        node,
+                        (OccurrenceRelationship.CONNECTION if rigid else OccurrenceRelationship.NEXT),
+                        is_ground=is_ground,
+                    )
+                    if populate_result.is_fatal():
+                        return populate_result
 
         if prev is not None:
             edge = DynamicEdge(relationship, node)

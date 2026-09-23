@@ -1,10 +1,11 @@
-import { assert, describe, expect, test, vi } from "vitest"
+import { assert, describe, expect, test } from "vitest"
 import DefaultAssetLoader from "@/mirabuf/DefaultAssetLoader.ts"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 describe("Default Asset Tests", async () => {
     await DefaultAssetLoader.refresh()
-    vi.spyOn(console, "log").mockImplementation(() => {})
+    mockConsole()
 
     test("Manifest loaded", () => {
         expect(DefaultAssetLoader.fields.length).toBeGreaterThan(1)

@@ -1,0 +1,111 @@
+name: Glueball - Build
+on:
+  release:
+    types:
+      - created
+  workflow_dispatch: {}
+
+permissions:
+  id-token: write
+  contents: read
+  attestations: write
+
+env:
+  BIN_NAME: glueball
+
+jobs:
+  releaseBuildGlueball:
+    name: Glueball Release (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        build: [ linux-x86, linux-arm, macos-x86, macos-arm, win-x86, win-arm ]
+        include:
+          - build: linux-x86
+            os: ubuntu-latest
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+          - build: linux-arm
+            os: ubuntu-latest
+            rust: stable
+            target: aarch64-unknown-linux-musl
+          - build: macos-x86
+            os: macos-latest
+            rust: stable
+            target: x86_64-apple-darwin
+          - build: macos-arm
+            os: macos-latest
+            rust: stable
+            target: aarch64-apple-darwin
+          - build: win-x86
+            os: windows-latest
+            rust: stable
+            target: x86_64-pc-windows-msvc
+          - build: win-arm
+            os: windows-latest
+            rust: stable
+            target: aarch64-pc-windows-msvc
+
+    defaults:
+      run:
+        working-directory: "glueball"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+          targets: ${{ matrix.target }}
+      - name: Build release binary
+        shell: bash
+        run: cargo build --release --target ${{ matrix.target }} --verbose
+
+      - name: Build archive
+        shell: bash
+        env:
+          TARGET: ${{ matrix.target }}
+          OS: ${{ matrix.os }}
+        run: |
+          staging="${{ env.BIN_NAME }}-${{ matrix.target }}"
+          builddir="synthesis-glueball"
+          mkdir -p "$builddir"
+          mkdir -p "$builddir/bin"
+          cp "install/default-config.toml" "$builddir/config.toml"
+          cp "install/README.md" "$builddir/README.md"
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            cp "target/${{ matrix.target }}/release/${{ env.BIN_NAME }}.exe" "$builddir/bin/"
+            cp "install/win-start.bat" "$builddir/launch.bat"
+            cd "$builddir"
+            7z a "../$staging.zip" .
+            echo "ASSET=$staging.zip" >> $GITHUB_ENV
+          else
+            cp "target/${{ matrix.target }}/release/${{ env.BIN_NAME }}" "$builddir/bin/"
+            cp "install/unix-start.sh" "$builddir/launch.sh"
+            tar czf "$staging.tar.gz" -C "$builddir" .
+            echo "ASSET=$staging.tar.gz" >> $GITHUB_ENV
+          fi
+      
+
+      - name: Generate artifact attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: ./glueball/${{ env.ASSET }}
+
+      - name: Upload Release Asset
+        if: github.ref_type == 'tag'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run:
+          gh release upload ${{ github.event.release.tag_name }}  ${{ env.ASSET }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v7
+        if: github.ref_type != 'tag'
+        with:
+          name: ${{ matrix.target }}
+          path: ./glueball/${{ env.ASSET }}
+          archive: true
+
+

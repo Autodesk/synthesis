@@ -1,5 +1,5 @@
+import { WHEEL_DRIVER_TYPE } from "../../driver/WheelDriver"
 import type { SimSupplier } from "../SimDataFlow"
-import { supplierTypeMap } from "../WPILibState"
 import {
     CANMOTOR_BRAKE_MODE,
     CANMOTOR_BUS_VOLTAGE,
@@ -11,6 +11,8 @@ import {
 } from "../WPILibTypes"
 import SimDriverStation from "./SimDriverStation"
 import SimGeneric from "./SimGeneric"
+
+export const CAN_MOTOR_TYPE = WHEEL_DRIVER_TYPE
 
 export default class SimCANMotor {
     private constructor() {}
@@ -41,10 +43,10 @@ export default class SimCANMotor {
         return SimGeneric.set(SimType.CAN_MOTOR, device, CANMOTOR_BUS_VOLTAGE, voltage)
     }
 
-    public static genSupplier(device: string): SimSupplier {
+    public static genSupplier(device: string): SimSupplier<typeof CAN_MOTOR_TYPE> {
         return {
-            getSupplierType: () => supplierTypeMap[SimType.CAN_MOTOR]!,
-            getSupplierValue: () => SimCANMotor.getPercentOutput(device) ?? 0,
+            supplierType: CAN_MOTOR_TYPE,
+            getSupplierValue: () => [{ value: SimCANMotor.getPercentOutput(device) ?? 0, baseType: CAN_MOTOR_TYPE[0] }],
         }
     }
 }

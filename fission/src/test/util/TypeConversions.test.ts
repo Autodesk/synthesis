@@ -19,11 +19,10 @@ describe("Three to Jolt Conversions", async () => {
         const threeArr = tM.toArray()
 
         for (let c = 0; c < 4; c++) {
-            const column = jM.GetColumn4(c)
+            const column = jM.GetColumn4(c) // STATIC_ALIAS
             for (let r = 0; r < 4; r++) {
                 expect(threeArr[c * 4 + r]).toBeCloseTo(column.GetComponent(r), 4)
             }
-            JOLT.destroy(column)
         }
 
         const threeTranslation = new THREE.Vector3()
@@ -31,19 +30,17 @@ describe("Three to Jolt Conversions", async () => {
         const threeScale = new THREE.Vector3()
         tM.decompose(threeTranslation, threeRotation, threeScale)
 
-        const joltTranslation = jM.GetTranslation()
-        const joltRotation = jM.GetQuaternion()
+        const joltTranslation = jM.GetTranslation() // STATIC_ALIAS
+        const joltRotation = jM.GetQuaternion() // STATIC_ALIAS
         const joltScale = new JOLT.Vec3(1, 1, 1)
 
         expect(joltTranslation.GetX()).toBeCloseTo(threeTranslation.x, 4)
         expect(joltTranslation.GetY()).toBeCloseTo(threeTranslation.y, 4)
         expect(joltTranslation.GetZ()).toBeCloseTo(threeTranslation.z, 4)
-        // JOLT.destroy(joltTranslation); // Causes error for some reason?
         expect(joltRotation.GetX()).toBeCloseTo(threeRotation.x, 4)
         expect(joltRotation.GetY()).toBeCloseTo(threeRotation.y, 4)
         expect(joltRotation.GetZ()).toBeCloseTo(threeRotation.z, 4)
         expect(joltRotation.GetW()).toBeCloseTo(threeRotation.w, 4)
-        JOLT.destroy(joltRotation)
         expect(joltScale.GetX()).toBeCloseTo(threeScale.x, 4)
         expect(joltScale.GetY()).toBeCloseTo(threeScale.y, 4)
         expect(joltScale.GetZ()).toBeCloseTo(threeScale.z, 4)
@@ -220,11 +217,10 @@ describe("Jolt to Three Conversions", () => {
         const threeArr = tM.toArray()
 
         for (let c = 0; c < 4; c++) {
-            const column = jM.GetColumn4(c)
+            const column = jM.GetColumn4(c) // STATIC_ALIAS
             for (let r = 0; r < 4; r++) {
                 expect(threeArr[c * 4 + r]).toBeCloseTo(column.GetComponent(r), 4)
             }
-            JOLT.destroy(column)
         }
 
         const threeTranslation = new THREE.Vector3()
@@ -232,19 +228,17 @@ describe("Jolt to Three Conversions", () => {
         const threeScale = new THREE.Vector3()
         tM.decompose(threeTranslation, threeRotation, threeScale)
 
-        const joltTranslation = jM.GetTranslation()
-        const joltRotation = jM.GetQuaternion()
+        const joltTranslation = jM.GetTranslation() // STATIC_ALIAS
+        const joltRotation = jM.GetQuaternion() // STATIC_ALIAS
         const joltScale = new JOLT.Vec3(1, 1, 1)
 
         expect(threeTranslation.x).toBeCloseTo(joltTranslation.GetX(), 4)
         expect(threeTranslation.y).toBeCloseTo(joltTranslation.GetY(), 4)
         expect(threeTranslation.z).toBeCloseTo(joltTranslation.GetZ(), 4)
-        // JOLT.destroy(joltTranslation); // Causes error for some reason?
         expect(threeRotation.x).toBeCloseTo(joltRotation.GetX(), 4)
         expect(threeRotation.y).toBeCloseTo(joltRotation.GetY(), 4)
         expect(threeRotation.z).toBeCloseTo(joltRotation.GetZ(), 4)
         expect(threeRotation.w).toBeCloseTo(joltRotation.GetW(), 4)
-        JOLT.destroy(joltRotation)
         expect(threeScale.x).toBeCloseTo(joltScale.GetX(), 4)
         expect(threeScale.y).toBeCloseTo(joltScale.GetY(), 4)
         expect(threeScale.z).toBeCloseTo(joltScale.GetZ(), 4)
@@ -253,12 +247,12 @@ describe("Jolt to Three Conversions", () => {
 
     test("Jolt.Mat44 [Identity] -> THREE.Matrix4", () => {
         const tmp = new JOLT.RMat44()
-        const joltMat = tmp.sIdentity()
+        const joltMat = tmp.sIdentity() // STATIC_ALIAS
         const threeMat = convertJoltMat44ToThreeMatrix4(joltMat)
 
         compareMat(joltMat, threeMat)
 
-        JOLT.destroy(joltMat)
+        JOLT.destroy(tmp)
     })
 
     test("Jolt.Mat44 [+X Axis Rotation] -> THREE.Matrix4", () => {

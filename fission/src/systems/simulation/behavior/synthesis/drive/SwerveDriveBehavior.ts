@@ -93,7 +93,7 @@ class SwerveDriveBehavior extends DriveBehavior {
             this._wheels.forEach(w => {
                 w.accelerationDirection = 0
             })
-            World.physicsSystem.enablePhysicsForBody(rootNodeId)
+            World.physicsSystem.activateBody(rootNodeId)
             return
         }
 

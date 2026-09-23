@@ -88,7 +88,7 @@ class InputSchemeManager {
         for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap) {
             const reverted = schemesByName.get(scheme.schemeName)
             if (reverted && scheme.customized) {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, reverted)
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, reverted)
             }
         }
     }
@@ -177,7 +177,7 @@ class InputSchemeManager {
      */
     public static applyCompatibleScheme(brainIndex: number): InputScheme | undefined {
         const driveType = SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType
-        const current = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        const current = InputSystem.getBrainIndexSchemeMapping(brainIndex)
         if (current && (driveType == null || current.supportedDrivetrains.includes(driveType))) {
             return current
         }

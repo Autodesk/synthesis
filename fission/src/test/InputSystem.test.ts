@@ -80,7 +80,7 @@ describe("Input Scheme Manager Checks", () => {
         InputSchemeManager.resetDefaultSchemes()
         InputSchemeManager.rebindOldBrainSchemes()
 
-        const rebound = InputSystem.brainIndexSchemeMap.get(brainIndex)!
+        const rebound = InputSystem.getBrainIndexSchemeMapping(brainIndex)!
         expect(rebound).not.toBe(edited)
         expect(rebound.schemeName).toBe(DefaultInputs.ernie().schemeName)
     })

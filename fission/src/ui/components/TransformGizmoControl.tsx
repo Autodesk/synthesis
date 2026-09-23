@@ -95,27 +95,27 @@ const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
     }, [gizmo, onAccept, onCancel])
 
     // If there are no modes enabled, consider the UI pointless.
-    return disableOptions ? undefined : (
-        <>
-            <ToggleButtonGroup
-                value={mode}
-                exclusive
-                onChange={(_, v) => {
-                    if (v == null) return
+    if (disableOptions) return null
 
-                    setMode(v)
-                    gizmo?.setMode(v)
-                }}
-                sx={{
-                    ...(sx ?? {}),
-                    alignSelf: "center",
-                    display: "flex",
-                    justifyContent: "center",
-                }}
-            >
-                {buttons}
-            </ToggleButtonGroup>
-        </>
+    return (
+        <ToggleButtonGroup
+            value={mode}
+            exclusive
+            onChange={(_, v) => {
+                if (v == null) return
+
+                setMode(v)
+                gizmo?.setMode(v)
+            }}
+            sx={{
+                ...(sx ?? {}),
+                alignSelf: "center",
+                display: "flex",
+                justifyContent: "center",
+            }}
+        >
+            {buttons}
+        </ToggleButtonGroup>
     )
 }
 

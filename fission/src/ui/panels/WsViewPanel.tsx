@@ -138,7 +138,7 @@ const WSViewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
 
     useEffect(() => {
         configureScreen(panel!, { title: "WS View Panel" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     return (
         <Stack>
@@ -174,7 +174,7 @@ const WSViewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                     ))}
                 </Select>
                 {/* {deviceSelect} */}
-                {selectedDevice ? (
+                {selectedDevice && (
                     <Box>
                         <TextField placeholder="Field Name" onChange={e => setField(e.target.value)} />
                         <TextField placeholder="Value" onChange={e => setValue(e.target.value)} />
@@ -196,8 +196,6 @@ const WSViewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                             Set
                         </Button>
                     </Box>
-                ) : (
-                    <></>
                 )}
             </Stack>
         </Stack>

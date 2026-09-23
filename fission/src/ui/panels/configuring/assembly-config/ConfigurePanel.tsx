@@ -1,45 +1,51 @@
 import type React from "react"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import InputSystem from "@/systems/input/InputSystem"
-import type { InputScheme } from "@/systems/input/InputTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { Alliance, FieldPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
-import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import World from "@/systems/World"
-import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { Button, Spacer } from "@/ui/components/StyledComponents"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { CloseType, type UIScreen, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
-import { ConfigMode, type ConfigurationType } from "./ConfigTypes"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import {
+    type CleanupRegisterFunction,
+    ConfigMode,
+    type ConfigurationSubpanelComponent,
+    type ConfigurationType,
+    fieldConfigModes,
+    synthesisRobotConfigModes,
+    wpilibRobotConfigModes,
+} from "./ConfigTypes"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
-import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
+import ConfigModeSelection from "./configure/ConfigModeSelection"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
-import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
-import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+import ConfigureGamepieceIntakeInterface from "./interfaces/ConfigureGamepieceIntakeInterface.tsx"
+import ConfigureGamepieceEjectorInterface from "./interfaces/ConfigureGamepieceEjectorInterface.tsx"
+import ConfigureJointsInterface from "./interfaces/ConfigureJointsInterface"
+import ConfigureSensorsInterface from "./interfaces/sensors/ConfigureSensorsInterface"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
-import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
-import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureCameraPointsInterface from "./interfaces/ConfigureCameraPointsInterface"
+import ConfigureSpawnPositionsInterface from "./interfaces/ConfigureSpawnPositionsInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import EventSystem from "@/systems/EventSystem.ts"
-import { Tab, Tabs } from "@mui/material"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { Box, Tab, Tabs, type TabsActions } from "@mui/material"
+import { tourTarget } from "@/ui/tour/TourSteps"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import CommandRegistry, { type CommandDefinition, type CommandProvider } from "@/ui/components/CommandRegistry"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import AssemblyExportButton from "@/panels/configuring/assembly-config/configure/AssemblyExport.tsx"
 import MetadataConfigInterface from "@/panels/configuring/assembly-config/interfaces/MetadataConfigInterface.tsx"
 import { FaArrowsRotate } from "react-icons/fa6"
+import ConfigureCameraInterface from "./interfaces/cameras/ConfigureCameraInterface"
+import MoveInterface from "@/panels/configuring/assembly-config/interfaces/MoveInterface.tsx"
+import ControlsConfigInterface from "@/panels/configuring/assembly-config/interfaces/ControlsConfigInterface.tsx"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import Label from "@/components/Label.tsx"
 
 // Register command: Configure Assets (module-scope side effect)
 CommandRegistry.get().registerCommands([
@@ -74,7 +80,7 @@ const provider: CommandProvider = () => {
     if (!World.isAlive || !World.sceneRenderer) return []
     const list: CommandDefinition[] = []
 
-    const robots = World.sceneRenderer.mirabufSceneObjects.getRobots() || []
+    const robots = World.getOwnRobots() || []
     for (const r of robots) {
         const name = r.assemblyName || "Robot"
         const nameTokens = String(name)
@@ -138,111 +144,35 @@ const provider: CommandProvider = () => {
 }
 CommandRegistry.get().registerProvider(provider)
 
-interface ConfigInterfaceProps<T, P> {
-    panel: UIScreen<T, P>
-    configMode: ConfigMode
-    assembly: MirabufSceneObject
-}
-
-const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomProps>> = ({
-    panel,
-    configMode,
-    assembly,
-}) => {
-    const { openPanel, closePanel } = useUIContext()
-
-    useEffect(() => {
-        if (configMode !== ConfigMode.MOVE) return
-
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
-        }
-    }, [configMode])
-
-    switch (configMode) {
-        case ConfigMode.INTAKE:
-            return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
-        case ConfigMode.EJECTOR:
-            return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
-        case ConfigMode.SUBSYSTEMS:
-            return <ConfigureSubsystemsInterface selectedRobot={assembly} />
-        case ConfigMode.CONTROLS: {
-            const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
-            const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
-
-            return (
-                <>
-                    <Button
-                        onClick={() => {
-                            setSpotlightAssembly(assembly)
-                            openPanel(ChooseInputSchemePanel, undefined, panel)
-                            closePanel(panel.id, CloseType.Overwrite)
-                        }}
-                    >
-                        Set Scheme
-                    </Button>
-                    {scheme && <ConfigureSchemeInterface selectedScheme={scheme} panelId={panel?.id} />}
-                </>
-            )
-        }
-        case ConfigMode.SEQUENTIAL:
-            return <SequentialBehaviorsInterface selectedRobot={assembly} />
-        case ConfigMode.SCORING_ZONES: {
-            const zones = assembly.fieldPreferences?.scoringZones ?? []
-            if (zones === undefined) {
-                console.error("Field does not contain scoring zone preferences!")
-                return <Label size="md">ERROR: Field does not contain scoring zone configuration!</Label>
-            }
-            return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
-        }
-        case ConfigMode.PROTECTED_ZONES: {
-            const zones = assembly.fieldPreferences?.protectedZones ?? []
-            if (zones === undefined) {
-                console.error("Field does not contain protected zone preferences!")
-                return <Label size="md">ERROR: Field does not contain protected zone configuration!</Label>
-            }
-            return <ConfigureProtectedZonesInterface selectedField={assembly} initialZones={zones} />
-        }
-        case ConfigMode.CAMERA_POINTS: {
-            const cameraPoints = assembly.fieldPreferences?.cameraPoints ?? []
-            return <ConfigureCameraPointsInterface selectedField={assembly} initialPoints={cameraPoints} />
-        }
-        case ConfigMode.MOVE:
-            return (
-                <TransformGizmoControl
-                    key="config-move-gizmo"
-                    defaultMode="translate"
-                    scaleDisabled={true}
-                    size={3.0}
-                    parent={assembly}
-                    onAccept={() => closePanel(panel.id, CloseType.Accept)}
-                    onCancel={() => closePanel(panel.id, CloseType.Cancel)}
-                />
-            )
-        case ConfigMode.SIM:
-            return <SimulationInterface selectedAssembly={assembly} />
-        case ConfigMode.BRAIN:
-            return <BrainSelectionInterface selectedAssembly={assembly} />
-        case ConfigMode.ALLIANCE:
-            return <AllianceSelectionInterface selectedAssembly={assembly} />
-        case ConfigMode.DRIVETRAIN:
-            return <DrivetrainSelectionInterface selectedAssembly={assembly} />
-        case ConfigMode.METADATA:
-            return <MetadataConfigInterface selectedAssembly={assembly}></MetadataConfigInterface>
-        default:
-            throw new Error(`Config mode ${configMode} has no associated interface`)
-    }
-}
-
 export interface ConfigurePanelCustomProps {
     selectedAssembly?: MirabufSceneObject
     configMode?: ConfigMode
     configurationType?: ConfigurationType
 }
 
+const subConfigPanels: Record<ConfigMode, ConfigurationSubpanelComponent> = {
+    [ConfigMode.JOINTS]: ConfigureJointsInterface,
+    [ConfigMode.EJECTOR]: ConfigureGamepieceEjectorInterface,
+    [ConfigMode.INTAKE]: ConfigureGamepieceIntakeInterface,
+    [ConfigMode.CAMERA]: ConfigureCameraInterface,
+    [ConfigMode.SENSORS]: ConfigureSensorsInterface,
+    [ConfigMode.CONTROLS]: ControlsConfigInterface,
+    [ConfigMode.SCORING_ZONES]: ConfigureScoringZonesInterface,
+    [ConfigMode.PROTECTED_ZONES]: ConfigureProtectedZonesInterface,
+    [ConfigMode.CAMERA_POINTS]: ConfigureCameraPointsInterface,
+    [ConfigMode.SPAWN_POSITIONS]: ConfigureSpawnPositionsInterface,
+    [ConfigMode.MOVE]: MoveInterface,
+    [ConfigMode.SIM]: SimulationInterface,
+    [ConfigMode.BRAIN]: BrainSelectionInterface,
+    [ConfigMode.DRIVETRAIN]: DrivetrainSelectionInterface,
+    [ConfigMode.ALLIANCE]: AllianceSelectionInterface,
+    [ConfigMode.METADATA]: MetadataConfigInterface,
+}
+
 const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
-    const { configureScreen, closePanel } = useUIContext()
+    const { configureScreen, closePanel, addToast } = useUIContext()
+    const configurePanelRef = useTourAnchor("configure-panel")
+
     const {
         configMode: initialConfigMode,
         selectedAssembly: initialSelectedAssembly,
@@ -252,186 +182,138 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(initialSelectedAssembly)
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(initialConfigMode)
     const [configurationType, setConfigurationType] = useState<ConfigurationType>(initialConfigurationType ?? "ROBOTS")
-    const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
+    const [pendingDeletes, setPendingDeletes] = useState<SceneObjectId[]>([])
 
-    const originalRobotPrefs = useRef<RobotPreferences | null>(null)
-    const originalFieldPrefs = useRef<FieldPreferences | null>(null)
-    const originalInputSchemes = useRef<InputScheme[] | null>(null)
+    const [confirmCallbacks, setConfirmCallbacks] = useState<(() => void | Promise<void>)[]>([])
+    const [cancelCallbacks, setCancelCallbacks] = useState<(() => void | Promise<void>)[]>([])
+    const [accessedAssemblies, setAccessedAssemblies] = useState<MirabufSceneObject[]>([])
 
-    const originalAlliance = useRef<Alliance | undefined>(selectedAssembly?.alliance)
-    const originalStation = useRef<MirabufSceneObject["station"]>(selectedAssembly?.station)
+    const [disableAccept, setDisableAccept] = useState<boolean>(false)
+
+    const registerCleanupFunctions: CleanupRegisterFunction = useCallback((applyFunc?, revertFunc?) => {
+        if (applyFunc) {
+            setConfirmCallbacks(old => [...old, applyFunc])
+        }
+        if (revertFunc) {
+            setCancelCallbacks(old => [...old, revertFunc])
+        }
+    }, [])
+
+    // Resize tab indicator when content changes size
+    const tabsActionsRef = useRef<TabsActions>(null)
+    const contentRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        const allSchemes: InputScheme[] = PreferencesSystem.getUserPreference("InputSchemes") || []
-        originalInputSchemes.current = structuredClone(allSchemes)
+        const content = contentRef.current
+        if (!content) return
 
-        originalAlliance.current = selectedAssembly?.alliance
-        originalStation.current = selectedAssembly?.station
-
-        if (selectedAssembly) {
-            const id = selectedAssembly.assemblyId
-
-            const robotPrefs = PreferencesSystem.getRobotPreferences(id)
-            const fieldPrefs = PreferencesSystem.getFieldPreferences(id)
-
-            if (robotPrefs) originalRobotPrefs.current = structuredClone(robotPrefs)
-            if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
-
-            originalAlliance.current = selectedAssembly.alliance
-            originalStation.current = selectedAssembly.station
-        }
-
-        // Listen for input scheme changes from other panels
-        return EventSystem.listen("InputSchemeChanged", ({ panelId }) => {
-            if (panelId === panel?.id) return
-
-            const currentSchemes: InputScheme[] = InputSchemeManager.allInputSchemes
-            originalInputSchemes.current = structuredClone(currentSchemes)
-        })
+        const observer = new ResizeObserver(() => tabsActionsRef.current?.updateIndicator())
+        observer.observe(content)
+        return () => observer.disconnect()
     }, [])
 
     useEffect(() => {
-        const onBeforeAccept = () => {
-            pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
-            setPendingDeletes([])
-
-            InputSchemeManager.saveSchemes(panel?.id)
-
-            originalRobotPrefs.current = null
-            originalFieldPrefs.current = null
-            originalInputSchemes.current = null
-
-            selectedAssembly?.sendPreferences()
-            EventSystem.dispatch("ConfigurationSavedEvent")
+        if (selectedAssembly != null) {
+            setAccessedAssemblies(v => [...v, selectedAssembly])
         }
-        const onCancel = () => {
-            setPendingDeletes([])
+    }, [selectedAssembly])
 
-            if (selectedAssembly) {
-                const id = selectedAssembly.assemblyId
-
-                if (originalRobotPrefs.current) PreferencesSystem.setRobotPreferences(id, originalRobotPrefs.current)
-                if (originalFieldPrefs.current) PreferencesSystem.setFieldPreferences(id, originalFieldPrefs.current)
-
-                selectedAssembly.alliance = originalAlliance.current
-                selectedAssembly.station = originalStation.current
-
-                selectedAssembly.loadPreferences()
+    useEffect(() => {
+        return EventSystem.listen("MatchStateChangedEvent", ({ mode }) => {
+            if (mode === MatchModeType.AUTONOMOUS) {
+                closePanel(panel!.id, CloseType.OVERWRITE)
             }
+        })
+    }, [closePanel, panel])
 
-            if (originalInputSchemes.current) {
-                PreferencesSystem.setUserPreference("InputSchemes", originalInputSchemes.current)
-                PreferencesSystem.savePreferences()
-                InputSchemeManager.resetDefaultSchemes(panel?.id)
-                InputSchemeManager.rebindOldBrainSchemes()
-            }
+    const onBeforeAccept = useCallback(async () => {
+        for (const callback of confirmCallbacks) {
+            await callback()
+        }
+        new Set(accessedAssemblies).forEach(assembly => {
+            assembly.savePreferences()
+        })
 
-            originalRobotPrefs.current = null
-            originalFieldPrefs.current = null
-            originalInputSchemes.current = null
+        pendingDeletes.forEach(item => {
+            World.sceneRenderer.removeSceneObject(item)
+        })
 
-            originalAlliance.current = undefined
-            originalStation.current = undefined
+        InputSchemeManager.saveSchemes()
+
+        EventSystem.dispatch("ConfigurationSavedEvent")
+        setConfirmCallbacks([])
+        setCancelCallbacks([])
+        setAccessedAssemblies([])
+    }, [confirmCallbacks, accessedAssemblies, pendingDeletes])
+
+    const onCancel = useCallback(async () => {
+        for (const callback of [...cancelCallbacks].reverse()) {
+            // If the same subpanel is opened twice, you want to revert in reverse order
+            await callback()
         }
 
-        originalAlliance.current = selectedAssembly?.alliance
-        originalStation.current = selectedAssembly?.station
+        new Set(accessedAssemblies).forEach(assembly => {
+            assembly.savePreferences()
+        })
 
+        setConfirmCallbacks([])
+        setCancelCallbacks([])
+        setAccessedAssemblies([])
+        addToast("info", "Configuration reverted")
+    }, [cancelCallbacks, accessedAssemblies, addToast])
+
+    const hasMadeChanges = useMemo(
+        () => confirmCallbacks.length > 0 || cancelCallbacks.length > 0,
+        [confirmCallbacks, cancelCallbacks]
+    )
+
+    const onClose = useCallback(
+        async (closeType: CloseType) => {
+            if (closeType == CloseType.OVERWRITE && hasMadeChanges) {
+                await onBeforeAccept()
+            }
+        },
+        [hasMadeChanges, onBeforeAccept]
+    )
+
+    useEffect(() => {
         configureScreen(
             panel!,
-            { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
-            { onBeforeAccept, onCancel }
+            {
+                title: "Configure Assets",
+                acceptText: "Save",
+                cancelText: hasMadeChanges ? "Revert" : "Cancel",
+                exclusiveGroup: "assembly-init",
+                disableAccept,
+            },
+            { onBeforeAccept, onCancel, onClose }
         )
-    }, [selectedAssembly, pendingDeletes])
+    }, [onBeforeAccept, onCancel, onClose, configureScreen, panel, hasMadeChanges, disableAccept])
 
     const modes = useMemo(() => {
-        switch (configurationType) {
-            case "ROBOTS":
-                return [
-                    new ConfigModeSelectionOption(
-                        "Brain",
-                        ConfigMode.BRAIN,
-                        "Select and modify what is controlling of the robot."
-                    ),
-
-                    new ConfigModeSelectionOption(
-                        "Move",
-                        ConfigMode.MOVE,
-                        "Adjust position of robot relative to field."
-                    ),
-
-                    new ConfigModeSelectionOption("Drivetrain", ConfigMode.DRIVETRAIN, "Sets the drivetrain type."),
-
-                    new ConfigModeSelectionOption(
-                        "Intake",
-                        ConfigMode.INTAKE,
-                        "Configure the robot’s intake position and parent node for picking up game pieces."
-                    ),
-
-                    new ConfigModeSelectionOption(
-                        "Ejector",
-                        ConfigMode.EJECTOR,
-                        "Configure the robot’s ejector mechanism, which controls the release or expulsion of game pieces."
-                    ),
-
-                    new ConfigModeSelectionOption(
-                        "Configure Joints",
-                        ConfigMode.SUBSYSTEMS,
-                        "Set the velocities, torques, and accelerations of your robot's motors."
-                    ),
-
-                    new ConfigModeSelectionOption(
-                        "Sequence Joints",
-                        ConfigMode.SEQUENTIAL,
-                        "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
-                    ),
-
-                    new ConfigModeSelectionOption(
-                        "Alliance / Station",
-                        ConfigMode.ALLIANCE,
-                        "Set the robot's alliance color for matches. (red or blue)"
-                    ),
-                    new ConfigModeSelectionOption("Metadata", ConfigMode.METADATA, "Update the asset's metadata"),
-                    selectedAssembly?.brain?.brainType === "wpilib"
-                        ? new ConfigModeSelectionOption(
-                              "Simulation",
-                              ConfigMode.SIM,
-                              "Configure the WPILib simulation settings for this robot."
-                          )
-                        : new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS, "Set your controller scheme."),
-                ]
-            case "FIELDS":
-                return [
-                    new ConfigModeSelectionOption(
-                        "Move",
-                        ConfigMode.MOVE,
-                        "Adjust position of field relative to robot."
-                    ),
-                    new ConfigModeSelectionOption(
-                        "Scoring Zones",
-                        ConfigMode.SCORING_ZONES,
-                        "Define and manage zones on the field where robots can earn points during simulation."
-                    ),
-                    new ConfigModeSelectionOption(
-                        "Protected Zones",
-                        ConfigMode.PROTECTED_ZONES,
-                        "Define and manage protected zones on the field where robots can not enter."
-                    ),
-                    new ConfigModeSelectionOption(
-                        "Camera Positions",
-                        ConfigMode.CAMERA_POINTS,
-                        "Place and configure driver-station camera views for this field."
-                    ),
-                    new ConfigModeSelectionOption("Metadata", ConfigMode.METADATA, "Update the asset's metadata"),
-                ]
-            default:
-                return []
+        if (configurationType == "FIELDS") {
+            return fieldConfigModes
         }
-    }, [configurationType, selectedAssembly?.brain?.brainType])
+        if (configurationType == "ROBOTS") {
+            if (selectedAssembly?.brain?.isSynthesis()) {
+                return synthesisRobotConfigModes
+            }
+            return wpilibRobotConfigModes
+        }
+        return []
+    }, [configurationType, selectedAssembly?.brain])
+
+    const ConfigSubPanel: ConfigurationSubpanelComponent | null = useMemo(() => {
+        if (configMode == null || selectedAssembly == null) {
+            return null
+        }
+        return subConfigPanels[configMode]
+    }, [configMode, selectedAssembly])
 
     return (
-        <>
+        <Box ref={configurePanelRef}>
             <Tabs
+                action={tabsActionsRef}
                 value={configurationType}
                 onChange={(_, newValue) => setConfigurationType(newValue)}
                 textColor="inherit"
@@ -443,64 +325,84 @@ const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> 
                 <Tab key="fields" value="FIELDS" label="FIELDS" />
                 <Tab key="inputs" value="INPUTS" label="INPUTS" />
             </Tabs>
-            {configurationType === "INPUTS" && <ConfigureInputsInterface />}
-            {configurationType !== "INPUTS" && (
-                <>
-                    <AssemblySelection
-                        panel={panel!}
-                        configurationType={configurationType}
-                        onAssemblySelected={a => {
-                            if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                            setConfigMode(undefined)
-                            setSelectedAssembly(a as MirabufSceneObject)
-                        }}
-                        selectedAssembly={selectedAssembly}
-                        onStageDelete={opt => {
-                            const id = (opt as AssemblySelectionOption).assemblyObject.id
-                            setPendingDeletes(prev => [...prev, id])
-                        }}
-                        pendingDeletes={pendingDeletes}
-                    />
-                    {selectedAssembly !== undefined && (
-                        <ConfigModeSelection
-                            modes={modes}
-                            configMode={configMode}
-                            onModeSelected={mode => {
+            <div ref={contentRef}>
+                {configurationType === "INPUTS" && (
+                    <ConfigureInputsInterface panel={panel!} registerCleanupFunction={registerCleanupFunctions} />
+                )}
+                {configurationType !== "INPUTS" && (
+                    <>
+                        <AssemblySelection
+                            panel={panel!}
+                            configurationType={configurationType}
+                            onAssemblySelected={a => {
                                 if (configMode !== undefined) EventSystem.dispatch("ConfigurationSavedEvent")
-                                setConfigMode(mode)
+                                setConfigMode(undefined)
+                                setSelectedAssembly(a as MirabufSceneObject)
                             }}
+                            selectedAssembly={selectedAssembly}
+                            onStageDelete={opt => {
+                                const id = (opt as AssemblySelectionOption).assemblyObject.id
+                                setPendingDeletes(prev => [...prev, id])
+                            }}
+                            pendingDeletes={pendingDeletes}
                         />
-                    )}
-                    {configMode !== undefined && selectedAssembly !== undefined && (
-                        <ConfigInterface panel={panel!} configMode={configMode} assembly={selectedAssembly} />
-                    )}
-                    {configMode === undefined && selectedAssembly !== undefined && (
-                        <>
-                            <Spacer height={16} />
-                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
-                            <Spacer height={16} />
-                            <Button
-                                className={"w-full"}
-                                color={"warning"}
-                                onClick={() => {
-                                    closePanel(panel!.id, CloseType.Accept)
-                                    selectedAssembly.resetPreferences()
-                                    globalAddToast(
-                                        "info",
-                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
-                                    )
-                                }}
-                            >
-                                Reset
-                                <Spacer width={5} />
-                                <FaArrowsRotate />
-                            </Button>
-                        </>
-                    )}
-                </>
-            )}
-        </>
+
+                        {selectedAssembly !== undefined &&
+                            (!selectedAssembly.isOwnObject ? (
+                                <Label size={"sm"}>Cannot configure someone else's object</Label>
+                            ) : (
+                                <>
+                                    <ConfigModeSelection
+                                        modes={modes}
+                                        configMode={configMode}
+                                        onModeSelected={mode => {
+                                            if (configMode !== undefined)
+                                                EventSystem.dispatch("ConfigurationSavedEvent")
+                                            setConfigMode(mode)
+                                        }}
+                                    />
+
+                                    {ConfigSubPanel != null && (
+                                        <ConfigSubPanel
+                                            panel={panel!}
+                                            selectedAssembly={selectedAssembly}
+                                            setDisableAccept={setDisableAccept}
+                                            hasMadeChanges={hasMadeChanges}
+                                            registerCleanupFunction={registerCleanupFunctions}
+                                        />
+                                    )}
+                                    {configMode === undefined && (
+                                        <>
+                                            <Spacer height={16} />
+                                            <AssemblyExportButton selectedAssembly={selectedAssembly} />
+                                            <Spacer height={16} />
+                                            <Button
+                                                className={"w-full"}
+                                                color={"warning"}
+                                                onClick={() => {
+                                                    closePanel(panel!.id, CloseType.ACCEPT)
+                                                    selectedAssembly.resetPreferences()
+                                                    globalAddToast(
+                                                        "info",
+                                                        "Preferences for " + selectedAssembly.descriptiveName + " reset"
+                                                    )
+                                                }}
+                                            >
+                                                Reset
+                                                <Spacer width={5} />
+                                                <FaArrowsRotate />
+                                            </Button>
+                                        </>
+                                    )}
+                                </>
+                            ))}
+                    </>
+                )}
+            </div>
+        </Box>
     )
 }
+
+tourTarget(ConfigurePanel, "ConfigurePanel")
 
 export default ConfigurePanel

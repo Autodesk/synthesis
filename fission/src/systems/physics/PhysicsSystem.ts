@@ -13,16 +13,21 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import type MirabufParser from "../../mirabuf/MirabufParser"
-import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "@/mirabuf/MirabufParser.ts"
+import {
+    GAMEPIECE_SUFFIX,
+    GROUNDED_JOINT_ID,
+    type RigidNodeId,
+    type RigidNodeReadOnly,
+} from "@/mirabuf/MirabufParser.ts"
 import { mirabuf } from "@/proto/mirabuf"
-import type { LocalSceneObjectId, Message } from "../multiplayer/types"
+import type { Message } from "../multiplayer/MultiplayerTypes.ts"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
 import WorldSystem from "../WorldSystem"
 import type { CurrentContactData, OnContactValidateData } from "./ContactEvents"
 import Mechanism from "./Mechanism"
 import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import MirabufSceneObject, { type RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject.ts"
 import type { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import {
     inferURDFAutoWheelBasis,
@@ -42,8 +47,12 @@ import {
     isWheel,
     setAxes,
 } from "./ConstraintSettingsUtilities"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import type { PhysicsBodyData, UpdatePhysicsBodyData } from "../multiplayer/MultiplayerMessageTypes.ts"
 
 const DEBUG_COLLIDER_WARNINGS = false
+
+const MULTIPLAYER_FREQUENCY = 2 // Send update packets every n frames
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -57,7 +66,7 @@ const ROBOT_LAYERS: number[] = [
 ]
 
 // Layer for ghost objects used in constraint systems, interacts with nothing
-const LAYER_GHOST = 10
+export const LAYER_GHOST = 10
 
 // Please update this accordingly.
 const COUNT_OBJECT_LAYERS = 11
@@ -146,10 +155,15 @@ class PhysicsSystem extends WorldSystem {
     private _joltInterface: Jolt.JoltInterface
     private _joltPhysSystem: Jolt.PhysicsSystem
     private _joltBodyInterface: Jolt.BodyInterface
-    private _bodies: Array<Jolt.BodyID>
-    private _constraints: Array<Jolt.Constraint>
+
+    private _contactListener!: Jolt.ContactListenerJS
+    private _bodies: Jolt.BodyID[]
+    private _constraints: Jolt.Constraint[]
     // Sphere game-piece bodies that get the resting-stiction pass each step (see update()).
-    private _sphereGamePieceBodies: Array<Jolt.BodyID> = []
+    private _sphereGamePieceBodies: Jolt.BodyID[] = []
+    private _gamepiecesToFreeze: Jolt.BodyID[] = []
+
+    private _bodyShapes: Map<JoltBodyIndexAndSequence, Jolt.Shape> = new Map()
 
     private _physicsEventQueue: SynthesisEvent<
         "OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent"
@@ -185,14 +199,14 @@ class PhysicsSystem extends WorldSystem {
         this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface()
         this.setUpContactListener(this._joltPhysSystem)
 
-        // NOTE
-        // Held by the Jolt Physics System
         const gravityVector = new JOLT.Vec3(0, -9.8, 0)
         this._joltPhysSystem.SetGravity(gravityVector)
+        JOLT.destroy(gravityVector)
 
         this._joltPhysSystem.GetPhysicsSettings().mDeterministicSimulation = false
         this._joltPhysSystem.GetPhysicsSettings().mSpeculativeContactDistance = 0.06
         this._joltPhysSystem.GetPhysicsSettings().mPenetrationSlop = 0.005
+        this._joltPhysSystem.GetPhysicsSettings().mTimeBeforeSleep = 0.2
 
         const ground = this.createBox(
             new THREE.Vector3(7.5, 0.1, 7.5),
@@ -267,25 +281,52 @@ class PhysicsSystem extends WorldSystem {
     public disablePhysicsForBody(bodyId: Jolt.BodyID) {
         if (!this.isBodyAdded(bodyId)) return
 
-        this._joltBodyInterface.DeactivateBody(bodyId)
+        this._joltBodyInterface.SetObjectLayer(bodyId, LAYER_GHOST)
+        this._joltBodyInterface.SetGravityFactor(bodyId, 0)
 
-        this.getBody(bodyId)!.SetIsSensor(true)
+        const zero = new JOLT.Vec3(0, 0, 0)
+        this._joltBodyInterface.SetLinearVelocity(bodyId, zero)
+        this._joltBodyInterface.SetAngularVelocity(bodyId, zero)
+        JOLT.destroy(zero)
     }
 
     /**
      * Enables physics for a single body
      *
+     * @param [layer=LAYER_GENERAL_DYNAMIC] the original layer of the body
      * @param bodyId
      */
-    public enablePhysicsForBody(bodyId: Jolt.BodyID) {
+    public enablePhysicsForBody(bodyId: Jolt.BodyID, layer: number = LAYER_GENERAL_DYNAMIC) {
+        if (!this.isBodyAdded(bodyId)) return
+
+        this._joltBodyInterface.SetObjectLayer(bodyId, layer)
+
+        this._joltBodyInterface.SetGravityFactor(bodyId, 1)
+        // this._joltBodyInterface.ActivateBody(bodyId)
+
+        // this.getBody(bodyId)!.SetIsSensor(false)
+    }
+
+    /**
+     * Wakes a sleeping body.
+     *
+     * @param bodyId
+     */
+    public activateBody(bodyId: Jolt.BodyID) {
         if (!this.isBodyAdded(bodyId)) return
 
         this._joltBodyInterface.ActivateBody(bodyId)
-        this.getBody(bodyId)!.SetIsSensor(false)
     }
 
     public isBodyAdded(bodyId: Jolt.BodyID) {
         return this._joltBodyInterface.IsAdded(bodyId)
+    }
+
+    public deactivateGamepieces() {
+        this._gamepiecesToFreeze.forEach(body => {
+            this._joltBodyInterface.DeactivateBody(body)
+        })
+        this._gamepiecesToFreeze = []
     }
 
     /**
@@ -310,9 +351,30 @@ class PhysicsSystem extends WorldSystem {
         JOLT.destroy(size)
 
         const body = this.createBody(shape, mass, position, rotation)
-        this._bodies.push(body.GetID())
+        this.trackBodyShape(body.GetID(), shape)
 
         return body
+    }
+
+    /** AddRefs `shape` and tracks it as `id`'s current shape; releases whatever was tracked before. */
+    private trackBodyShape(id: Jolt.BodyID, shape: Jolt.Shape) {
+        shape.AddRef()
+
+        // Must be called while the body is still alive to avoid a use-after-free
+        const key = id.GetIndexAndSequenceNumber()
+        const oldShape = this._bodyShapes.get(key)
+        this._bodyShapes.set(key, shape)
+
+        // The refcount here is not guarenteed to be exactly 1, avoid `JOLT.destroy()`
+        if (oldShape) oldShape.Release()
+    }
+
+    private releaseBodyShapeByKey(key: JoltBodyIndexAndSequence) {
+        const shape = this._bodyShapes.get(key)
+        if (!shape) return
+
+        this._bodyShapes.delete(key)
+        shape.Release()
     }
 
     /**
@@ -353,6 +415,9 @@ class PhysicsSystem extends WorldSystem {
         return body
     }
 
+    /**
+     * Only used in testing
+     */
     public addBodyToSystem(bodyId: Jolt.BodyID, shouldActivate: boolean) {
         this._joltBodyInterface.AddBody(
             bodyId,
@@ -457,6 +522,7 @@ class PhysicsSystem extends WorldSystem {
             }
 
             let listener: Jolt.PhysicsStepListener | null = null
+            let vehicleTester: Jolt.VehicleCollisionTester | null = null
 
             const addConstraint = (c: Jolt.Constraint): void => {
                 mechanism.addConstraint({
@@ -482,19 +548,21 @@ class PhysicsSystem extends WorldSystem {
                             ? [bodyA, bodyB]
                             : [bodyB, bodyA]
 
-                        const [fixedConstraint, vehicleConstraint, vehicleListener] = this.createWheelConstraint(
-                            jointInst,
-                            jDef,
-                            maxAcceleration ?? 1.5,
-                            bodyOne,
-                            bodyTwo,
-                            parser.assembly.info!.version!,
-                            urdfImport,
-                            wheelRadii.get(jointGuid)
-                        )
+                        const [fixedConstraint, vehicleConstraint, vehicleListener, tester] =
+                            this.createWheelConstraint(
+                                jointInst,
+                                jDef,
+                                maxAcceleration ?? 1.5,
+                                bodyOne,
+                                bodyTwo,
+                                parser.assembly.info!.version!,
+                                urdfImport,
+                                wheelRadii.get(jointGuid)
+                            )
                         addConstraint(fixedConstraint)
                         addConstraint(vehicleConstraint)
                         listener = vehicleListener
+                        vehicleTester = tester
 
                         break
                     }
@@ -522,6 +590,7 @@ class PhysicsSystem extends WorldSystem {
                     break
             }
             if (listener) mechanism.addStepListener(listener)
+            if (vehicleTester) mechanism.addVehicleTester(vehicleTester)
         })
     }
 
@@ -557,6 +626,7 @@ class PhysicsSystem extends WorldSystem {
 
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
+        JOLT.destroy(anchorPoint)
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
@@ -590,6 +660,7 @@ class PhysicsSystem extends WorldSystem {
 
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         constraintSettings.mPoint1 = constraintSettings.mPoint2 = anchorPoint
+        JOLT.destroy(anchorPoint)
 
         const freedom = jointDefinition.prismatic!.prismaticFreedom!
 
@@ -606,9 +677,6 @@ class PhysicsSystem extends WorldSystem {
         const fixedSettings = new JOLT.FixedConstraintSettings()
         fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint
 
-        // TODO
-        // Figure out if this cast is necessary
-        // If not, replace with `this.newConstraint()`
         const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint)
         this._joltPhysSystem.AddConstraint(fixedConstraint)
         this._constraints.push(fixedConstraint)
@@ -686,7 +754,8 @@ class PhysicsSystem extends WorldSystem {
             const miraAxis = jDef.rotational!.rotationalFreedom!.axis! as mirabuf.Vector3
             const miraAxisX: number = (versionNum < 5 ? -miraAxis.x! : miraAxis.x!) ?? 0
             const axis = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
-            const radius = inferWheelRadius(urdfImport, bodyWheel.GetShape().GetLocalBounds(), axis)
+            const wheelBounds = bodyWheel.GetShape().GetLocalBounds() // STATIC_ALIAS
+            const radius = inferWheelRadius(urdfImport, wheelBounds, axis)
             JOLT.destroy(axis)
 
             wheels.push({ guid: jointGuid, radius })
@@ -717,11 +786,12 @@ class PhysicsSystem extends WorldSystem {
     private createVehicleListeners(constraint: Jolt.VehicleConstraint, bodyWheel: Jolt.Body) {
         const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05)
         constraint.SetVehicleCollisionTester(tester)
+        tester.AddRef()
 
         const listener = new JOLT.VehicleConstraintStepListener(constraint)
         this._joltPhysSystem.AddStepListener(listener)
 
-        return listener
+        return { listener, tester }
     }
 
     public createWheelConstraint(
@@ -733,7 +803,7 @@ class PhysicsSystem extends WorldSystem {
         versionNum: number,
         urdfImport: boolean,
         resolvedRadius?: number
-    ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener] {
+    ): [Jolt.Constraint, Jolt.VehicleConstraint, Jolt.PhysicsStepListener, Jolt.VehicleCollisionTester] {
         const anchorPoint = createAnchorPoint(jointInstance, jointDefinition)
         const fixedConstraint = this.createFixedConstraint(bodyMain, bodyWheel, anchorPoint)
 
@@ -747,7 +817,7 @@ class PhysicsSystem extends WorldSystem {
         const axis = new JOLT.Vec3(unitAxis.GetX() * 0.1, unitAxis.GetY() * 0.1, unitAxis.GetZ() * 0.1)
 
         const urdfWheelBasis = urdfImport ? inferURDFAutoWheelBasis(unitAxis) : undefined
-        const bounds = bodyWheel.GetShape().GetLocalBounds()
+        const bounds = bodyWheel.GetShape().GetLocalBounds() // STATIC_ALIAS
         const wheelDimensions = urdfWheelBasis
             ? inferWheelDimensionsFromAxle(bounds, unitAxis)
             : {
@@ -769,6 +839,7 @@ class PhysicsSystem extends WorldSystem {
         const wheelSettings = new JOLT.WheelSettingsWV()
 
         wheelSettings.mPosition = wheelPos
+        JOLT.destroy(wheelPos)
 
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
@@ -787,11 +858,19 @@ class PhysicsSystem extends WorldSystem {
 
         JOLT.destroy(axis)
         JOLT.destroy(unitAxis)
+        JOLT.destroy(anchorPoint)
 
         const vehicleConstraint = this.createVehicleConstraint(wheelSettings, bodyMain, maxAcc, urdfWheelBasis)
-        const listener = this.createVehicleListeners(vehicleConstraint, bodyWheel)
+        const { listener, tester } = this.createVehicleListeners(vehicleConstraint, bodyWheel)
 
-        return [fixedConstraint, vehicleConstraint, listener]
+        if (urdfWheelBasis) {
+            JOLT.destroy(urdfWheelBasis.forward)
+            JOLT.destroy(urdfWheelBasis.up)
+            JOLT.destroy(urdfWheelBasis.suspensionDirection)
+            JOLT.destroy(urdfWheelBasis.steeringAxis)
+        }
+
+        return [fixedConstraint, vehicleConstraint, listener, tester]
     }
 
     /**
@@ -885,6 +964,9 @@ class PhysicsSystem extends WorldSystem {
 
         const nonPhysicsNodes = filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly)
 
+        const newBodies = new JOLT.ArrayBodyID()
+        const newInactiveBodies = new JOLT.ArrayBodyID()
+
         const massMod = (() => {
             let assemblyMass = 0
             nonPhysicsNodes.forEach(x => {
@@ -944,27 +1026,27 @@ class PhysicsSystem extends WorldSystem {
                 // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
 
                 if (!partShapeResult) {
+                    if (DEBUG_COLLIDER_WARNINGS) {
+                        console.warn("Skipping collider (no valid shape settings)", debugLabel)
+                    }
                     return [undefined, undefined]
                 }
 
                 const [shapeSettings, partMin, partMax] = partShapeResult
 
                 const transform = convertThreeMatrix4ToJoltMat44(parser.globalTransforms.get(partId)!)
-                const translation = transform.GetTranslation()
-                const rotation = transform.GetQuaternion()
+                const translation = transform.GetTranslation() // STATIC_ALIAS
+                const rotation = transform.GetQuaternion() // STATIC_ALIAS
 
-                // NOTE
-                // `AddShape` consumes `translation` and `rotation`
                 compoundShapeSettings.AddShape(translation, rotation, shapeSettings, 0)
                 shapesAdded++
 
-                const worldMin = transform.Multiply3x3(partMin)
-                const worldMax = transform.Multiply3x3(partMax)
+                const worldMin = transform.Multiply3x3(partMin) // STATIC_ALIAS
                 this.updateMinMaxBounds(worldMin, minBounds, maxBounds)
+
+                const worldMax = transform.Multiply3x3(partMax) // STATIC_ALIAS
                 this.updateMinMaxBounds(worldMax, minBounds, maxBounds)
 
-                JOLT.destroy(worldMin)
-                JOLT.destroy(worldMax)
                 JOLT.destroy(partMin)
                 JOLT.destroy(partMax)
                 JOLT.destroy(transform)
@@ -1041,11 +1123,12 @@ class PhysicsSystem extends WorldSystem {
 
                 let shape = shapeResult.Get()
                 let appliedSphereCollider = false
+                let massOverride: number | undefined
 
                 if (rn.isDynamic) {
                     if (rn.isGamePiece) {
                         if (computeSphericity(totalVolume, totalArea) >= MIN_SPHERICITY) {
-                            const center = shape.GetCenterOfMass()
+                            const center = shape.GetCenterOfMass() // STATIC_ALIAS
                             const volumeMeters3 = totalVolume * 1e-6 // Convert cm^3 to m^3
                             const radius = Math.max(Math.cbrt((3 * volumeMeters3) / (4 * Math.PI)), 0.01)
 
@@ -1056,16 +1139,18 @@ class PhysicsSystem extends WorldSystem {
                                 identityRotation,
                                 sphereSettings
                             )
+                            // STATIC_ALIAS. No AddRef()+.Clear() either, `shape` has no other ref yet,
+                            // that pair would zero refcount and free it early Static's implicit ref covers it
                             shape = offsetSettings.Create().Get()
-                            JOLT.destroy(identityRotation)
-                            JOLT.destroy(sphereSettings)
                             appliedSphereCollider = true
+
+                            JOLT.destroy(identityRotation)
+                            JOLT.destroy(offsetSettings)
                         }
 
-                        const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
-                        shape.GetMassProperties().mMass = mass
+                        massOverride = totalMass == 0.0 ? undefined : Math.min(totalMass, MAX_GP_MASS)
                     } else {
-                        shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass * massMod
+                        massOverride = totalMass == 0.0 ? undefined : totalMass * massMod
                     }
                 }
 
@@ -1078,10 +1163,28 @@ class PhysicsSystem extends WorldSystem {
                     rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
                     rnLayer
                 )
+
+                if (massOverride !== undefined) {
+                    bodySettings.mOverrideMassProperties = JOLT.EOverrideMassProperties_CalculateInertia
+                    bodySettings.mMassPropertiesOverride.mMass = massOverride
+                }
+
+                // BodyCreationSettings constructor took its own ref on `shape`, safe to drop
+                // shapeResult's claim now. STATIC_ALIAS, `Clear()` over `JOLT.destroy()`
+                shapeResult.Clear()
+
                 const body = this._joltBodyInterface.CreateBody(bodySettings)
-                this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
-                body.SetAllowSleeping(false)
+
+                // Game pieces are allowed to sleep, but are inactive by default
+                // they are placed at their initial position by their `MirabufSceneObject`
+                // which activates them.
+                if (!rn.isGamePiece) body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
+                if (rn.isGamePiece) {
+                    newInactiveBodies.push_back(body.GetID())
+                } else {
+                    newBodies.push_back(body.GetID())
+                }
 
                 // Set Friction Here
                 let staticFriction = 0.0
@@ -1105,6 +1208,10 @@ class PhysicsSystem extends WorldSystem {
                 this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
 
+                if (rn.isGamePiece) {
+                    this._gamepiecesToFreeze.push(body.GetID())
+                }
+
                 if (appliedSphereCollider) {
                     body.GetMotionProperties().SetAngularDamping(SPHERE_GP_ANGULAR_DAMPING)
                     body.GetMotionProperties().SetLinearDamping(SPHERE_GP_LINEAR_DAMPING)
@@ -1119,6 +1226,25 @@ class PhysicsSystem extends WorldSystem {
             // Cleanup
             JOLT.destroy(compoundShapeSettings)
         })
+
+        JOLT.destroy(minBounds)
+        JOLT.destroy(maxBounds)
+
+        if (newBodies.size() > 0) {
+            const data = newBodies.data()
+            const size = newBodies.size()
+            const addState = this._joltBodyInterface.AddBodiesPrepare(data, size)
+            this._joltBodyInterface.AddBodiesFinalize(data, size, addState, JOLT.EActivation_Activate)
+        }
+        JOLT.destroy(newBodies)
+
+        if (newInactiveBodies.size() > 0) {
+            const data = newInactiveBodies.data()
+            const size = newInactiveBodies.size()
+            const addState = this._joltBodyInterface.AddBodiesPrepare(data, size)
+            this._joltBodyInterface.AddBodiesFinalize(data, size, addState, JOLT.EActivation_DontActivate)
+        }
+        JOLT.destroy(newInactiveBodies)
 
         return rnToBodies
     }
@@ -1156,7 +1282,6 @@ class PhysicsSystem extends WorldSystem {
             JOLT.destroy(settings)
             JOLT.destroy(min)
             JOLT.destroy(max)
-
             return
         }
 
@@ -1302,6 +1427,7 @@ class PhysicsSystem extends WorldSystem {
 
         if (!collector.HadHit()) {
             JOLT.destroy(collector)
+            JOLT.destroy(ray)
             return undefined
         }
 
@@ -1309,8 +1435,9 @@ class PhysicsSystem extends WorldSystem {
         const data = { mBodyID: new JOLT.BodyID(collector.mHit.mBodyID.GetIndexAndSequenceNumber()) }
 
         JOLT.destroy(collector)
+        JOLT.destroy(ray)
 
-        return { data, point: convertJoltRVec3ToJoltVec3(hitPoint), ray }
+        return { data, point: convertJoltRVec3ToJoltVec3(hitPoint) }
     }
 
     /**
@@ -1331,44 +1458,80 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
-     * Destroys bodies.
+     * Destroys all given bodies and removes them from the physics system.
      *
-     * @param bodies  Bodies to destroy.
+     * @param bodies Bodies to destroy and remove.
      */
     public destroyBodies(...bodies: Jolt.Body[]) {
-        this.unregisterSphereGamePieceBodies(bodies.map(x => x.GetID()))
-        bodies.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x.GetID())
-            this._joltBodyInterface.DestroyBody(x.GetID())
-        })
+        this.destroyBodiesById(...bodies.map(body => body.GetID()))
     }
 
-    public destroyBodyIds(...bodies: Jolt.BodyID[]) {
+    public destroyBodiesById(...bodies: Jolt.BodyID[]) {
+        // Capture body keys before destroying them, while each `BodyID` is still valid.
+        const keys = bodies.map(x => x.GetIndexAndSequenceNumber())
+
+        // Prune destroyed bodies from `this._bodies` now so later bulk cleanup does not
+        // re-destroy them. Compute this before the destroy loop, while each body ID is valid.
+        const destroyedIds = new Set(keys)
+        this._bodies = this._bodies.filter(x => !destroyedIds.has(x.GetIndexAndSequenceNumber()))
+
         this.unregisterSphereGamePieceBodies(bodies)
-        bodies.forEach(x => {
-            if (this.isBodyAdded(x)) {
-                this._joltBodyInterface.RemoveBody(x)
-                this._joltBodyInterface.DestroyBody(x)
-            }
-        })
+
+        // There shouldn't be duplicate bodies, but there have been in the past and likely will be in the future
+        // Because removing duplicates will cause a crash, it's better to be robust here and filter duplicates
+        const ids = new JOLT.ArrayBodyID()
+        ids.reserve(bodies.length)
+
+        const seen = new Set<number>()
+        bodies
+            .filter(id => this.isBodyAdded(id))
+            .map(id => [id, id.GetIndexAndSequenceNumber()] as [Jolt.BodyID, number])
+            .filter(body => !seen.has(body[1]))
+            .forEach(([id, sequenceIdx]) => {
+                ids.push_back(id)
+                seen.add(sequenceIdx)
+            })
+
+        if (ids.size() > 0) {
+            this._joltBodyInterface.RemoveBodies(ids.data(), ids.size())
+            this._joltBodyInterface.DestroyBodies(ids.data(), ids.size())
+        }
+        JOLT.destroy(ids)
+
+        keys.forEach(key => this.releaseBodyShapeByKey(key))
+    }
+
+    public removeStepListeners(listeners: Jolt.PhysicsStepListener[]) {
+        listeners.forEach(x => this._joltPhysSystem.RemoveStepListener(x))
+    }
+
+    public addStepListeners(listeners: Jolt.PhysicsStepListener[]) {
+        listeners.forEach(x => this._joltPhysSystem.AddStepListener(x))
     }
 
     public destroyMechanism(mech: Mechanism) {
+        // `RemoveConstraint` frees the constraint; do not `destroy()` it afterward. Prune
+        // `this._constraints` so later cleanup does not remove the same freed constraint again.
+        //
+        // `PhysicsStepListener`s are different: `RemoveStepListener` detaches them but does not
+        // free them, so `destroy()` after removal is required.
         mech.stepListeners.forEach(x => {
             this._joltPhysSystem.RemoveStepListener(x)
+            JOLT.destroy(x)
         })
-        mech.constraints.forEach(x => {
-            this._joltPhysSystem.RemoveConstraint(x.primaryConstraint)
+
+        const mechConstraints = new Set<Jolt.Constraint>(
+            mech.constraints.flatMap(x => [x.primaryConstraint, ...x.extraConstraints])
+        )
+        mechConstraints.forEach(x => {
+            this._joltPhysSystem.RemoveConstraint(x)
         })
-        this.unregisterSphereGamePieceBodies([...mech.nodeToBody.values()])
-        mech.nodeToBody.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x)
-            this._joltBodyInterface.DestroyBody(x)
-        })
-        mech.ghostBodies.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x)
-            this._joltBodyInterface.DestroyBody(x)
-        })
+        this._constraints = this._constraints.filter(x => !mechConstraints.has(x))
+        // `createVehicleListeners` takes its own ref on each tester, so release that ref here.
+        // Do not `destroy()` testers directly.
+        mech.vehicleTesters.forEach(x => x.Release())
+
+        this.destroyBodiesById(...mech.nodeToBody.values(), ...mech.ghostBodies)
     }
 
     private unregisterSphereGamePieceBodies(bodies: Jolt.BodyID[]) {
@@ -1400,7 +1563,8 @@ class PhysicsSystem extends WorldSystem {
         const zero = new JOLT.Vec3(0, 0, 0)
         this._sphereGamePieceBodies.forEach(bodyId => {
             const body = this.getBody(bodyId)
-            if (!body) return
+            // Sleeping bodies are already at rest and shouldn't be touched
+            if (!body || !body.IsActive()) return
 
             const atRest =
                 body.GetLinearVelocity().Length() < SPHERE_GP_STICTION_LINEAR_SPEED &&
@@ -1432,45 +1596,116 @@ class PhysicsSystem extends WorldSystem {
         this.applySphereGamePieceStiction()
 
         if (World.multiplayerSystem != null) {
-            const interObjectCollisions = this._physicsEventQueue
-                .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
-                .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
+            if (World.multiplayerSystem.sinceLastUpdate == 0) {
+                const interObjectCollisions = this._physicsEventQueue
+                    .filter((x): x is SynthesisEvent<"OnContactAddedEvent"> => x.type === "OnContactAddedEvent")
+                    .filter(x => this.onSameLayer(x.data.body1, x.data.body2))
 
-            World.multiplayerSystem.getOwnSceneObjectIDs().forEach(clientSceneObjectId => {
-                const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)
+                if (interObjectCollisions.length > 0) {
+                    // If there's a collision, we send over every scene object we have.
+                    // That way whichever client happens to catch the collision first (tracked by timestamp)
+                    // will act as the authority for every mirabuf scene object's state
+                    const message: Message = {
+                        type: "collision",
+                        data: World.sceneRenderer.mirabufSceneObjects.getAll().map(object => object.getUpdateData()),
+                    }
 
-                if (clientSceneObject == null || !(clientSceneObject instanceof MirabufSceneObject)) {
-                    console.warn("Could not find multiplayer robot") // happens when you delete
-                    World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
-                    return
+                    World.multiplayerSystem.broadcast(message)
+                } else {
+                    // If there's no collision, then we can just deal with our own scene objects and send their positions over
+                    World.multiplayerSystem.getOwnRobots().forEach(clientSceneObject => {
+                        const clientSceneObjectId = clientSceneObject.id
+
+                        if (!(clientSceneObject instanceof MirabufSceneObject)) {
+                            console.warn("Could not find multiplayer robot") // happens when you delete
+                            World.multiplayerSystem?.unregisterOwnSceneObject(clientSceneObjectId)
+                            return
+                        }
+
+                        const touchedObjects = clientSceneObject.mechanism.touchedBodies
+
+                        const message: Message = {
+                            type: "update",
+                            data: {
+                                sceneObject: clientSceneObject.getUpdateData(),
+                                touchedBodies: touchedObjects.map(data => this.getRNUpdateData(...data)),
+                            },
+                        }
+                        World.multiplayerSystem?.broadcast(message)
+
+                        if (clientSceneObjectId != null) {
+                            clientSceneObject.mechanism.touchedBodies = []
+                        }
+                    })
                 }
-                const touchedBodies = clientSceneObject.mechanism.touchedObjects
+            }
 
-                const message: Message =
-                    interObjectCollisions.length > 0
-                        ? {
-                              type: "collision",
-                              data: World.sceneRenderer.mirabufSceneObjects
-                                  .getAll()
-                                  .map(object => object.getUpdateData())
-                                  .filter(n => n != null),
-                          }
-                        : {
-                              type: "update",
-                              data: [clientSceneObject, ...touchedBodies]
-                                  .map(object => object.getUpdateData())
-                                  .filter(n => n != null),
-                          }
-                World.multiplayerSystem?.broadcast(message)
-
-                if (clientSceneObjectId != null) {
-                    clientSceneObject.mechanism.touchedObjects = []
-                }
-            })
+            World.multiplayerSystem.sinceLastUpdate =
+                (World.multiplayerSystem.sinceLastUpdate + 1) % MULTIPLAYER_FREQUENCY
         }
 
-        this._physicsEventQueue.forEach(x => x.dispatch())
+        this._physicsEventQueue.forEach(x => {
+            x.dispatch()
+            this.releaseContactEventPayload(x)
+        })
         this._physicsEventQueue = []
+    }
+
+    public getRNUpdateData(sceneObjectId: SceneObjectId, rigidNodeId: RigidNodeId): UpdatePhysicsBodyData {
+        const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectId) as MirabufSceneObject
+        const body = this.getBody(sceneObject.mechanism.nodeToBody.get(rigidNodeId) as Jolt.BodyID)!
+
+        const linearVelocity = body.GetLinearVelocity()
+        const angularVelocity = body.GetAngularVelocity()
+        const position = body.GetPosition()
+        const rotation = body.GetRotation()
+
+        return {
+            sceneObjectId,
+            rigidNodeId,
+            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
+            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
+            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
+            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+        }
+    }
+
+    public getBodyUpdateData(body: Jolt.Body): PhysicsBodyData {
+        const rigidNodeId = (<RigidNodeAssociate>World.physicsSystem.getBodyAssociation(body.GetID())).rigidNodeId
+        const linearVelocity = body.GetLinearVelocity()
+        const angularVelocity = body.GetAngularVelocity()
+        const position = body.GetPosition()
+        const rotation = body.GetRotation()
+
+        return {
+            rigidNodeId,
+            linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
+            angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
+            positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
+            rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+        }
+    }
+
+    /**
+     * Only destroys stuff we made copies of. `manifold`/`settings`/`baseOffset`/`collisionResult`
+     * just point at Jolt's own data, so leave those alone. `body1`/`body2` depend on the event:
+     * on "added" they're our own copies (destroy them below); on "persisted"/"validate" they're
+     * just references into Jolt, so don't destroy those.
+     */
+    private releaseContactEventPayload(
+        event: SynthesisEvent<"OnContactAddedEvent" | "OnContactPersistedEvent" | "OnContactValidateEvent">
+    ) {
+        switch (event.type) {
+            case "OnContactAddedEvent": {
+                const data = event.data as CurrentContactData
+                JOLT.destroy(data.body1)
+                JOLT.destroy(data.body2)
+                break
+            }
+            case "OnContactPersistedEvent":
+            case "OnContactValidateEvent":
+                break
+        }
     }
 
     private onSameLayer(body1: Jolt.BodyID, body2: Jolt.BodyID): boolean {
@@ -1481,24 +1716,23 @@ class PhysicsSystem extends WorldSystem {
      * Destroys PhysicsSystem and frees all objects
      */
     public destroy() {
+        // See destroyMechanism's comment
         this._constraints.forEach(x => {
             this._joltPhysSystem.RemoveConstraint(x)
         })
         this._constraints = []
 
         // Destroy Jolt Bodies.
-        this.destroyBodyIds(...this._bodies)
+        this.destroyBodiesById(...this._bodies)
         this._bodies = []
         this._sphereGamePieceBodies = []
-
-        // Capture the contact listener before destroying JoltInterface, which deletes
-        // PhysicsSystem and leaves _joltPhysSystem dangling.
-        const contactListener = this._joltPhysSystem.GetContactListener()
 
         // Don't destroy BodyInterface: it's a value member of PhysicsSystem, not a heap
         // allocation, so freeing it corrupts the heap.
         JOLT.destroy(this._joltInterface)
-        JOLT.destroy(contactListener)
+
+        // Destroy the original handle, not GetContactListener()'s base-typed (stale-cache) one.
+        JOLT.destroy(this._contactListener)
     }
 
     private createGhostBody(position: Jolt.RVec3, destroy: boolean = true) {
@@ -1528,22 +1762,25 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public createSensor(shapeSettings: Jolt.ShapeSettings, destroy: boolean = true): Jolt.BodyID | undefined {
-        const shape = shapeSettings.Create()
+        // Drop the interal ref with clear
+        const shape = shapeSettings.Create() // STATIC_ALIAS
         if (shape.HasError()) {
             console.error(`Failed to create sensor body\n${shape.GetError().c_str}`)
 
             if (destroy) JOLT.destroy(shapeSettings)
-            JOLT.destroy(shape)
+            shape.Clear()
 
             return undefined
         }
 
+        // `createBody` already pushes `body.GetID()` onto `this._bodies` — see createBox's
+        // comment for why pushing it again here is a genuine double-destroy bug, not just a
+        // harmless duplicate.
         const body = this.createBody(shape.Get(), undefined, undefined, undefined)
-        this._bodies.push(body.GetID())
         body.SetIsSensor(true)
 
         if (destroy) JOLT.destroy(shapeSettings)
-        JOLT.destroy(shape)
+        shape.Clear()
 
         this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
         return body.GetID()
@@ -1565,6 +1802,7 @@ class PhysicsSystem extends WorldSystem {
         destroy: boolean = true
     ): void {
         if (!this.isBodyAdded(id)) {
+            if (destroy) JOLT.destroy(position)
             return
         }
 
@@ -1588,7 +1826,10 @@ class PhysicsSystem extends WorldSystem {
         activate: Jolt.EActivation = JOLT.EActivation_Activate,
         destroy: boolean = true
     ): void {
-        if (!this.isBodyAdded(id)) return
+        if (!this.isBodyAdded(id)) {
+            if (destroy) JOLT.destroy(rotation)
+            return
+        }
 
         this._joltBodyInterface.SetRotation(id, rotation, activate)
 
@@ -1613,6 +1854,10 @@ class PhysicsSystem extends WorldSystem {
         destroy: boolean = true
     ): void {
         if (!this.isBodyAdded(id)) {
+            if (destroy) {
+                JOLT.destroy(position)
+                JOLT.destroy(rotation)
+            }
             return
         }
 
@@ -1646,6 +1891,12 @@ class PhysicsSystem extends WorldSystem {
         activate: Jolt.EActivation = JOLT.EActivation_Activate
     ): void {
         if (!this.isBodyAdded(id)) {
+            if (destroy) {
+                JOLT.destroy(position)
+                JOLT.destroy(rotation)
+                JOLT.destroy(linear)
+                JOLT.destroy(angular)
+            }
             return
         }
 
@@ -1666,25 +1917,28 @@ class PhysicsSystem extends WorldSystem {
      * Exposes `SetShape` method on the _joltBodyInterface
      * Sets the shape of the body
      *
-     * Does not destroy any arguments
+     * `SetShape` takes its own ref on `shape`. Pass `release: true` to drop the caller's ref
+     * after handoff. Do not `JOLT.destroy()` a shape once it has been passed to `SetShape`.
      *
      * @param id The id of the body
      * @param shape The new shape of the body
      * @param massProperties The mass properties of the new body
      * @param activationMode The activation mode of the new body
+     * @param release Whether to release the caller's own reference to `shape` after the handoff
      */
     public setShape(
         id: Jolt.BodyID,
         shape: Jolt.Shape,
         massProperties: boolean,
         activationMode: Jolt.EActivation,
-        destroy: boolean = false
+        release: boolean = false
     ): void {
         if (!this.isBodyAdded(id)) return
 
         this._joltBodyInterface.SetShape(id, shape, massProperties, activationMode)
+        this.trackBodyShape(id, shape)
 
-        if (destroy) JOLT.destroy(shape)
+        if (release) shape.Release()
     }
 
     /**
@@ -1711,7 +1965,7 @@ class PhysicsSystem extends WorldSystem {
             (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
                 World.multiplayerSystem
                     ?.getOwnSceneObjectIDs()
-                    .includes(this.bodyToMiraSceneObject(body)?.id as LocalSceneObjectId)) ??
+                    .includes(this.bodyToMiraSceneObject(body)?.id ?? ("" as SceneObjectId))) ??
             false
         )
     }
@@ -1720,14 +1974,16 @@ class PhysicsSystem extends WorldSystem {
      * Records the robot body as having touched another body
      * This is used for tracking which bodies the client needs to send the state of to peers
      */
-    private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body) {
+    private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body): void {
         if (other == null || robot == null) return
 
         const robotSceneObject = this.bodyToMiraSceneObject(robot)
         const otherSceneObject = this.bodyToMiraSceneObject(other)
         if (robotSceneObject == null || otherSceneObject == null) return
 
-        robotSceneObject.mechanism.touchedObjects.push(otherSceneObject)
+        const rigidNodeId = (<RigidNodeAssociate>this.getBodyAssociation(other.GetID())).rigidNodeId
+
+        robotSceneObject.mechanism.touchedBodies.push([otherSceneObject.id, rigidNodeId])
     }
 
     /**
@@ -1737,6 +1993,7 @@ class PhysicsSystem extends WorldSystem {
      */
     private setUpContactListener(physSystem: Jolt.PhysicsSystem) {
         const contactListener = new JOLT.ContactListenerJS()
+        this._contactListener = contactListener
 
         contactListener.OnContactAdded = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
             const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
@@ -1857,8 +2114,6 @@ function setupCollisionFiltering(settings: Jolt.JoltSettings) {
         }
     }
 
-    // WARNING
-    // DO NOT FREE
     const BP_LAYER_FIELD = new JOLT.BroadPhaseLayer(LAYER_FIELD)
     const BP_LAYER_GENERAL_DYNAMIC = new JOLT.BroadPhaseLayer(LAYER_GENERAL_DYNAMIC)
 
@@ -1873,6 +2128,10 @@ function setupCollisionFiltering(settings: Jolt.JoltSettings) {
     bpRobotLayers.forEach((bpRobot, i) => {
         bpInterface.MapObjectToBroadPhaseLayer(ROBOT_LAYERS[i], bpRobot)
     })
+
+    JOLT.destroy(BP_LAYER_FIELD)
+    JOLT.destroy(BP_LAYER_GENERAL_DYNAMIC)
+    bpRobotLayers.forEach(bpRobot => JOLT.destroy(bpRobot))
 
     settings.mObjectLayerPairFilter = objectFilter
     settings.mBroadPhaseLayerInterface = bpInterface
@@ -1900,7 +2159,6 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
 export type RayCastHit = {
     data: { mBodyID: Jolt.BodyID }
     point: Jolt.Vec3
-    ray: Jolt.RRayCast
 }
 
 export default PhysicsSystem

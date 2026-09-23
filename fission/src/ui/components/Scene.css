@@ -1,4 +1,4 @@
-canvas {
+.scene-container > canvas {
     position: fixed;
     top: 0pt;
     bottom: 0pt;

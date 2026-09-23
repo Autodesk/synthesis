@@ -5,13 +5,23 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import FieldMiraEditor, { devtoolHandlers, type SynthesisDevtoolKey } from "../../mirabuf/FieldMiraEditor"
-import { globalAddToast } from "../components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { Button } from "../components/StyledComponents"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import SelectMenu from "@/components/SelectMenu.tsx"
 import { AssemblySelectionOption } from "@/panels/configuring/assembly-config/configure/AssemblySelection.tsx"
 import { tryParse } from "@/util/Utility.ts"
+import CommandRegistry from "@/ui/components/CommandRegistry"
+
+// Register command: Open Developer Tool Panel (module-scope side effect)
+CommandRegistry.get().registerCommand({
+    id: "open-developer-tool-panel",
+    label: "Open Developer Tool Panel",
+    description: "Open the Developer Tool panel.",
+    keywords: ["panel", "developer", "devtool"],
+    perform: () => import("./DeveloperToolPanel").then(m => globalOpenPanel(m.default, undefined)),
+})
 
 const devtoolKeys = Object.keys(devtoolHandlers) as SynthesisDevtoolKey[]
 const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
@@ -116,7 +126,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
 
     useEffect(() => {
         configureScreen(panel!, { title: "Developer Tool", hideAccept: true, cancelText: "Close" }, {})
-    }, [])
+    }, [configureScreen, panel])
 
     return (
         <>
@@ -124,7 +134,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 options={World.sceneRenderer.mirabufSceneObjects
                     .getAll()
                     .map(obj => new AssemblySelectionOption(obj.descriptiveName, obj))}
-                onOptionSelected={val => setActiveObj((val as AssemblySelectionOption)?.assemblyObject)}
+                onOptionSelected={val => setActiveObj(val?.assemblyObject)}
                 defaultHeaderText={`Select an object`}
                 noOptionsText={`Nothing spawned!`}
             />
@@ -169,14 +179,14 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                             </ul>
                         </Stack>
                         {/* Editor */}
-                        <div className="min-w-[360px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-xs text-gray-100">
+                        <div className="min-w-[480px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-xs text-gray-100">
                             {selectedKey ? (
                                 <>
                                     {/* strip off the prefix here */}
                                     <div className="font-bold text-sm mb-2">{selectedKey}</div>
                                     <textarea
                                         className={`
-                            w-full h-48 font-mono text-sm
+                            w-full h-[32rem] font-mono text-sm
                             bg-gray-700 dark:bg-gray-800
                             border border-gray-600
                             text-gray-100

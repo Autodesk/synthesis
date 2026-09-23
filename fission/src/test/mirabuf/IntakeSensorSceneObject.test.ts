@@ -3,10 +3,11 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import IntakeSensorSceneObject from "../../mirabuf/IntakeSensorSceneObject"
 import type MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { createBodyMock } from "../mocks/jolt"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
-    destroyBodyIds: vi.fn(),
+    destroyBodiesById: vi.fn(),
     setBodyPosition: vi.fn(),
     setBodyRotation: vi.fn(),
     getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
@@ -19,7 +20,6 @@ const mockPhysicsSystem = {
 }
 const mockSceneRenderer = {
     sceneObjects: new Map(),
-    createBox: vi.fn(),
     scene: {
         remove: vi.fn(),
     },
@@ -37,25 +37,12 @@ vi.mock("@/systems/World", () => ({
 }))
 
 describe("IntakeSensorSceneObject", () => {
-    const originalConsoleLog = console.log
-    const originalConsoleError = console.error
-    const originalConsoleWarn = console.warn
-    const originalConsoleDebug = console.debug
-
     beforeEach(() => {
-        vi.clearAllMocks()
-        console.log = vi.fn()
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.debug = vi.fn()
+        mockConsole()
     })
 
     afterEach(() => {
-        vi.clearAllMocks()
-        console.log = originalConsoleLog
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.debug = originalConsoleDebug
+        vi.restoreAllMocks()
     })
 
     test("Setup creates sensor", () => {
@@ -93,7 +80,7 @@ describe("IntakeSensorSceneObject", () => {
         Reflect.set(instance, "_joltBodyId", mockBodyId)
         Reflect.set(instance, "_collision", vi.fn())
         instance.dispose()
-        expect(mockPhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
+        expect(mockPhysicsSystem.destroyBodiesById).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
         expect(mockSceneRenderer.scene.remove).toBeDefined()
     })
 })

@@ -3,7 +3,17 @@ import { globalAddToast } from "@/components/GlobalUIControls"
 import { mirabuf } from "@/proto/mirabuf"
 import World from "@/systems/World"
 import { type MirabufStorageBackend, initStorageBackend } from "@/mirabuf/MirabufStorageBackend"
+import { MiraType } from "@/mirabuf/MiraType"
 import { hashBuffer, unzipMira } from "@/util/Utility.ts"
+import { detectAndTagWheels } from "@/systems/simulation/synthesis_brain/WheelDetector"
+import { consolePrefixer } from "console-prefixer"
+
+const console = consolePrefixer({
+    defaultPrefix: {
+        text: "[MirabufLoader]",
+        style: "background: linear-gradient(90deg,rgba(121, 171, 162, 1) 0%, rgba(100, 55, 179, 1) 100%); color: white;font-weight:bold; padding:2px; border-radius:2px;",
+    },
+})
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "978534"
@@ -13,7 +23,15 @@ export interface MirabufCacheInfo {
     name: string
     miraType: MiraType
     remotePath?: string
-    thumbnailStorageID?: string
+    year?: number
+    thumbnail?: string
+}
+
+export interface CacheRemoteOptions {
+    name?: string
+    expectedHash?: string
+    year?: number
+    thumbnail?: string
 }
 
 export interface MirabufRemoteInfo {
@@ -150,23 +168,23 @@ class MirabufCachingService {
      *
      * @param {string} fetchLocation Location of Mirabuf file.
      * @param {MiraType} miraType Type of Mirabuf Assembly.
-     * @param {string} name Optional display name for the cached file.
+     * @param {CacheRemoteOptions} options Optional metadata to store alongside the cached file.
      *
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
     public static async cacheRemote(
         fetchLocation: string,
         miraType: MiraType,
-        name?: string,
-        expectedHash?: string
+        options: CacheRemoteOptions = {}
     ): Promise<MirabufCacheInfo | undefined> {
+        const { expectedHash, year, thumbnail } = options
         try {
             // grab file remote
             const resp = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
             if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`)
 
             const miraBuff = await resp.arrayBuffer()
-            name ??= this.assemblyFromBuffer(miraBuff).info?.name ?? fetchLocation
+            const name = options.name ?? this.assemblyFromBuffer(miraBuff).info?.name ?? fetchLocation
 
             World.analyticsSystem?.event("Remote Download", {
                 assemblyName: name,
@@ -180,6 +198,8 @@ class MirabufCachingService {
                     miraType,
                     name,
                     remotePath: fetchLocation,
+                    year,
+                    thumbnail,
                 },
                 expectedHash
             )
@@ -199,11 +219,19 @@ class MirabufCachingService {
                 hash: await hashBuffer(miraBuff),
                 miraType: miraType,
                 name: name,
+                year,
+                thumbnail,
             }
         } catch (e) {
             console.warn("Caching failed", e)
             return undefined
         }
+    }
+
+    public static async cacheRemoteAndReturn(fetchLocation: string, miraType: MiraType) {
+        const cacheInfo = await this.cacheRemote(fetchLocation, miraType)
+        if (cacheInfo?.hash == null) return
+        return await this.get(cacheInfo.hash)
     }
 
     public static async cacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
@@ -242,13 +270,7 @@ class MirabufCachingService {
         miraType: MiraType
     ): Promise<{ assembly: mirabuf.Assembly; cacheInfo: MirabufCacheInfo } | undefined> {
         const assembly = this.assemblyFromBuffer(buffer)
-        const hash = await hashBuffer(buffer)
 
-        World.analyticsSystem?.event("Local Upload", {
-            fileSize: buffer.byteLength,
-            key: hash,
-            type: miraType == MiraType.ROBOT ? "robot" : "field",
-        })
         if (assembly.dynamic && miraType == MiraType.FIELD) {
             globalAddToast("warning", "Cannot import robot assembly as a field")
             return
@@ -257,6 +279,10 @@ class MirabufCachingService {
         if (!assembly.dynamic && miraType != MiraType.FIELD) {
             globalAddToast("warning", "Cannot import field assembly as a robot")
             return
+        }
+
+        if (assembly.dynamic) {
+            detectAndTagWheels(assembly)
         }
 
         const info = await MirabufCachingService.storeAssemblyInCache(assembly, { miraType })
@@ -333,6 +359,10 @@ class MirabufCachingService {
 
     public static getAll(miraType?: MiraType) {
         return this._cacheMap.getAll(miraType)
+    }
+
+    public static has(hash: string): boolean {
+        return this._cacheMap.get(hash) != null
     }
 
     /**
@@ -438,9 +468,6 @@ class MirabufCachingService {
     }
 }
 
-export enum MiraType {
-    ROBOT = 1,
-    FIELD,
-}
+export { MiraType }
 
 export default MirabufCachingService

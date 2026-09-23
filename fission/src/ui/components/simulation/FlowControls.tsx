@@ -1,6 +1,9 @@
 import { Panel as FlowPanel, useReactFlow } from "@xyflow/react"
-import type { FlowControlsProps } from "@/systems/simulation/SimConfigShared"
 import { Button, SynthesisIcons } from "../StyledComponents"
+
+export type FlowControlsProps = {
+    onCreateJunction?: () => void
+}
 
 function FlowControls({ onCreateJunction }: FlowControlsProps) {
     const { zoomIn, zoomOut, fitView } = useReactFlow()

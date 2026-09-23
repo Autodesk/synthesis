@@ -16,14 +16,13 @@ export function convertThreeToJoltQuat(a: THREE.Euler | THREE.Quaternion | undef
 
 export function convertArrayToThreeMatrix4(arr: number[]) {
     // DO NOT ask me why retrieving and setting the same EXACT data is done is two DIFFERENT majors
-    // biome-ignore-start format: We would prefer to visualize this as a matrix
+    // biome-ignore format: We would prefer to visualize this as a matrix
     return new THREE.Matrix4(
         arr[0], arr[4], arr[8], arr[12],
         arr[1], arr[5], arr[9], arr[13],
         arr[2], arr[6], arr[10], arr[14],
         arr[3], arr[7], arr[11], arr[15]
     )
-    // biome-ignore-end format: We would prefer to visualize this as a matrix
 }
 
 export function convertThreeMatrix4ToArray(mat: THREE.Matrix4) {
@@ -60,11 +59,16 @@ export function convertThreeMatrix4ToJoltMat44(m: THREE.Matrix4) {
     return jMat
 }
 
-export function convertJoltVec3ToThreeVector3(vec: Jolt.Vec3 | Jolt.RVec3, destroy: boolean = true) {
+export function convertJoltVec3ToThreeVector3(vec: Jolt.Vec3 | Jolt.RVec3, destroy: boolean = false) {
     const [x, y, z] = [vec.GetX(), vec.GetY(), vec.GetZ()]
     if (destroy) JOLT.destroy(vec)
 
     return new THREE.Vector3(x, y, z)
+}
+
+/** Copies a Jolt getter's reused static temporary to a THREE.Vector3 */
+export function readJoltVec3(v: Jolt.Vec3): THREE.Vector3 {
+    return new THREE.Vector3(v.GetX(), v.GetY(), v.GetZ())
 }
 
 export function convertJoltQuatToThreeQuaternion(quat: Jolt.Quat, destroy: boolean = false) {
@@ -75,11 +79,11 @@ export function convertJoltQuatToThreeQuaternion(quat: Jolt.Quat, destroy: boole
 }
 
 export function convertJoltMat44ToThreeMatrix4(m: Jolt.RMat44, destroy: boolean = false): THREE.Matrix4 {
-    const [t, q] = [m.GetTranslation(), m.GetQuaternion()]
+    const [t, q] = [m.GetTranslation(), m.GetQuaternion()] // STATIC_ALIAS
 
     const mat = new THREE.Matrix4().compose(
-        convertJoltVec3ToThreeVector3(t, false),
-        convertJoltQuatToThreeQuaternion(q, false),
+        convertJoltVec3ToThreeVector3(t),
+        convertJoltQuatToThreeQuaternion(q),
         new THREE.Vector3(1, 1, 1)
     )
 
@@ -95,7 +99,7 @@ export function convertJoltVec3ToJoltRVec3(vec: Jolt.Vec3, destroy: boolean = tr
     return new JOLT.RVec3(x, y, z)
 }
 
-export function convertJoltRVec3ToJoltVec3(vec: Jolt.RVec3, destroy: boolean = true): Jolt.Vec3 {
+export function convertJoltRVec3ToJoltVec3(vec: Jolt.RVec3, destroy: boolean = false): Jolt.Vec3 {
     const [x, y, z] = [vec.GetX(), vec.GetY(), vec.GetZ()]
     if (destroy) JOLT.destroy(vec)
 

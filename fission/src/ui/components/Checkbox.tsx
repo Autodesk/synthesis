@@ -4,7 +4,7 @@ import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import Label from "./Label"
 import { LabelWithTooltip } from "./StyledComponents"
 
-type CheckboxProps = {
+export type CheckboxProps = {
     /**
      * The label text that will be on the right of the checkbox.
      */
