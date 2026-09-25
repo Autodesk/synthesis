@@ -12,8 +12,11 @@ type PullRequest = {
 type Review = {
     id?: number
     state?: string
-    submitted_at?: string | null
     user?: { login?: string }
+}
+
+type ReviewRequests = {
+    users?: { login?: string }[]
 }
 
 type GitHubEvent = {
@@ -40,22 +43,16 @@ const repositoryFullName = process.env.GITHUB_REPOSITORY
 const sourceEventName = process.env.JIRA_SOURCE_EVENT_NAME
 const sourceHeadBranch = process.env.JIRA_SOURCE_HEAD_BRANCH
 const sourceHeadRepository = process.env.JIRA_SOURCE_HEAD_REPOSITORY
-const githubApiUrl = (process.env.GITHUB_API_URL ?? "https://api.github.com").replace(
-    /\/$/,
-    "",
-)
+const githubApiUrl = (process.env.GITHUB_API_URL ?? "https://api.github.com").replace(/\/$/, "")
 const webhookUrl = process.env.JIRA_AUTOMATION_WEBHOOK_URL
 const webhookToken = process.env.JIRA_AUTOMATION_WEBHOOK_TOKEN
 const githubToken = process.env.GITHUB_TOKEN
 
 if (!eventPath) throw new Error("GITHUB_EVENT_PATH is unavailable")
 if (!repositoryFullName) throw new Error("GITHUB_REPOSITORY is unavailable")
-if (!sourceEventName)
-    throw new Error("JIRA_SOURCE_EVENT_NAME is unavailable")
-if (!sourceHeadBranch)
-    throw new Error("JIRA_SOURCE_HEAD_BRANCH is unavailable")
-if (!sourceHeadRepository)
-    throw new Error("JIRA_SOURCE_HEAD_REPOSITORY is unavailable")
+if (!sourceEventName) throw new Error("JIRA_SOURCE_EVENT_NAME is unavailable")
+if (!sourceHeadBranch) throw new Error("JIRA_SOURCE_HEAD_BRANCH is unavailable")
+if (!sourceHeadRepository) throw new Error("JIRA_SOURCE_HEAD_REPOSITORY is unavailable")
 if (!githubToken) throw new Error("GITHUB_TOKEN is unavailable")
 
 const [owner, repository, unexpectedRepositoryPath] = repositoryFullName.split("/")
@@ -69,42 +66,31 @@ if (event.repository?.full_name !== repositoryFullName)
 
 const normalizeLogin = (login: string | undefined) => login?.toLowerCase()
 
-const reviewTimestamp = (review: Review) => {
-    const timestamp = Date.parse(review.submitted_at ?? "")
-    return Number.isNaN(timestamp) ? review.id ?? 0 : timestamp
-}
+const reviewDecisionStates = new Set(["APPROVED", "CHANGES_REQUESTED", "DISMISSED"])
 
-const latestReviewsByReviewer = (reviews: Review[]) => {
+const latestReviewDecisionsByReviewer = (reviews: Review[]) => {
     const latest = new Map<string, Review>()
 
+    // GitHub returns reviews in chronological order. COMMENTED and PENDING
+    // reviews do not replace a reviewer's approval or change request.
     for (const review of reviews) {
         const reviewer = normalizeLogin(review.user?.login)
-        if (!reviewer || !review.state || review.state.toUpperCase() === "PENDING") continue
+        const state = review.state?.toUpperCase()
+        if (!reviewer || !state || !reviewDecisionStates.has(state)) continue
 
-        const previous = latest.get(reviewer)
-        if (!previous || reviewTimestamp(review) > reviewTimestamp(previous))
-            latest.set(reviewer, review)
+        latest.set(reviewer, review)
     }
 
     return latest
 }
 
 const issueKeyFor = (pullRequest: PullRequest) => {
-    const issueKeys = [
-        ...new Set(
-            (pullRequest.title?.match(/\bSYNTH-\d+\b/gi) ?? [])
-                .map((key) => key.toUpperCase()),
-        ),
-    ]
+    const issueKeys = [...new Set((pullRequest.title?.match(/\bSYNTH-\d+\b/gi) ?? []).map(key => key.toUpperCase()))]
 
     if (issueKeys.length === 1) return issueKeys[0]
 
-    if (issueKeys.length === 0)
-        console.info("No SYNTH work item key found in the pull request title.")
-    else
-        console.info(
-            "Multiple SYNTH work item keys found in the pull request title; refusing to transition Jira.",
-        )
+    if (issueKeys.length === 0) console.info("No SYNTH work item key found in the pull request title.")
+    else console.info("Multiple SYNTH work item keys found in the pull request title; refusing to transition Jira.")
 
     return null
 }
@@ -118,23 +104,17 @@ const githubApi = async <T>(path: string): Promise<T> => {
         },
     })
 
-    if (!response.ok)
-        throw new Error(`GitHub API request failed with status ${response.status}`)
+    if (!response.ok) throw new Error(`GitHub API request failed with status ${response.status}`)
 
     return (await response.json()) as T
 }
 
 const pullRequestFor = async (number: number) => {
-    if (!Number.isSafeInteger(number) || number < 1)
-        throw new Error("The recorded pull request number is invalid")
+    if (!Number.isSafeInteger(number) || number < 1) throw new Error("The recorded pull request number is invalid")
 
     const pullRequest = await githubApi<PullRequest>(`/pulls/${number}`)
-    if (pullRequest.number !== number)
-        throw new Error("GitHub returned a different pull request number")
-    if (
-        pullRequest.head?.ref !== sourceHeadBranch ||
-        pullRequest.head.repo?.full_name !== sourceHeadRepository
-    )
+    if (pullRequest.number !== number) throw new Error("GitHub returned a different pull request number")
+    if (pullRequest.head?.ref !== sourceHeadBranch || pullRequest.head.repo?.full_name !== sourceHeadRepository)
         throw new Error("The recorded event does not match the workflow run source")
 
     return pullRequest
@@ -143,38 +123,64 @@ const pullRequestFor = async (number: number) => {
 const pullRequestReviews = async (number: number) => {
     const reviews: Review[] = []
     for (let page = 1; ; page += 1) {
-        const pageReviews = await githubApi<Review[]>(
-            `/pulls/${number}/reviews?per_page=100&page=${page}`,
-        )
+        const pageReviews = await githubApi<Review[]>(`/pulls/${number}/reviews?per_page=100&page=${page}`)
         reviews.push(...pageReviews)
         if (pageReviews.length < 100) return reviews
     }
 }
 
-const reviewRequestUpdate = async (
-    pullRequest: PullRequest,
-): Promise<StatusUpdate | null> => {
-    const requestedReviewer = normalizeLogin(event.requested_reviewer?.login)
-    if (!requestedReviewer) return null
+const pullRequestReviewRequests = async (number: number) =>
+    githubApi<ReviewRequests>(`/pulls/${number}/requested_reviewers?per_page=100`)
 
-    const latestReviews = latestReviewsByReviewer(
-        await pullRequestReviews(pullRequest.number ?? 0),
+const getUpdate = async (): Promise<StatusUpdate | null> => {
+    if (
+        sourceEventName === "pull_request_review" &&
+        (event.action !== "submitted" || event.review?.state?.toLowerCase() !== "changes_requested")
     )
-    const requestedReview = latestReviews.get(requestedReviewer)
-
-    if (requestedReview?.state?.toUpperCase() !== "CHANGES_REQUESTED") return null
-
-    const otherOutstandingChangeRequests = [...latestReviews.entries()].filter(
-        ([reviewer, review]) =>
-            reviewer !== requestedReviewer &&
-            review.state?.toUpperCase() === "CHANGES_REQUESTED",
-    )
-
-    if (otherOutstandingChangeRequests.length > 0) {
-        console.info(
-            "Keeping Jira work items in Addressing Feedback because other reviewers still have changes requested.",
-        )
         return null
+
+    if (sourceEventName === "pull_request" && (event.action !== "review_requested" || !event.requested_reviewer?.login))
+        return null
+
+    const recordedPullRequestNumber = event.pull_request?.number
+    if (!recordedPullRequestNumber) return null
+
+    const pullRequest = await pullRequestFor(recordedPullRequestNumber)
+    const reviews = await pullRequestReviews(recordedPullRequestNumber)
+    const latestReviews = latestReviewDecisionsByReviewer(reviews)
+
+    if (sourceEventName === "pull_request_review") {
+        const reviewId = event.review.id
+        if (!Number.isSafeInteger(reviewId) || reviewId < 1) throw new Error("The recorded review ID is invalid")
+
+        const review = reviews.find(candidate => candidate.id === reviewId)
+        if (review?.state?.toUpperCase() !== "CHANGES_REQUESTED") return null
+    }
+
+    if (sourceEventName === "pull_request") {
+        const requestedReviewer = normalizeLogin(event.requested_reviewer?.login)
+        if (!requestedReviewer || latestReviews.get(requestedReviewer)?.state?.toUpperCase() !== "CHANGES_REQUESTED")
+            return null
+    }
+
+    const reviewRequests = await pullRequestReviewRequests(recordedPullRequestNumber)
+    const requestedReviewers = new Set(
+        (reviewRequests.users ?? [])
+            .map(reviewer => normalizeLogin(reviewer.login))
+            .filter((reviewer): reviewer is string => Boolean(reviewer))
+    )
+    const changeRequestReviewers = [...latestReviews.entries()]
+        .filter(([, review]) => review.state?.toUpperCase() === "CHANGES_REQUESTED")
+        .map(([reviewer]) => reviewer)
+
+    if (changeRequestReviewers.length === 0) return null
+
+    if (changeRequestReviewers.some(reviewer => !requestedReviewers.has(reviewer))) {
+        return {
+            event: "changes_requested",
+            pullRequest,
+            targetStatus: "Addressing Feedback",
+        }
     }
 
     return {
@@ -184,63 +190,18 @@ const reviewRequestUpdate = async (
     }
 }
 
-const getUpdate = async (): Promise<StatusUpdate | null> => {
-    if (
-        sourceEventName === "pull_request_review" &&
-        (event.action !== "submitted" ||
-            event.review?.state?.toLowerCase() !== "changes_requested")
-    )
-        return null
-
-    if (
-        sourceEventName === "pull_request" &&
-        (event.action !== "review_requested" || !event.requested_reviewer?.login)
-    )
-        return null
-
-    const recordedPullRequestNumber = event.pull_request?.number
-    if (!recordedPullRequestNumber) return null
-
-    const pullRequest = await pullRequestFor(recordedPullRequestNumber)
-
-    if (sourceEventName === "pull_request_review") {
-        const reviewId = event.review.id
-        if (!Number.isSafeInteger(reviewId) || reviewId < 1)
-            throw new Error("The recorded review ID is invalid")
-
-        const review = (await pullRequestReviews(recordedPullRequestNumber)).find(
-            (candidate) => candidate.id === reviewId,
-        )
-        if (review?.state?.toUpperCase() !== "CHANGES_REQUESTED") return null
-
-        return {
-            event: "changes_requested",
-            pullRequest,
-            targetStatus: "Addressing Feedback",
-        }
-    }
-
-    if (sourceEventName === "pull_request" && event.action === "review_requested")
-        return reviewRequestUpdate(pullRequest)
-
-    return null
-}
-
 const sendToJira = async (update: JiraUpdate) => {
     const sourceRepository = update.pullRequest.head?.repo
-    if (
-        sourceRepository?.fork !== false ||
-        sourceRepository.full_name !== repositoryFullName
-    ) {
+    if (sourceRepository?.fork !== false || sourceRepository.full_name !== repositoryFullName) {
         console.info(
-            "Skipping Jira status sync because the pull request source repository is a fork or is unavailable.",
+            "Skipping Jira status sync because the pull request source repository is a fork or is unavailable."
         )
         return
     }
 
     if (!webhookUrl || !webhookToken)
         throw new Error(
-            "JIRA_AUTOMATION_WEBHOOK_URL and JIRA_AUTOMATION_WEBHOOK_TOKEN must be configured as repository secrets.",
+            "JIRA_AUTOMATION_WEBHOOK_URL and JIRA_AUTOMATION_WEBHOOK_TOKEN must be configured as repository secrets."
         )
 
     const response = await fetch(webhookUrl, {
@@ -255,11 +216,10 @@ const sendToJira = async (update: JiraUpdate) => {
         method: "POST",
     })
 
-    if (!response.ok)
-        throw new Error(`Jira webhook for ${update.issueKey} returned ${response.status}`)
+    if (!response.ok) throw new Error(`Jira webhook for ${update.issueKey} returned ${response.status}`)
 
     console.info(
-        `Requested ${update.targetStatus} for ${update.issueKey} from pull request #${update.pullRequest.number}.`,
+        `Requested ${update.targetStatus} for ${update.issueKey} from pull request #${update.pullRequest.number}.`
     )
 }
 
