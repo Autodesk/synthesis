@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: Sync Jira pull request review status
+
+on:
+  pull_request_review:
+    types:
+      - submitted
+  pull_request:
+    types:
+      - review_requested
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  sync:
+    name: Sync linked Jira work items
+    if: >-
+      (github.event_name == 'pull_request_review' &&
+      github.event.action == 'submitted' &&
+      github.event.review.state == 'changes_requested') ||
+      (github.event_name == 'pull_request' &&
+      github.event.action == 'review_requested' &&
+      github.event.requested_reviewer != null)
+    runs-on: ubuntu-latest
+    steps:
+      # The review event can originate from a fork. Always execute the trusted
+      # version from the default branch, never workflow code from the PR.
+      - name: Check out trusted workflow code
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Sync Jira review status
+        run: bun .github/workflows/jira/sync-pr-review-status.ts
+        env:
+          GITHUB_DATA: ${{ toJSON(github) }}
+          GITHUB_TOKEN: ${{ github.token }}
+          JIRA_AUTOMATION_WEBHOOK_TOKEN: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_TOKEN }}
+          JIRA_AUTOMATION_WEBHOOK_URL: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_URL }}
