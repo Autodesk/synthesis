@@ -1,0 +1,70 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: Sync Jira pull request review status
+
+# workflow_run always uses this workflow from the default branch. The
+# preceding event-recording workflow is intentionally untrusted and never
+# receives Jira secrets.
+on:
+  workflow_run:
+    workflows:
+      - Record Jira pull request review event
+    types:
+      - completed
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: read
+
+concurrency:
+  # Each run recalculates the current review state, so only the newest run for
+  # a pull request needs to finish. Group by source branch because the pull
+  # request number is stored in the untrusted artifact.
+  group: jira-pr-review-status-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    name: Sync linked Jira work items
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.event == 'pull_request_review' ||
+      github.event.workflow_run.event == 'pull_request')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # workflow_run executes this workflow from the default branch. Keep the
+      # checkout explicit so the source of the code remains obvious.
+      - name: Check out trusted workflow code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          ref: ${{ github.sha }}
+
+      - name: Download the review event payload
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          github-token: ${{ github.token }}
+          name: jira-pr-review-event
+          # The artifact is untrusted. Keep it outside the workspace so it
+          # cannot overwrite the checked-out trusted workflow code.
+          path: ${{ runner.temp }}/jira-pr-review-event
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version: 1.3.13
+
+      - name: Sync Jira status
+        run: bun .github/workflows/jira/sync-pr-review-status.ts
+        env:
+          GITHUB_EVENT_PATH: ${{ runner.temp }}/jira-pr-review-event/event.json
+          GITHUB_TOKEN: ${{ github.token }}
+          JIRA_AUTOMATION_WEBHOOK_TOKEN: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_TOKEN }}
+          JIRA_AUTOMATION_WEBHOOK_URL: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_URL }}
+          JIRA_SOURCE_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          JIRA_SOURCE_HEAD_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
+          JIRA_SOURCE_EVENT_NAME: ${{ github.event.workflow_run.event }}
