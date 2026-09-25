@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: Record Jira pull request review event
+
+on:
+  pull_request_review:
+    types:
+      - submitted
+  pull_request:
+    types:
+      - review_requested
+
+# This workflow runs from pull request content, so it must never receive
+# repository secrets or a write-capable token. It only records the public
+# event payload for the trusted workflow_run processor.
+permissions: {}
+
+jobs:
+  record:
+    name: Record review event
+    runs-on: ubuntu-latest
+    steps:
+      - name: Upload the event payload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          if-no-files-found: error
+          name: jira-pr-review-event
+          path: ${{ github.event_path }}
+          retention-days: 1

@@ -1,5 +1,10 @@
+type Repository = {
+    fork?: boolean
+    full_name?: string
+}
+
 type PullRequest = {
-    head?: { repo?: { fork?: boolean } | null }
+    head?: { ref?: string; repo?: Repository | null }
     number?: number
     title?: string
 }
@@ -13,9 +18,10 @@ type Review = {
 
 type GitHubEvent = {
     action?: string
-    pull_request?: PullRequest
+    pull_request?: { number?: number }
+    repository?: Repository
     requested_reviewer?: { login?: string }
-    review?: { state?: string }
+    review?: { id?: number; state?: string }
 }
 
 type JiraEvent = "changes_requested" | "review_requested"
@@ -30,18 +36,36 @@ type JiraUpdate = {
 type StatusUpdate = Omit<JiraUpdate, "issueKey">
 
 const eventPath = process.env.GITHUB_EVENT_PATH
-if (!eventPath) throw new Error("GITHUB_EVENT_PATH is unavailable")
-
-const event = JSON.parse(await Bun.file(eventPath).text()) as GitHubEvent
-const [owner, repository, unexpectedRepositoryPath] = (
-    process.env.GITHUB_REPOSITORY ?? ""
-).split("/")
+const repositoryFullName = process.env.GITHUB_REPOSITORY
+const sourceEventName = process.env.JIRA_SOURCE_EVENT_NAME
+const sourceHeadBranch = process.env.JIRA_SOURCE_HEAD_BRANCH
+const sourceHeadRepository = process.env.JIRA_SOURCE_HEAD_REPOSITORY
+const githubApiUrl = (process.env.GITHUB_API_URL ?? "https://api.github.com").replace(
+    /\/$/,
+    "",
+)
 const webhookUrl = process.env.JIRA_AUTOMATION_WEBHOOK_URL
 const webhookToken = process.env.JIRA_AUTOMATION_WEBHOOK_TOKEN
 const githubToken = process.env.GITHUB_TOKEN
 
+if (!eventPath) throw new Error("GITHUB_EVENT_PATH is unavailable")
+if (!repositoryFullName) throw new Error("GITHUB_REPOSITORY is unavailable")
+if (!sourceEventName)
+    throw new Error("JIRA_SOURCE_EVENT_NAME is unavailable")
+if (!sourceHeadBranch)
+    throw new Error("JIRA_SOURCE_HEAD_BRANCH is unavailable")
+if (!sourceHeadRepository)
+    throw new Error("JIRA_SOURCE_HEAD_REPOSITORY is unavailable")
+if (!githubToken) throw new Error("GITHUB_TOKEN is unavailable")
+
+const [owner, repository, unexpectedRepositoryPath] = repositoryFullName.split("/")
 if (!owner || !repository || unexpectedRepositoryPath)
     throw new Error("GITHUB_REPOSITORY must be in the form owner/repository")
+
+const event = JSON.parse(await Bun.file(eventPath).text()) as GitHubEvent
+
+if (event.repository?.full_name !== repositoryFullName)
+    throw new Error("The recorded event belongs to a different repository")
 
 const normalizeLogin = (login: string | undefined) => login?.toLowerCase()
 
@@ -85,41 +109,57 @@ const issueKeyFor = (pullRequest: PullRequest) => {
     return null
 }
 
-const pullRequestReviews = async (pullRequest: PullRequest) => {
-    const number = pullRequest.number
+const githubApi = async <T>(path: string): Promise<T> => {
+    const response = await fetch(`${githubApiUrl}/repos/${owner}/${repository}${path}`, {
+        headers: {
+            Accept: "application/vnd.github+json",
+            Authorization: `Bearer ${githubToken}`,
+            "X-GitHub-Api-Version": "2026-03-10",
+        },
+    })
 
-    if (!number || !githubToken)
-        throw new Error("GitHub pull request number or token is unavailable")
+    if (!response.ok)
+        throw new Error(`GitHub API request failed with status ${response.status}`)
 
+    return (await response.json()) as T
+}
+
+const pullRequestFor = async (number: number) => {
+    if (!Number.isSafeInteger(number) || number < 1)
+        throw new Error("The recorded pull request number is invalid")
+
+    const pullRequest = await githubApi<PullRequest>(`/pulls/${number}`)
+    if (pullRequest.number !== number)
+        throw new Error("GitHub returned a different pull request number")
+    if (
+        pullRequest.head?.ref !== sourceHeadBranch ||
+        pullRequest.head.repo?.full_name !== sourceHeadRepository
+    )
+        throw new Error("The recorded event does not match the workflow run source")
+
+    return pullRequest
+}
+
+const pullRequestReviews = async (number: number) => {
     const reviews: Review[] = []
     for (let page = 1; ; page += 1) {
-        const response = await fetch(
-            `https://api.github.com/repos/${owner}/${repository}/pulls/${number}/reviews?per_page=100&page=${page}`,
-            {
-                headers: {
-                    Accept: "application/vnd.github+json",
-                    Authorization: `Bearer ${githubToken}`,
-                    "X-GitHub-Api-Version": "2026-03-10",
-                },
-            },
+        const pageReviews = await githubApi<Review[]>(
+            `/pulls/${number}/reviews?per_page=100&page=${page}`,
         )
-
-        if (!response.ok)
-            throw new Error(
-                `Unable to read pull request reviews: GitHub returned ${response.status}`,
-            )
-
-        const pageReviews = (await response.json()) as Review[]
         reviews.push(...pageReviews)
         if (pageReviews.length < 100) return reviews
     }
 }
 
-const reviewRequestUpdate = async (pullRequest: PullRequest) => {
+const reviewRequestUpdate = async (
+    pullRequest: PullRequest,
+): Promise<StatusUpdate | null> => {
     const requestedReviewer = normalizeLogin(event.requested_reviewer?.login)
     if (!requestedReviewer) return null
 
-    const latestReviews = latestReviewsByReviewer(await pullRequestReviews(pullRequest))
+    const latestReviews = latestReviewsByReviewer(
+        await pullRequestReviews(pullRequest.number ?? 0),
+    )
     const requestedReview = latestReviews.get(requestedReviewer)
 
     if (requestedReview?.state?.toUpperCase() !== "CHANGES_REQUESTED") return null
@@ -138,37 +178,60 @@ const reviewRequestUpdate = async (pullRequest: PullRequest) => {
     }
 
     return {
-        event: "review_requested" as const,
+        event: "review_requested",
         pullRequest,
-        targetStatus: "In Review" as const,
+        targetStatus: "In Review",
     }
 }
 
 const getUpdate = async (): Promise<StatusUpdate | null> => {
-    const pullRequest = event.pull_request
-    if (!pullRequest) return null
+    if (
+        sourceEventName === "pull_request_review" &&
+        (event.action !== "submitted" ||
+            event.review?.state?.toLowerCase() !== "changes_requested")
+    )
+        return null
 
     if (
-        process.env.GITHUB_EVENT_NAME === "pull_request_review" &&
-        event.review?.state?.toLowerCase() === "changes_requested"
+        sourceEventName === "pull_request" &&
+        (event.action !== "review_requested" || !event.requested_reviewer?.login)
     )
+        return null
+
+    const recordedPullRequestNumber = event.pull_request?.number
+    if (!recordedPullRequestNumber) return null
+
+    const pullRequest = await pullRequestFor(recordedPullRequestNumber)
+
+    if (sourceEventName === "pull_request_review") {
+        const reviewId = event.review.id
+        if (!Number.isSafeInteger(reviewId) || reviewId < 1)
+            throw new Error("The recorded review ID is invalid")
+
+        const review = (await pullRequestReviews(recordedPullRequestNumber)).find(
+            (candidate) => candidate.id === reviewId,
+        )
+        if (review?.state?.toUpperCase() !== "CHANGES_REQUESTED") return null
+
         return {
-            event: "changes_requested" as const,
+            event: "changes_requested",
             pullRequest,
-            targetStatus: "Addressing Feedback" as const,
+            targetStatus: "Addressing Feedback",
         }
+    }
 
-    if (
-        process.env.GITHUB_EVENT_NAME === "pull_request" &&
-        event.action === "review_requested"
-    )
+    if (sourceEventName === "pull_request" && event.action === "review_requested")
         return reviewRequestUpdate(pullRequest)
 
     return null
 }
 
 const sendToJira = async (update: JiraUpdate) => {
-    if (update.pullRequest.head?.repo?.fork !== false) {
+    const sourceRepository = update.pullRequest.head?.repo
+    if (
+        sourceRepository?.fork !== false ||
+        sourceRepository.full_name !== repositoryFullName
+    ) {
         console.info(
             "Skipping Jira status sync because the pull request source repository is a fork or is unavailable.",
         )

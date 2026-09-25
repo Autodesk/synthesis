@@ -2,15 +2,18 @@
 
 name: Sync Jira pull request review status
 
+# workflow_run always uses this workflow from the default branch. The
+# preceding event-recording workflow is intentionally untrusted and never
+# receives Jira secrets.
 on:
-  pull_request_review:
+  workflow_run:
+    workflows:
+      - Record Jira pull request review event
     types:
-      - submitted
-  pull_request:
-    types:
-      - review_requested
+      - completed
 
 permissions:
+  actions: read
   contents: read
   pull-requests: read
 
@@ -18,38 +21,40 @@ jobs:
   sync:
     name: Sync linked Jira work items
     if: >-
-      (github.event_name == 'pull_request_review' &&
-      github.event.action == 'submitted' &&
-      github.event.review.state == 'changes_requested') ||
-      (github.event_name == 'pull_request' &&
-      github.event.action == 'review_requested' &&
-      github.event.requested_reviewer != null)
+      github.event.workflow_run.conclusion == 'success' &&
+      (github.event.workflow_run.event == 'pull_request_review' ||
+      github.event.workflow_run.event == 'pull_request')
     runs-on: ubuntu-latest
     steps:
-      # The review event can originate from a fork. Always execute the trusted
-      # version from the default branch, never workflow code from the PR.
+      # workflow_run executes this workflow from the default branch. Keep the
+      # checkout explicit so the source of the code remains obvious.
       - name: Check out trusted workflow code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
           ref: ${{ github.event.repository.default_branch }}
 
+      - name: Download the review event payload
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          github-token: ${{ github.token }}
+          name: jira-pr-review-event
+          path: .jira-review-event
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: 1.3.13
 
-      - name: Sync Jira status after changes are requested
-        if: github.event_name == 'pull_request_review'
+      - name: Sync Jira status
         run: bun .github/workflows/jira/sync-pr-review-status.ts
         env:
-          JIRA_AUTOMATION_WEBHOOK_TOKEN: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_TOKEN }}
-          JIRA_AUTOMATION_WEBHOOK_URL: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_URL }}
-
-      - name: Sync Jira status after a review is re-requested
-        if: github.event_name == 'pull_request'
-        run: bun .github/workflows/jira/sync-pr-review-status.ts
-        env:
+          GITHUB_EVENT_PATH: ${{ github.workspace }}/.jira-review-event/event.json
           GITHUB_TOKEN: ${{ github.token }}
           JIRA_AUTOMATION_WEBHOOK_TOKEN: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_TOKEN }}
           JIRA_AUTOMATION_WEBHOOK_URL: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_URL }}
+          JIRA_SOURCE_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          JIRA_SOURCE_HEAD_REPOSITORY: ${{ github.event.workflow_run.head_repository.full_name }}
+          JIRA_SOURCE_EVENT_NAME: ${{ github.event.workflow_run.event }}
