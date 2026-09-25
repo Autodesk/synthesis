@@ -39,7 +39,9 @@ jobs:
         with:
           github-token: ${{ github.token }}
           name: jira-pr-review-event
-          path: .jira-review-event
+          # The artifact is untrusted. Keep it outside the workspace so it
+          # cannot overwrite the checked-out trusted workflow code.
+          path: ${{ runner.temp }}/jira-pr-review-event
           repository: ${{ github.repository }}
           run-id: ${{ github.event.workflow_run.id }}
 
@@ -51,7 +53,7 @@ jobs:
       - name: Sync Jira status
         run: bun .github/workflows/jira/sync-pr-review-status.ts
         env:
-          GITHUB_EVENT_PATH: ${{ github.workspace }}/.jira-review-event/event.json
+          GITHUB_EVENT_PATH: ${{ runner.temp }}/jira-pr-review-event/event.json
           GITHUB_TOKEN: ${{ github.token }}
           JIRA_AUTOMATION_WEBHOOK_TOKEN: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_TOKEN }}
           JIRA_AUTOMATION_WEBHOOK_URL: ${{ secrets.JIRA_AUTOMATION_WEBHOOK_URL }}
