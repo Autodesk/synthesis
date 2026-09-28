@@ -1,5 +1,3 @@
-# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
-
 name: Sync Jira pull request review status
 
 # workflow_run always uses this workflow from the default branch. The
