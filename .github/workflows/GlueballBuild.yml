@@ -101,7 +101,7 @@ jobs:
           gh release upload ${{ github.event.release.tag_name }}  ${{ env.ASSET }}
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         if: github.ref_type != 'tag'
         with:
           name: ${{ matrix.target }}
