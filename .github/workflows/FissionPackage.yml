@@ -37,14 +37,14 @@ jobs:
           bun run build:dev
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         id: upload-artifact-prod
         with:
           name: "${{ steps.info.outputs.name }}@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
           path: fission/dist/prod/
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v7.0.1
         id: upload-artifact-dev
         with:
           name: "${{ steps.info.outputs.name }}-dev@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
