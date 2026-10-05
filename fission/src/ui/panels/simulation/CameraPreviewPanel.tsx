@@ -11,7 +11,7 @@ import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 const BOX_W = 480
 const BOX_H = 360
 const PANEL_WIDTH = BOX_W + 40
-const PANEL_HEIGHT = `min(${BOX_H + 200}px, 85vh)`
+const PANEL_HEIGHT = `min(${BOX_H + 200}px, var(--synthesis-panel-max-height))`
 
 interface CameraPreviewPanelProps {
     selectedAssembly: MirabufSceneObject

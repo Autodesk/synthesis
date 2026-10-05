@@ -25,9 +25,9 @@ interface PanelElementProps<T, P> {
 
 // TODO: I don't like this
 const HALF_W = "calc(50vw - 50%)"
-const HALF_H = "calc(50vh - 50%)"
+const HALF_H = "calc(var(--synthesis-viewport-half-height) - 50%)"
 const FULL_W = "calc(100vw - 100%)"
-const FULL_H = "calc(100vh - 100%)"
+const FULL_H = "calc(var(--synthesis-viewport-height) - 100%)"
 
 // TODO: optimize?
 const getPositionOffset = (position: PanelPosition) => {
@@ -77,7 +77,7 @@ export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>
                     p: 0,
                     backgroundColor: "#2e2e2e",
                     boxShadow: 6,
-                    maxHeight: "85vh",
+                    maxHeight: "var(--synthesis-panel-max-height)",
                     width: props.width,
                     height: props.height,
                     flexDirection: "column",
