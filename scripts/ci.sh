@@ -129,8 +129,11 @@ check_branch_freshness() {
     fi
 
     local pull_request_number="${GITHUB_EVENT_NUMBER:-}"
+    if [[ -z "$pull_request_number" && "${GITHUB_REF:-}" =~ ^refs/pull/([0-9]+)/ ]]; then
+        pull_request_number="${BASH_REMATCH[1]}"
+    fi
     if [[ -z "$pull_request_number" ]]; then
-        echo "GITHUB_EVENT_NUMBER is missing for a dev pull request." >&2
+        echo "The pull request number is missing from GITHUB_EVENT_NUMBER and GITHUB_REF." >&2
         return 1
     fi
 
