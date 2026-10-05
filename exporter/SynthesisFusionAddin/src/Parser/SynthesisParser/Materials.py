@@ -8,6 +8,9 @@ from src.Proto import material_pb2
 
 OPACITY_RAMPING_CONSTANT = 14.0
 
+# Appearances with this name are exported fully transparent
+FULLY_TRANSPARENT_APPEARANCE_NAME = ["air", "polycarbonate (clear)", "glass (clear)"]
+
 # Update tables as needed for UX and needed materials
 STATIC_FRICTION_COEFFS = {
     "Aluminum": 1.1,
@@ -238,6 +241,18 @@ def getMaterialAppearance(
     construct_info_result = construct_info("", appearance, fus_object=fusionAppearance)
     if construct_info_result.is_err():
         return construct_info_result
+
+    # Make the transparent material actually transparent
+    if fusionAppearance.name.lower() in FULLY_TRANSPARENT_APPEARANCE_NAME:
+        appearance.roughness = 0.5
+        appearance.metallic = 0.0
+        appearance.specular = 0.0
+        color = appearance.albedo
+        color.R = 255
+        color.G = 255
+        color.B = 255
+        color.A = 0
+        return Ok(None)
 
     appearance.roughness = 0.9
     appearance.metallic = 0.3

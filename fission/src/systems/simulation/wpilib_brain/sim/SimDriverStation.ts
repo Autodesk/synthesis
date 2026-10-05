@@ -20,8 +20,8 @@ export default class SimDriverStation {
         const enabled = mode != RobotSimMode.DISABLED
         const autonomous = mode == RobotSimMode.AUTO
         SimGeneric.set<boolean>(SimType.DRIVERS_STATION, "", ">ds", true)
-        SimGeneric.set<boolean>(SimType.DRIVERS_STATION, "", ">enabled", enabled)
         SimGeneric.set<boolean>(SimType.DRIVERS_STATION, "", ">autonomous", autonomous)
+        SimGeneric.set<boolean>(SimType.DRIVERS_STATION, "", ">enabled", enabled)
     }
 
     public static setStation(station: AllianceStation) {

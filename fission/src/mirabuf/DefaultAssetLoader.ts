@@ -2,7 +2,10 @@ import { type MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader.ts"
 import type { ManifestFileType } from "../../manifest.d.ts"
 import { API_URL } from "@/util/Consts.ts"
 
-export type DefaultAssetInfo = Required<Pick<MirabufCacheInfo, "hash" | "remotePath" | "miraType" | "name">>
+export type DefaultAssetInfo = Required<Pick<MirabufCacheInfo, "hash" | "remotePath" | "miraType" | "name">> & {
+    year?: number
+    thumbnail?: string
+}
 
 class DefaultAssetLoader {
     private static _assets: DefaultAssetInfo[] = []
@@ -34,6 +37,8 @@ class DefaultAssetLoader {
                     hash: obj.hash,
                     miraType,
                     name: obj.filename,
+                    year: obj.year,
+                    thumbnail: obj.thumbnail ? `${baseUrl}/${dir}/${obj.thumbnail}` : undefined,
                 })
             })
         })

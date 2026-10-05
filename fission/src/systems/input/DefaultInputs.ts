@@ -209,11 +209,11 @@ class DefaultInputs {
         }
         return {
             schemeName: "Felix",
-            descriptiveName: "WASD + Arrows (Swerve)",
+            descriptiveName: "WASD + Arrows (Swerve/Mecanum)",
             customized: false,
             usesGamepad: false,
             usesTouchControls: false,
-            supportedDrivetrains: [DriveType.SWERVE],
+            supportedDrivetrains: [DriveType.SWERVE, DriveType.MECANUM],
             inputs: [
                 AxisInput.onKeyboard("swerveForward", "KeyW", "KeyS"),
                 AxisInput.onKeyboard("swerveStrafe", "KeyA", "KeyD"),
@@ -237,11 +237,11 @@ class DefaultInputs {
     public static gizmo: InputSupplier = () => {
         return {
             schemeName: "Gizmo",
-            descriptiveName: "Dual Stick (Swerve)",
+            descriptiveName: "Dual Stick (Swerve/Mecanum)",
             customized: false,
             usesGamepad: true,
             usesTouchControls: false,
-            supportedDrivetrains: [DriveType.SWERVE],
+            supportedDrivetrains: [DriveType.SWERVE, DriveType.MECANUM],
             inputs: [
                 AxisInput.onGamepadJoystick("swerveForward", 1, false),
                 AxisInput.onGamepadJoystick("swerveStrafe", 0, false),
@@ -286,6 +286,7 @@ class DefaultInputs {
                 driveInputs = [AxisInput.unbound("tankLeft"), AxisInput.unbound("tankRight")]
                 break
             case DriveType.SWERVE:
+            case DriveType.MECANUM:
                 driveInputs = [
                     AxisInput.unbound("swerveForward"),
                     AxisInput.unbound("swerveStrafe"),

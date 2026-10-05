@@ -5,6 +5,7 @@ export enum DriveType {
     ARCADE = "Arcade",
     TANK = "Tank",
     SWERVE = "Swerve",
+    MECANUM = "Mecanum",
 }
 
 abstract class Behavior {

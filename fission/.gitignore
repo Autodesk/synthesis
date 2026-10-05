@@ -32,5 +32,6 @@ yarn.lock
 test-results
 coverage
 src/test/**/__screenshots__
+src/bench/baseline.json
 
 tsconfig.tsbuildinfo

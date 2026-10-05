@@ -2,6 +2,7 @@ export class UICallback<T extends unknown[], U> extends Function {
     private _userDefinedFunc?: (...args: T) => U
     private _defaultFunc?: (...args: T) => U
     // @ts-expect-error allow ignored
+    // biome-ignore lint/style/useNamingConvention: this name has special meaning here
     private __self__: UICallback<T, U>
 
     constructor() {
@@ -19,6 +20,7 @@ export class UICallback<T extends unknown[], U> extends Function {
         this._defaultFunc = f
     }
 
+    // biome-ignore lint/style/useNamingConvention: this name has special meaning here
     __call__(...args: T): U | undefined {
         const userDefinedRet = this._userDefinedFunc?.(...args)
         const defaultRet = this._defaultFunc?.(...args)

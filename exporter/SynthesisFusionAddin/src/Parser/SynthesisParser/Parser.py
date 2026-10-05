@@ -29,6 +29,7 @@ def reload() -> None:
     import importlib
 
     importlib.reload(Components)
+    importlib.reload(JointHierarchy)
     importlib.reload(Joints)
     importlib.reload(Materials)
     importlib.reload(PDMessage)

@@ -17,9 +17,9 @@ import {
 export type CameraControlsType = "Target" | "FieldView"
 
 export enum CameraMode {
-    Follow = "Follow",
-    Locked = "Locked",
-    Face = "Face",
+    FOLLOW = "Follow",
+    LOCKED = "Locked",
+    FACE = "Face",
 }
 
 type PointerType = -1 | 0 | 1 | 2
@@ -240,7 +240,7 @@ export class CustomTargetControls extends CameraControls {
     private _pendingResync: THREE.Vector3 | undefined
     private _focusBlend: FocusBlend | undefined
 
-    private _mode: CameraMode = CameraMode.Follow
+    private _mode: CameraMode = CameraMode.FOLLOW
     private _focusPosition: THREE.Vector3 = new THREE.Vector3()
     private _faceZoom = new ZoomEase(CO_DEFAULT_ZOOM)
 
@@ -251,12 +251,12 @@ export class CustomTargetControls extends CameraControls {
     public set mode(val: CameraMode) {
         if (val === this._mode) return
 
-        if (val === CameraMode.Face && this._focusProvider?.miraType === MiraType.FIELD) return
+        if (val === CameraMode.FACE && this._focusProvider?.miraType === MiraType.FIELD) return
 
         this._mode = val
         EventSystem.dispatch("CameraModeChangedEvent", { mode: val })
 
-        if (val === CameraMode.Face) {
+        if (val === CameraMode.FACE) {
             // Face mode drives the camera directly and ignores target coords
             this._pendingResync = undefined
             this._focusPosition.copy(this._mainCamera.position)
@@ -272,7 +272,7 @@ export class CustomTargetControls extends CameraControls {
      */
     private syncCoordsFromWorldPos(worldPos: THREE.Vector3): void {
         const ref =
-            this._mode === CameraMode.Locked && this._focusProvider
+            this._mode === CameraMode.LOCKED && this._focusProvider
                 ? worldPos.clone().applyMatrix4(new THREE.Matrix4().copy(this._focus).invert())
                 : worldPos.clone().sub(this.focusWorldPosition())
 
@@ -291,12 +291,12 @@ export class CustomTargetControls extends CameraControls {
 
         if (!this._focusProvider) return
 
-        if (this._focusProvider.miraType === MiraType.FIELD && this._mode === CameraMode.Face) {
+        if (this._focusProvider.miraType === MiraType.FIELD && this._mode === CameraMode.FACE) {
             // Don't allow Face mode for fields, default back to Follow mode
-            this.mode = CameraMode.Follow
+            this.mode = CameraMode.FOLLOW
         }
 
-        if (this._mode !== CameraMode.Face) {
+        if (this._mode !== CameraMode.FACE) {
             // Capture the camera's current world position.
             // The coord re-sync is deferred to update() so it runs after _focus is refreshed
             this._pendingResync = this._mainCamera.position.clone()
@@ -326,9 +326,9 @@ export class CustomTargetControls extends CameraControls {
         this._isExplicitlyUnfocused = true
         this.onFocusProviderChanged()
 
-        if (this._mode !== CameraMode.Follow) {
+        if (this._mode !== CameraMode.FOLLOW) {
             const worldPos =
-                this._mode === CameraMode.Face ? this._focusPosition.clone() : this._mainCamera.position.clone()
+                this._mode === CameraMode.FACE ? this._focusPosition.clone() : this._mainCamera.position.clone()
             this.syncCoordsFromWorldPos(worldPos)
         }
     }
@@ -338,7 +338,7 @@ export class CustomTargetControls extends CameraControls {
      * world pose. Used when handing off from another control scheme (e.g. Field View) so the view doesn't jump.
      */
     public adoptCurrentView(): void {
-        this._mode = CameraMode.Follow
+        this._mode = CameraMode.FOLLOW
         this._focusProvider = undefined
         this._isExplicitlyUnfocused = true
 
@@ -374,7 +374,7 @@ export class CustomTargetControls extends CameraControls {
         this._isExplicitlyUnfocused = false
         EventSystem.dispatch("CameraFocusChangedEvent", { focusProvider: target })
 
-        if (this._mode === CameraMode.Face) return
+        if (this._mode === CameraMode.FACE) return
 
         this._focusBlend = { progress: 0, duration, startFocus: this._focus.clone() }
     }
@@ -445,7 +445,7 @@ export class CustomTargetControls extends CameraControls {
             return
         }
 
-        if (this._mode === CameraMode.Face) {
+        if (this._mode === CameraMode.FACE) {
             // Face mode drives the camera directly, so only zoom is allowed
             if (move.scale) this.zoomFaceMode(move.scale)
             return
@@ -464,8 +464,8 @@ export class CustomTargetControls extends CameraControls {
 
     /** Drops any focus target and pans the free-orbit point by the given screen movement. */
     private panAndUnfocus(movement: [number, number]): void {
-        if (this._mode !== CameraMode.Follow) {
-            this.mode = CameraMode.Follow
+        if (this._mode !== CameraMode.FOLLOW) {
+            this.mode = CameraMode.FOLLOW
         }
 
         // Clear focus so validateFocusProvider() does not re-snap the camera on the next frame.
@@ -587,7 +587,7 @@ export class CustomTargetControls extends CameraControls {
             this._pendingResync = undefined
         }
 
-        if (this._mode === CameraMode.Face && this._focusProvider) {
+        if (this._mode === CameraMode.FACE && this._focusProvider) {
             this.updateFaceModeZoom(deltaT)
             this.focusMode()
             return
@@ -611,7 +611,7 @@ export class CustomTargetControls extends CameraControls {
                 )
             )
 
-        if (this._mode === CameraMode.Locked && this._focusProvider) {
+        if (this._mode === CameraMode.LOCKED && this._focusProvider) {
             deltaTransform.premultiply(this._focus)
         } else {
             const focusPosition = new THREE.Matrix4().copyPosition(this._focus)

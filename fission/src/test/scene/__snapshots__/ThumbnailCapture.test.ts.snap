@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`computeThumbnailFraming > frames 2018 the same way it always has 1`] = `
+{
+  "lookAt": [
+    0,
+    1.0654,
+    -0,
+  ],
+  "position": [
+    -20.6003,
+    17.8855,
+    20.6003,
+  ],
+}
+`;
+
+exports[`computeThumbnailFraming > frames DOZER the same way it always has 1`] = `
+{
+  "lookAt": [
+    -0.1873,
+    0.1881,
+    -0.6366,
+  ],
+  "position": [
+    -1.4547,
+    1.2229,
+    0.6308,
+  ],
+}
+`;

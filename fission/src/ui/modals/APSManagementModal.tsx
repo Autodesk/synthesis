@@ -9,13 +9,14 @@ import { useUIContext } from "../helpers/UIProviderHelpers"
 const APSManagementModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
     const [userInfo, _] = useState(APS.userInfo)
+
     useEffect(() => {
         const onBeforeAccept = () => {
             APS.logout()
         }
 
         configureScreen(modal!, { title: userInfo?.name ?? "Not signed in", acceptText: "Logout" }, { onBeforeAccept })
-    }, [modal, userInfo?.name])
+    }, [modal, userInfo?.name, configureScreen])
 
     return (
         <Stack spacing={10} direction="row">

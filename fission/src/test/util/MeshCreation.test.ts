@@ -2,7 +2,7 @@ import * as THREE from "three"
 import { Vector3 } from "three"
 import { describe, expect, test } from "vitest"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { createMeshForShape, deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
+import { createBoxMesh, createMeshForShape, deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 
 describe("Mesh Creation Tests", () => {
     test("Sphere Mesh Creation", () => {
@@ -25,6 +25,21 @@ describe("Mesh Creation Tests", () => {
         expect(boxSize.x).toBeCloseTo(1.0, 2)
         expect(boxSize.y).toBeCloseTo(4.0, 2)
         expect(boxSize.z).toBeCloseTo(9.0, 2)
+    })
+
+    test("Box Mesh spans the full given size, centered on its origin", () => {
+        const material = new THREE.MeshBasicMaterial()
+        const mesh = createBoxMesh(new JOLT.Vec3(2, 3, 4), material)
+
+        expect(mesh.material).toBe(material)
+
+        mesh.geometry.computeBoundingBox()
+        const size = new Vector3()
+        mesh.geometry.boundingBox?.getSize(size)
+        expect(size.x).toBeCloseTo(2.0, 2)
+        expect(size.y).toBeCloseTo(3.0, 2)
+        expect(size.z).toBeCloseTo(4.0, 2)
+        expect(mesh.geometry.boundingBox?.min).toEqual(new Vector3(-1, -1.5, -2))
     })
 })
 

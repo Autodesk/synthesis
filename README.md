@@ -86,4 +86,6 @@ If you have any questions about Synthesis or the Immersion Program, you can cont
 
 Copyright (c) Autodesk
 
+Except for the assets and files identified in [MARKS-LICENSE.md](/MARKS-LICENSE.md), this repository is licensed under the Apache License, Version 2.0.
+
 SPDX-License-Identifier: Apache-2.0

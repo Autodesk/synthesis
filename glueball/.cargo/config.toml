@@ -1,0 +1,2 @@
+[env]
+TS_RS_LARGE_INT = "number"

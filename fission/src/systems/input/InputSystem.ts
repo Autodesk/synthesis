@@ -7,6 +7,11 @@ import type Input from "./inputs/Input"
 
 const LOG_GAMEPAD_EVENTS = false
 
+// returns true if 'esc' was consumed
+type EscapeHandler = () => boolean
+
+export const ESCAPE_PRIORITY = { COMMAND_PALETTE: 30, TOUR: 20, MODAL: 10, PANEL: 0 } as const
+
 /**
  *  The input system listens for and records key presses and joystick positions to be used by robots.
  *  It also maps robot behaviors (such as an arcade drivetrain or an arm) to specific keys through customizable input schemes.
@@ -28,18 +33,35 @@ class InputSystem extends WorldSystem {
     private static _rightJoystickPos: { x: number; y: number } = { x: 0, y: 0 }
 
     /** Maps a brain index to an input scheme. */
-    public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+    private static _brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+
+    public static get brainIndexSchemeMap() {
+        return this._brainIndexSchemeMap
+    }
 
     public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
-        InputSystem.brainIndexSchemeMap.set(index, scheme)
+        this.brainIndexSchemeMap.set(index, scheme)
         World.analyticsSystem?.event("Scheme Applied", {
             isCustomized: scheme.customized,
             schemeName: scheme.schemeName,
         })
     }
+    public static getBrainIndexSchemeMapping(index: number): InputScheme | undefined {
+        return this.brainIndexSchemeMap.get(index)
+    }
 
-    // Janky solution to centralize escape key closing logic, first in the list is higher priority, returning true consumes the keypress
-    public static escapeKeyListeners: (null | (() => boolean))[] = [null, null, null]
+    private static _escapeHandlers: { priority: number; handler: EscapeHandler }[] = []
+
+    /** highest priority is asked first. call the result to unregister. */
+    public static addEscapeHandler(handler: EscapeHandler, priority = 0): () => void {
+        const entry = { priority, handler }
+        InputSystem._escapeHandlers.push(entry)
+        InputSystem._escapeHandlers.sort((a, b) => b.priority - a.priority)
+
+        return () => {
+            InputSystem._escapeHandlers = InputSystem._escapeHandlers.filter(e => e !== entry)
+        }
+    }
 
     /**
      * Sets whether the command palette is open, which blocks all robot inputs
@@ -132,8 +154,7 @@ class InputSystem extends WorldSystem {
 
     private checkEscapeKey(event: KeyboardEvent) {
         if (event.key == "Escape") {
-            const anyMatched = InputSystem.escapeKeyListeners.some(cb => cb != null && cb())
-            if (anyMatched) {
+            if (InputSystem._escapeHandlers.some(entry => entry.handler())) {
                 event.preventDefault()
             }
         }
@@ -191,7 +212,7 @@ class InputSystem extends WorldSystem {
             return 0
         }
 
-        const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        const targetScheme = InputSystem.getBrainIndexSchemeMapping(brainIndex)
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
 

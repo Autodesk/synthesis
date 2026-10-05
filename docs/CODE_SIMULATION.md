@@ -24,3 +24,30 @@ You should see updates both in Fission and in the readouts in the code simulator
 The robot code will control the movement of the robot in Fission, and you can expand each of the devices in the robot code simulator GUI to see if their fields are being updated by Fission.
 For example, running the JavaAutoSample should cause the `ADXL362[4]` and `SYN AHRS[0]` devices to update with rotation and acceleration data from Fission
 (note that the names may differ if the code changes).
+
+## FTC Code Simulation
+
+To run:
+
+```
+cd simulation/SyntheSimFTC
+./gradlew run --args="--src <path-to-teamcode-src> [--opmode <name>] [--port <port>]"
+```
+
+`--src` points at a plain directory of `.java` files, rooted so package folders (`org/firstinspires/ftc/teamcode/...`) hang off it. `--port` defaults to `3301`. Make sure to start the simulation before starting the dev server.
+
+`--opmode` picks which discovered OpMode to run, matching a class name (`ExampleDozerArcadeDrive`), or the annotation's display name (`"Dozer Arcade Drive"`).
+
+The runner logs every OpMode it found and which one it selected, e.g.:
+
+```
+[OpModeRunner] Discovered [TeleOp] Dozer Arcade Drive (org.firstinspires.ftc.teamcode.examples.ExampleDozerArcadeDrive)
+[OpModeRunner] Running [TeleOp] Dozer Arcade Drive (org.firstinspires.ftc.teamcode.examples.ExampleDozerArcadeDrive)
+```
+
+Running the Dozer sample at `simulation/samples/FTCDozerArcadeDriveSample`:
+
+```
+cd simulation/SyntheSimFTC
+./gradlew run --args="--src ../samples/FTCDozerArcadeDriveSample --opmode ExampleDozerArcadeDrive"
+```

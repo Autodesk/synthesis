@@ -5,22 +5,22 @@ import World from "@/systems/World.ts"
 import EventSystem from "@/systems/EventSystem.ts"
 
 export default class ScoreTracker {
-    private static _redScore: number = 0
-    private static _blueScore: number = 0
-    private static _perRobotScore: Map<MirabufSceneObject, number>
+    private _redScore: number = 0
+    private _blueScore: number = 0
+    private _perRobotScore: Map<MirabufSceneObject, number> = new Map()
 
-    public static get redScore() {
+    public get redScore() {
         return this._redScore
     }
-    public static get blueScore() {
+    public get blueScore() {
         return this._blueScore
     }
 
-    public static get perRobotScore(): ReadonlyMap<MirabufSceneObject, number> {
+    public get perRobotScore(): ReadonlyMap<MirabufSceneObject, number> {
         return this._perRobotScore
     }
 
-    public static resetScores(): void {
+    public resetScores(): void {
         this._redScore = 0
         this._blueScore = 0
         this._perRobotScore = new Map()
@@ -28,12 +28,12 @@ export default class ScoreTracker {
         this.notifyChange()
     }
 
-    public static addPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
+    public addPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
         const currentRobotScore = this._perRobotScore.get(robot) ?? 0
         this._perRobotScore.set(robot, currentRobotScore + scoreToAdd)
     }
 
-    public static addPoints(alliance: Alliance, points: number, notify: boolean = true) {
+    public addPoints(alliance: Alliance, points: number, notify: boolean = true) {
         if (alliance == "red") {
             this._redScore += points
         } else {
@@ -44,18 +44,34 @@ export default class ScoreTracker {
         }
     }
 
-    private static notifyChange() {
+    private notifyChange() {
         EventSystem.dispatch("ScoreChangedEvent", { red: this.redScore, blue: this.blueScore })
     }
 
-    public static robotPenalty(
+    /**
+     * In order for this function to work with match mode, the caller must adhere to either of the following contracts, but not both:
+     * 1. The parameter `broadcastPenalty` should be set to `false`
+     * 2. This function should only be called to penalize robots owned by the client
+     *
+     * Basically, every client is responsible for broadcasting penalties committed by their robot
+     */
+    public robotPenalty(
         robot: MirabufSceneObject,
         penaltyPoints: number,
         penaltyInfo: string,
         broadcastPenalty: boolean = true
     ): void {
-        if (broadcastPenalty) {
+        if (broadcastPenalty && World.multiplayerSystem) {
+            World.multiplayerSystem.broadcast({
+                type: "matchModePenalty",
+                data: {
+                    objectId: robot.id,
+                    points: penaltyPoints,
+                    description: penaltyInfo,
+                },
+            })
         }
+
         // Display a toast showing that a penalty was committed
         globalAddToast(
             "warning",

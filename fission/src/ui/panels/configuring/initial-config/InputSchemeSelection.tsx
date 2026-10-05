@@ -1,4 +1,14 @@
-import { Box, Divider, FormControl, InputLabel, MenuItem, Stack, Tooltip } from "@mui/material"
+import {
+    Box,
+    Divider,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Stack,
+    type SxProps,
+    type Theme,
+    Tooltip,
+} from "@mui/material"
 import { type ReactElement, useCallback, useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -6,16 +16,18 @@ import InputSystem from "@/systems/input/InputSystem"
 import { type InputScheme, type InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputTypes"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import { PositiveButton, SynthesisIcons, Select } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useIsTouchDevice } from "@/ui/helpers/useIsMobile"
 
 interface SchemeSelectorProps {
     scheme: InputScheme
     panelId?: string
     brainIndex: number
 
-    style?: React.CSSProperties
+    style?: SxProps<Theme>
     message: string
     disabled?: boolean
 
@@ -31,7 +43,9 @@ const SchemeSelector: React.FC<SchemeSelectorProps> = ({
     disabled = false,
     onSelect,
 }): ReactElement | null => {
-    if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
+    const isTouch = useIsTouchDevice()
+
+    if (scheme.usesTouchControls && !isTouch) return null
     return (
         <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
             <Stack
@@ -80,6 +94,9 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
     )
+    const [robotCentric, setRobotCentric] = useState<boolean>(
+        SynthesisBrain.brainIndexMap.get(brainIndex)?.mecanumRobotCentric ?? false
+    )
     const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
 
     const refreshAvailableSchemes = useCallback(() => {
@@ -104,9 +121,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
     }, [onSelect])
 
     return (
-        // A scroll view with buttons to select default and custom input schemes
-        <>
-            {/** The label and divider at the top of the scroll view */}
+        <Stack gap={2}>
             <Divider />
             <FormControl fullWidth>
                 <InputLabel id="input-scheme-drivetrain-type-label">Drivetrain Type</InputLabel>
@@ -116,23 +131,32 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                     onChange={e => {
                         const newDriveType = e.target.value as DriveType
                         const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
-                        if (brain) {
-                            brain.configureDriveBehavior(newDriveType)
-                        }
-                        setRobotDriveType(newDriveType)
+                        const appliedDriveType = brain?.configureDriveBehavior(newDriveType) ?? newDriveType
+                        setRobotDriveType(appliedDriveType)
 
                         const scheme = InputSchemeManager.applyCompatibleScheme(brainIndex)
                         if (scheme) setSelectedScheme(scheme)
                         EventSystem.dispatch("InputSchemeChanged", { panelId })
                     }}
                 >
-                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE].map(dt => (
+                    {[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE, DriveType.MECANUM].map(dt => (
                         <MenuItem key={dt} value={dt}>
                             {dt}
                         </MenuItem>
                     ))}
                 </Select>
             </FormControl>
+            {robotDriveType === DriveType.MECANUM && (
+                <Checkbox
+                    label="Robot-Centric Drive"
+                    tooltip="Drive relative to the robot's nose instead of a fixed field heading."
+                    checked={robotCentric}
+                    onClick={checked => {
+                        SynthesisBrain.brainIndexMap.get(brainIndex)?.setMecanumRobotCentric(checked)
+                        setRobotCentric(checked)
+                    }}
+                />
+            )}
             <Divider />
             <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                 {`${availableSchemes?.length} Input Schemes`}
@@ -188,6 +212,6 @@ export default function InputSchemeSelection({ brainIndex, onSelect, panelId }: 
                         </div>
                     )
                 })}
-        </>
+        </Stack>
     )
 }

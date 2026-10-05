@@ -1,9 +1,11 @@
 import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
-import type { FunctionComponent, ReactNode } from "react"
 import type React from "react"
-import { useCallback, useReducer, useState } from "react"
+import { useRef } from "react"
+import { useMemo } from "react"
+import type { FunctionComponent, ReactNode } from "react"
+import { Fragment, useCallback, useEffect, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import type { ModalImplProps } from "./components/Modal"
 import type { PanelImplProps } from "./components/Panel"
@@ -17,13 +19,15 @@ import {
     type OpenPanelFn,
     type Panel,
     type PanelProps,
+    type TogglePanelFn,
+    type UIBlockState,
     UIContext,
     type UIScreen,
     type UIScreenCallbacks,
     type UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
-import InputSystem from "@/systems/input/InputSystem.ts"
+import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem.ts"
 
 export type UIProviderProps = {
     children?: ReactNode
@@ -42,51 +46,62 @@ function shallowEqualProps(a: unknown, b: unknown): boolean {
 }
 
 // biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
+const DEFAULT_PROPS = {
+    hideAccept: false,
+    hideCancel: false,
+    acceptText: "Accept",
+    cancelText: "Cancel",
+} as UIScreenProps<any>
+
+const DEFAULT_MODAL_PROPS = {
+    ...DEFAULT_PROPS,
+    allowClickAway: true,
+}
+
+const DEFAULT_PANEL_PROPS = {
+    ...DEFAULT_PROPS,
+    position: "right",
+} as PanelProps<any>
+
+const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
+    elem.onClose?.(closeType)
+    switch (closeType) {
+        case CloseType.ACCEPT: {
+            const beforeAcceptResult = elem.onBeforeAccept?.()
+            elem.onAccept?.(beforeAcceptResult)
+            break
+        }
+        case CloseType.CANCEL:
+            elem.onCancel?.()
+            break
+        default:
+            break
+    }
+}
+
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<any, any> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<any, any>[]>([])
-
-    const [_, refresh] = useReducer(x => !x, false)
+    const [refreshDep, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
-    const DEFAULT_PROPS = {
-        hideAccept: false,
-        hideCancel: false,
-        acceptText: "Accept",
-        cancelText: "Cancel",
-    } as UIScreenProps<any>
-
-    const DEFAULT_MODAL_PROPS = {
-        ...DEFAULT_PROPS,
-        allowClickAway: true,
-    }
-
-    const DEFAULT_PANEL_PROPS = {
-        ...DEFAULT_PROPS,
-        position: "right",
-    } as PanelProps<any>
-
-    InputSystem.escapeKeyListeners[1] = () => {
-        if (modal != null) {
-            if (!modal.props.hideCancel) {
-                closeModal(CloseType.Cancel)
-            }
-            return true
-        }
-        return false
-    }
-
-    InputSystem.escapeKeyListeners[2] = () => {
-        if (panels.length > 0) {
-            const panel = panels[panels.length - 1]
-            if (!panel.props.hideCancel) {
-                closePanel(panel.id, CloseType.Cancel)
-                return true
+    const blockState: UIBlockState = useMemo(() => {
+        const blockingPanel = panels.find(p => p.props.blocking)
+        if (blockingPanel != null) {
+            return {
+                blocked: true,
+                blockMessage:
+                    blockingPanel?.props?.blockingMessage ?? "Close the current panel before opening another.",
             }
         }
-        return false
-    }
+        return {
+            blocked: false,
+        }
+    }, [refreshDep, panels])
+
+    const blockStateRef = useRef<UIBlockState>(blockState)
+    blockStateRef.current = blockState
 
     const openModal: OpenModalFn = useCallback(
         <T, P>(
@@ -96,6 +111,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             props: Omit<ModalProps<P>, "type" | "configured" | "custom"> &
                 Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PROPS
         ) => {
+            if (blockStateRef.current.blocked) {
+                addToast("warning", blockStateRef.current.blockMessage)
+                return null
+            }
+
             const id = uuidv4()
             const newModal = {
                 id,
@@ -107,7 +127,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                     custom: customProps,
                 },
             } as Modal<T, P>
-            modal?.onClose?.(CloseType.Overwrite)
+            modal?.onClose?.(CloseType.OVERWRITE)
 
             newModal.props.configured = false
 
@@ -129,6 +149,36 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         [modal]
     )
 
+    const snackbarAction = useCallback(
+        (snackbarId: SnackbarKey) => (
+            <IconButton onClick={() => closeSnackbar(snackbarId)}>
+                <CloseIcon />
+            </IconButton>
+        ),
+        [closeSnackbar]
+    )
+
+    const addToast = useCallback(
+        (variant: VariantType, ...contents: SnackbarMessage[]) => {
+            enqueueSnackbar(
+                contents.length <= 1 ? (
+                    (contents[0] ?? "")
+                ) : (
+                    <span>
+                        {contents.map((content, index) => (
+                            <Fragment key={index}>
+                                {content}
+                                {index < contents.length - 1 && <br />}
+                            </Fragment>
+                        ))}
+                    </span>
+                ),
+                { variant, action: snackbarAction }
+            )
+        },
+        [enqueueSnackbar, snackbarAction]
+    )
+
     const openPanel: OpenPanelFn = useCallback(
         <T, P>(
             content: FunctionComponent<PanelImplProps<T, P>>,
@@ -148,12 +198,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             }
 
             // if any (generic) open panel declares itself as blocking, prevent opening a new one
-            const blockingPanel = panels.find(p => p.props.blocking)
-            if (blockingPanel) {
-                const msg = blockingPanel.props.blockingMessage ?? "Close the current panel before opening another."
-                addToast("warning", msg)
+            if (blockStateRef.current.blocked) {
+                addToast("warning", blockStateRef.current.blockMessage)
                 return null
             }
+
             const id = uuidv4()
             const panel = {
                 id,
@@ -180,44 +229,18 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             panel.onCancel = new UICallback()
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
-            const contentName = (content as unknown as { name?: string })?.name ?? ""
-            const mutuallyExclusive = ["ImportMirabufPanel", "ConfigurePanel", "InitialConfigPanel"]
-            const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
-            if (mutuallyExclusive.includes(contentName)) {
-                const existing = panels.find(p =>
-                    mutuallyExclusive.includes((p.content as unknown as { name?: string })?.name ?? "")
-                )
-                if (existing) {
-                    // Replace existing with the new one
-                    setPanels(p => [...p.filter(x => x !== existing), panel as Panel<any, any>])
-                    return id
-                }
-            }
-
-            setPanels([...nextPanels, panel as Panel<any, any>])
+            setPanels(panels => {
+                const nextPanels = existingDuplicate ? panels.filter(p => p !== existingDuplicate) : panels
+                return [...nextPanels, panel as Panel<any, any>]
+            })
             return id
         },
-        [panels]
+        [panels, addToast]
     )
 
-    const closeCallbacks = <T, P>(elem: Panel<T, P> | Modal<T, P>, closeType: CloseType) => {
-        elem.onClose?.(closeType)
-        switch (closeType) {
-            case CloseType.Accept: {
-                const beforeAcceptResult = elem.onBeforeAccept?.()
-                elem.onAccept?.(beforeAcceptResult)
-                break
-            }
-            case CloseType.Cancel:
-                elem.onCancel?.()
-                break
-            default:
-                break
-        }
-    }
-
     const closeModal = useCallback(
-        <T, P>(closeType: CloseType) => {
+        <T, P>(closeType: CloseType, id?: string) => {
+            if (modal != null && id != null && modal.id !== id) return //
             if (modal) closeCallbacks<T, P>(modal as Modal<T, P>, closeType)
             setModal(undefined)
         },
@@ -231,62 +254,88 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             return p.filter((pnl: Panel<any, any>) => pnl.id !== id)
         })
     }, [])
+
+    useEffect(
+        () =>
+            InputSystem.addEscapeHandler(() => {
+                if (modal == null) return false
+                if (!modal.props.hideCancel) closeModal(CloseType.CANCEL)
+                return true
+            }, ESCAPE_PRIORITY.MODAL),
+        [modal, closeModal]
+    )
+
+    useEffect(
+        () =>
+            InputSystem.addEscapeHandler(() => {
+                const panel = panels[panels.length - 1]
+                if (panel == null || panel.props.hideCancel) return false
+                closePanel(panel.id, CloseType.CANCEL)
+                return true
+            }, ESCAPE_PRIORITY.PANEL),
+        [panels, closePanel]
+    )
+
+    const togglePanel: TogglePanelFn = useCallback(
+        <T, P>(
+            content: FunctionComponent<PanelImplProps<T, P>>,
+            customProps: P,
+            matchesOpen?: (openCustomProps: P) => boolean
+        ) => {
+            const openInstance = panels.find(p => p.content === content)
+            if (openInstance && (matchesOpen?.((openInstance.props as PanelProps<P>).custom) ?? true)) {
+                // OVERWRITE, not CANCEL: dismissing a panel by re-clicking its icon is not a
+                // rejection of the user's edits, so panels get to save them via onClose.
+                closePanel(openInstance.id, CloseType.OVERWRITE)
+                return null
+            }
+            return openPanel(content, customProps)
+        },
+        [panels, openPanel, closePanel]
+    )
     // biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
-    const snackbarAction = useCallback(
-        (snackbarId: SnackbarKey) => (
-            <IconButton onClick={() => closeSnackbar(snackbarId)}>
-                <CloseIcon />
-            </IconButton>
-        ),
-        []
-    )
+    const configureScreen: ConfigureScreenFn = useCallback(
+        (screen, props, callbacks) => {
+            type PropKey = keyof typeof screen.props
+            type PropValue = (typeof screen.props)[keyof typeof screen.props]
 
-    const addToast = useCallback(
-        (variant: VariantType, ...contents: SnackbarMessage[]) => {
-            enqueueSnackbar(
-                contents.length <= 1 ? (
-                    <>{...contents}</>
-                ) : (
-                    <>
-                        {...contents.map(child => (
-                            <>
-                                {child}
-                                <br />
-                            </>
-                        ))}
-                    </>
-                ),
-                { variant, action: snackbarAction }
-            )
+            for (const [k, v] of Object.entries(props)) {
+                ;(screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
+            }
+
+            screen.props.configured = true
+
+            if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
+            if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
+            if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
+
+            if ("exclusiveGroup" in screen.props) {
+                const exclusiveGroup = screen.props.exclusiveGroup
+                if (exclusiveGroup != null) {
+                    setPanels(panels => {
+                        const existing = panels.find(p => p.props.exclusiveGroup == exclusiveGroup && p !== screen)
+                        if (existing) {
+                            closePanel(existing.id, CloseType.OVERWRITE)
+                        }
+                        return panels
+                    })
+                }
+            }
+            refresh()
         },
-        [enqueueSnackbar]
+        [closePanel]
     )
-
-    const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {
-        type PropKey = keyof typeof screen.props
-        type PropValue = (typeof screen.props)[keyof typeof screen.props]
-
-        for (const [k, v] of Object.entries(props)) {
-            ;(screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
-        }
-
-        screen.props.configured = true
-
-        if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
-        if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
-        if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
-
-        refresh()
-    }, [])
 
     return (
         <UIContext.Provider
             value={{
                 modal,
                 panels,
+                blockState,
                 openModal,
                 openPanel,
+                togglePanel,
                 closeModal,
                 closePanel,
                 addToast,

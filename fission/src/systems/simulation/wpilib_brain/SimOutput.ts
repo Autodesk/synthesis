@@ -4,7 +4,7 @@ import SliderDriver from "../driver/SliderDriver"
 import WheelDriver from "../driver/WheelDriver"
 import SimAO from "./sim/SimAO"
 import SimCAN from "./sim/SimCAN"
-import SimDIO from "./sim/SimDIO"
+import SimDIO, { DIO_TYPE } from "./sim/SimDIO"
 import SimPWM from "./sim/SimPWM"
 import { SimType } from "./WPILibTypes"
 
@@ -42,7 +42,7 @@ export class PWMOutputGroup extends SimOutputGroup {
         const average =
             this.ports.reduce((sum, port) => {
                 const speed = SimPWM.getSpeed(`${port}`) ?? 0
-                return sum + speed
+                return sum + speed.value
             }, 0) / this.ports.length
 
         this.drivers.forEach(d => {
@@ -90,11 +90,12 @@ export class SimDigitalOutput extends SimOutput {
     }
 
     public setValue(value: boolean) {
-        SimDIO.setValue(this._name, value)
+        // TODO: is this the right split? have everything using Sim... to construct a Nora[Base]Value?
+        SimDIO.setValue(this._name, { value, baseType: DIO_TYPE[0] })
     }
 
     public getValue(): boolean {
-        return SimDIO.getValue(this._name)
+        return SimDIO.getValue(this._name).value
     }
 
     public update(_deltaT: number) {}

@@ -1,109 +1,122 @@
-import type Jolt from "@synthesis.adsk/jolt-physics"
-import Peer, { type DataConnection } from "peerjs"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { mirabuf } from "@/proto/mirabuf"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import World from "../World"
 import { peerMessageHandlers } from "./MessageHandlers"
-import type { ClientInfo, LocalSceneObjectId, Message, MessageWithTimestamp, RemoteSceneObjectId } from "./types"
-import { hashBuffer } from "@/util/Utility"
+import type { ClientAndLatencyInfo, ClientInfo, Message, MessageWithTimestamp } from "./MultiplayerTypes.ts"
 import EventSystem from "@/systems/EventSystem.ts"
+import type { ServerToClientMessage } from "@/systems/multiplayer/bindings/ServerToClientMessage.ts"
+import { consolePrefixer } from "console-prefixer"
+import { hashBuffer } from "@/util/Utility.ts"
+import { mirabuf } from "@/proto/mirabuf"
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+import MatchMode from "../match_mode/MatchMode.ts"
+import type { MultiplayerCommunicationProvider } from "@/systems/multiplayer/MultiplayerCommunicationInterface.ts"
+import type { MultiplayerSessionEndOutcome } from "@/systems/analytics/AnalyticsSystem.ts"
 
 export const COLLISION_TIMEOUT = 500
 
+export const multiplayerLogger = consolePrefixer({
+    defaultPrefix: {
+        text: "[Multiplayer]",
+        style: "background: orange; color: white;font-weight:bold; padding:2px; border-radius:2px;",
+    },
+})
+const console = multiplayerLogger
+
 class MultiplayerSystem {
-    public readonly client: Peer
-    private readonly _connections: Map<string, DataConnection> = new Map()
-    readonly roomId: string
-    readonly clientId: string
-    private readonly _initializationPromise: Promise<boolean>
+    public readonly client: MultiplayerCommunicationProvider
+    public roomId: string = ""
+    public clientId: string = ""
+    private _initializationPromise: Promise<boolean>
 
-    public readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
+    public readonly clientToInfoMap: Map<string, ClientAndLatencyInfo> = new Map()
+    public readonly clientToObjectMap: Map<string, SceneObjectId[]> = new Map() // indicates ownership over objects
 
-    public readonly _clientToObjectMap: Map<string, LocalSceneObjectId[]> = new Map()
-    public readonly _clientToBodyMap: Map<string, Map<number, Jolt.BodyID>> = new Map() // Each Map is: peerBodyId -> clientBodyId
-    public readonly _clientToSceneObjectIdMap: Map<string, Map<RemoteSceneObjectId, LocalSceneObjectId>> = new Map() // Each Map is: peerObjectId -> clientObjectId
-
-    readonly info: ClientInfo
+    private _info: ClientInfo = {} as ClientInfo
     private _onDestroyHooks: (() => void)[] = []
 
-    public static async setup(roomId: string, displayName: string, isHost: boolean): Promise<boolean> {
-        const clientId = await generateId(roomId)
-        const system = new MultiplayerSystem(roomId, clientId, displayName, isHost)
+    private _lastRTT: number = -1
+    // Positive if client clock ahead, negative if server clock ahead
+    private _clientTimeDeltaMS: number = 0
+    private _lastPingTs: number = 0
+    private _hasPendingPing: boolean = false
+
+    // Session analytics accumulators
+    private _peakPlayers: number = 1
+    private _latencySumMS: number = 0
+    private _latencySamples: number = 0
+    private _sessionEndReported: boolean = false
+
+    public fieldTransferLock?: { ts: number; id: SceneObjectId }
+
+    public isHost: boolean
+
+    public sinceLastUpdate = 0
+
+    public static async setup(
+        ws: MultiplayerCommunicationProvider,
+        displayName: string,
+        isHost: boolean
+    ): Promise<boolean> {
+        MatchMode.getInstance().sandboxModeStart()
+
+        console.group("Multiplayer initialization")
+
+        const system = new MultiplayerSystem(ws, displayName, isHost)
+        const initResult = await system._initializationPromise
         World.setMultiplayerSystem(system)
-        return await system._initializationPromise
+
+        World.analyticsSystem?.event("Multiplayer Session Start", {
+            role: isHost ? "Host" : "Client",
+            outcome: initResult ? "Success" : "Failure",
+        })
+
+        console.groupEnd()
+
+        return initResult
     }
 
-    private constructor(roomId: string, clientId: string, displayName: string, isHost: boolean = false) {
-        this.roomId = roomId
-        this.clientId = clientId
-        this.info = { clientId: this.clientId, displayName: displayName, isHost, creationTime: Date.now() }
-
-        this.client = new Peer(this.clientId, {
-            host: window.location.hostname,
-            port: parseInt(import.meta.env.VITE_MULTIPLAYER_PORT) ?? 9002,
-            path: "/",
-        })
-
-        this.client.on("call", e => console.debug("peerjs call", e))
-        this.client.on("close", () => {
-            console.debug("peerjs close")
-        })
+    private constructor(ws: MultiplayerCommunicationProvider, displayName: string, isHost: boolean) {
+        this.isHost = isHost
+        this.client = ws
+        this.client.onError = () => {
+            globalAddToast("warning", "Multiplayer error")
+        }
 
         this._initializationPromise = new Promise<boolean>(resolve => {
-            this.client.on("open", async (id: string) => {
-                console.debug(`Broker connection opened: ID - ${id}`)
-                const peerCount = await this.connectToRoom()
-                if (peerCount == 0 && !isHost) {
-                    globalAddToast("warning", `Could not find room`, this.roomId)
+            this._info.displayName = displayName
+            this.client.onServerMessage = async msg => {
+                if (msg.type != "sendinfo") {
                     this.destroy()
-                    World.setMultiplayerSystem(undefined)
-                    EventSystem.dispatch("MultiplayerStateJoinRoom")
+                    console.error("Received invalid initial message")
                     resolve(false)
+                    return
                 }
+                await this.handleServerMessage(msg)
                 resolve(true)
-            })
-
-            this.client.on("error", e => {
-                console.error("PeerJS Error:", e)
-                switch (e.type) {
-                    case "unavailable-id":
-                        globalAddToast("warning", "Reused Client ID", "Try Joining Again")
-                        PreferencesSystem.setUserPreference("MultiplayerClientID", "")
-                        break
-                    case "network":
-                        globalAddToast("error", "Network Issue", "Could not connect to server")
-                        break
-                    default:
-                        console.warn("Unknown PeerJS Error Type", e.type)
-                        globalAddToast("warning", "Unknown PeerJS Error")
-                        break
-                }
-                resolve(false)
-            })
-
-            this.client.on("disconnected", peer => {
-                console.log("PeerJS Disconnect:", peer, this._clientToInfoMap.get(peer)?.displayName ?? "")
-            })
-        })
-
-        this.client.on("connection", async conn => {
-            console.debug("Receiving Connection: ", conn.peer)
-            if (
-                conn.metadata.authHash !=
-                (await createSha256Hash({
-                    roomId: this.roomId,
-                    establishedClientId: this.clientId,
-                    newClientId: conn.peer,
-                }))
-            ) {
-                conn.close()
-                console.warn("Blocking unauthorized connection from " + conn.peer)
-                return
             }
-            this.setupConnectionHandlers(conn)
+            this.client.onClose = () => {
+                resolve(false)
+            }
+            setTimeout(() => resolve(false), 10000)
+        }).then(res => {
+            if (res) {
+                this.client.onServerMessage = async msg => {
+                    await this.handleServerMessage(msg)
+                }
+
+                this.client.onPeerMessage = async msg => {
+                    await this.handlePeerMessage(msg)
+                }
+                this.client.onClose = () => {
+                    globalAddToast("error", "Multiplayer disconnected")
+                    this.destroy("Disconnected")
+                    EventSystem.dispatch("MultiplayerStateJoinRoom")
+                }
+                this.registerExistingSceneObjects()
+            }
+            return res
         })
 
         this._onDestroyHooks.push(
@@ -113,250 +126,270 @@ class MultiplayerSystem {
                 })
             })
         )
+
+        this.ping()
+        const pingCallback = setInterval(() => this.ping(), 5_000)
+
+        this._onDestroyHooks.push(() => {
+            clearInterval(pingCallback)
+        })
     }
 
-    async connectToRoom() {
-        const roomHash = await createSha256Hash({ roomId: this.roomId })
+    private ping() {
+        if (!this._hasPendingPing) {
+            this._lastPingTs = Date.now()
+        }
 
-        const peersPromise = new Promise<string[]>(resolve => this.client.listAllPeers(resolve))
-        const peers = await peersPromise
+        this._hasPendingPing = true
 
-        console.debug(`Peers: ${peers}`)
-
-        const peerCount = await Promise.all(
-            peers
-                .filter(peer => peer !== this.clientId)
-                .map(async peer => {
-                    const idParts = peer.split("-")
-                    if (idParts[1] != roomHash) return false
-                    if (
-                        idParts[2] == (await createSha256Hash({ roomId: this.roomId, establishedClientId: idParts[1] }))
-                    )
-                        return false
-
-                    const conn = this.client.connect(peer, {
-                        metadata: {
-                            authHash: await createSha256Hash({
-                                roomId: this.roomId,
-                                establishedClientId: peer,
-                                newClientId: this.clientId,
-                            }),
-                        },
-                    })
-                    this.setupConnectionHandlers(conn)
-
-                    console.debug(`Initiating Connection: ${peer}`)
-                    return true
-                })
-        ).then(res => res.filter(success => success).length)
-
-        EventSystem.dispatch("MultiplayerStateJoinRoom")
-        return peerCount
-    }
-
-    setupConnectionHandlers(conn: DataConnection) {
-        if (this._connections.has(conn.peer)) {
-            console.warn("Setting up connection for", conn.peer, "again")
+        if (!this.client.ready) {
+            setTimeout(() => this.ping(), 200)
             return
         }
-        conn.on("open", async () => {
-            console.debug("Connection opened", conn.peer)
-            this._connections.set(conn.peer, conn)
-            EventSystem.dispatch("MultiplayerStatePeerChange")
-            await this.send(conn.peer, { type: "info", data: this.info })
 
-            for (const obj of this.getOwnObjects()) {
-                await this.send(conn.peer, {
-                    type: "newObject",
-                    data: {
-                        sceneObjectKey: obj.id as RemoteSceneObjectId,
-                        assemblyHash: await hashBuffer(
-                            mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
-                        ),
-                        miraType: obj.miraType,
-                        initialPreferences: obj.getPreferenceData(),
-                        bodyIds: obj.getAllBodyIds().map(id => id.GetIndexAndSequenceNumber()),
-                    },
-                })
-            }
-        })
-
-        conn.on("data", async (data: unknown) => {
-            await this.handlePeerMessage(data as MessageWithTimestamp, conn.peer)
-        })
-
-        conn.on("close", () => {
-            this._clientToObjectMap.get(conn.peer)?.forEach(obj => {
-                this.handlePeerMessage(
-                    {
-                        type: "deleteObject",
-                        data: this.convertSceneObjectIdReverse(conn.peer, obj)!,
-                        timestamp: Date.now(),
-                    },
-                    conn.peer
-                ).catch(console.error) // TODO Get actual sceneObjectKey
-            })
-            this._clientToSceneObjectIdMap.delete(conn.peer)
-
-            this._connections.delete(conn.peer)
-            // TODO: handle host transition
-
-            EventSystem.dispatch("MultiplayerStatePeerChange")
-            globalAddToast(
-                "warning",
-                "Multiplayer Peer Disconnected",
-                this._clientToInfoMap.get(conn.peer)?.displayName ?? "Unknown"
-            )
-            console.debug("Connection closed:", conn.peer)
-        })
-        conn.on("iceStateChanged", e => console.debug("ice change", e))
-
-        conn.on("error", (err: Error) => {
-            console.error("Connection error:", err)
-        })
+        this.client.sendServer({ type: "ping", timestamp: Date.now() })
     }
 
-    async handlePeerMessage(message: MessageWithTimestamp, peerId: string) {
-        if (message.type != "update") {
-            console.debug(`Recieving Message ${message.type}`)
+    async handleServerMessage(message: ServerToClientMessage) {
+        switch (message.type) {
+            case "sendinfo":
+                this.roomId = message.room_id
+                this.clientId = message.client_id
+                this._info.clientId = this.clientId
+                this._info.creationTime = Date.now()
+                globalAddToast("success", "Joined room", this.roomId)
+                await this.introduceSelf(true)
+                setTimeout(() => EventSystem.dispatch("MultiplayerStateJoinRoom"))
+                break
+            case "kick":
+                this.removePeer(message.client_id)
+                break
+            case "pong":
+                this._lastRTT = Date.now() - message.client_send_ts
+                this._clientTimeDeltaMS = Date.now() - this._lastRTT / 2 - message.server_ts
+                this._hasPendingPing = false
+                this._latencySumMS += this._lastRTT / 2
+                this._latencySamples++
+                this.send({
+                    type: "latencyInfo",
+                    data: {
+                        latencyMS: this.latencyMS,
+                    },
+                })
+                break
+            default:
+                console.warn(`Unhandled message from server (type ${message.type})`, message)
         }
+        return message.type
+    }
+
+    async handlePeerMessage(message: MessageWithTimestamp) {
+        if (message.recipientId != null && message.recipientId != this.clientId) {
+            console.info("Ignoring message for", message.recipientId)
+            return
+        }
+
         const handler = peerMessageHandlers[message.type].bind(this) as (
             data: unknown,
             peerid: string,
             time: number
         ) => Promise<void> | void
-        await handler(message.data, peerId, message.timestamp)
+        await handler(message.data, message.clientId, message.timestamp)
+        return message.type
     }
 
-    async send(peer: string, message: Message) {
-        const conn = this._connections.get(peer)
-        if (!conn) {
-            console.warn("Couldn't find peer: ", peer)
-            return
-        }
+    broadcast(message: Message) {
+        return this.send(message)
+    }
+
+    send(message: Message, peerID?: string) {
+        message.recipientId = peerID
         message.timestamp ??= Date.now()
-        await conn.send(message)
-    }
-
-    async broadcast(message: Message) {
-        if (message.type != "update") {
-            console.debug(`Sending Message: ${message.type}`)
+        message.clientId = this.clientId
+        if (message.type == "newObject" && message.data.miraType == MiraType.FIELD) {
+            this.fieldTransferLock = { ts: message.timestamp, id: message.data.sceneObjectId }
         }
-        message.timestamp ??= Date.now()
-        return await Promise.all(this._peers.map(peer => peer.send(message)))
+        this.client.sendPeer(message as MessageWithTimestamp)
     }
 
-    getOwnSceneObjectIDs() {
-        return this._clientToObjectMap.get(this.clientId) ?? []
+    async introduceSelf(requestIntroductions: boolean, peerID?: string) {
+        this.send(
+            {
+                type: "info",
+                data: {
+                    info: this._info,
+                    introduceSelf: requestIntroductions,
+                },
+            },
+            peerID
+        )
+        for (const obj of this.getOwnObjects()) {
+            this.send(
+                {
+                    type: "newObject",
+                    data: {
+                        sceneObjectId: obj.id,
+                        assemblyHash: await hashBuffer(
+                            mirabuf.Assembly.encode(obj.mirabufInstance.parser.assembly).finish().buffer as ArrayBuffer
+                        ),
+                        miraType: obj.miraType,
+                        initialPreferences: obj.getPreferenceData(),
+                        initialPhysicsData: obj.miraType === MiraType.FIELD ? obj.getUpdateData().bodies : undefined,
+                    },
+                },
+                peerID
+            )
+        }
+    }
+
+    sendDimensionPenalty() {}
+
+    sendOngoingMatchModeInfo() {
+        const matchMode = MatchMode.getInstance()
+        if (!matchMode.isMatchEnabled()) return
+
+        this.broadcast({
+            type: "matchModeState",
+            data: {
+                event: "ongoing",
+                config: matchMode.matchModeConfig,
+                startTime: this.toServerTime(matchMode.startTime!),
+            },
+        })
+    }
+
+    getOwnSceneObjectIDs(): SceneObjectId[] {
+        return this.clientToObjectMap.get(this.clientId) ?? []
     }
 
     getOwnRobots(): MirabufSceneObject[] {
         return this.getOwnObjects().filter(obj => obj.miraType == MiraType.ROBOT)
     }
 
+    getRemoteRobots(): MirabufSceneObject[] {
+        return this.getRemoteObjects().filter(obj => obj.miraType == MiraType.ROBOT)
+    }
+
     getOwnObjects(): MirabufSceneObject[] {
-        return (this._clientToObjectMap.get(this.clientId) ?? [])
+        return (this.clientToObjectMap.get(this.clientId) ?? [])
             .map(id => World.sceneRenderer.sceneObjects.get(id))
             .filter(obj => obj instanceof MirabufSceneObject)
     }
 
-    registerOwnSceneObject(objectId: LocalSceneObjectId) {
-        const list = this._clientToObjectMap.get(this.clientId)
-        this.setSceneObjectIdMapping(this.clientId, objectId as RemoteSceneObjectId, objectId)
+    getRemoteObjects(): MirabufSceneObject[] {
+        return [...this.clientToObjectMap]
+            .filter(([clientId, _]) => clientId != this.clientId)
+            .map(([_, objects]) => objects)
+            .flat()
+            .map(id => World.sceneRenderer.sceneObjects.get(id))
+            .filter(obj => obj instanceof MirabufSceneObject)
+    }
+
+    recordPlayerCount() {
+        this._peakPlayers = Math.max(this._peakPlayers, this.clientToInfoMap.size + 1)
+    }
+
+    registerOwnSceneObject(objectId: SceneObjectId) {
+        const list = this.clientToObjectMap.get(this.clientId)
+        if (list?.includes(objectId)) {
+            console.warn("Already has", objectId)
+            return
+        }
         if (list != null) {
             list.push(objectId)
         } else {
-            this._clientToObjectMap.set(this.clientId, [objectId])
+            this.clientToObjectMap.set(this.clientId, [objectId])
         }
     }
-    unregisterOwnSceneObject(objectId: LocalSceneObjectId) {
-        const list = this._clientToObjectMap.get(this.clientId)
+
+    registerExistingSceneObjects() {
+        const objects = World.sceneRenderer.mirabufSceneObjects.getAll()
+        objects.forEach(object => {
+            console.warn("Checking", object.id)
+            if (object.isOwnObject) {
+                this.registerOwnSceneObject(object.id)
+            }
+        })
+    }
+
+    unregisterOwnSceneObject(objectId: SceneObjectId) {
+        const list = this.clientToObjectMap.get(this.clientId)
         if (!list) return
         const index = list.indexOf(objectId)
         if (index == -1) return
         list.splice(index, 1)
     }
 
-    get peerIDs(): string[] {
-        return [...this._connections.keys()]
-    }
+    removePeer(clientId: string) {
+        const name = this.clientToInfoMap.get(clientId)?.displayName
+        this.clientToObjectMap.get(clientId)?.forEach(obj => {
+            World.sceneRenderer.removeSceneObject(obj)
+        })
+        this.clientToInfoMap.delete(clientId)
+        this.clientToObjectMap.delete(clientId)
 
-    private get _peers() {
-        return [...this._connections.values()]
-    }
-
-    get peerInfo(): ClientInfo[] {
-        return this.peerIDs.map(
-            peerId =>
-                this._clientToInfoMap.get(peerId) ?? {
-                    clientId: peerId,
-                    displayName: peerId,
-                    isHost: false,
-                    creationTime: Infinity,
-                }
+        EventSystem.dispatch("MultiplayerStatePeerChange")
+        globalAddToast(
+            "warning",
+            "Multiplayer Peer Disconnected",
+            name != null ? `${name} (${clientId.slice(0, 8)})` : clientId
         )
     }
 
-    get displayName(): string {
-        return this.info.displayName
+    get peerIDs(): string[] {
+        return [...this.clientToInfoMap.keys()]
     }
 
-    public destroy() {
-        this._connections.forEach(conn => conn.close())
-        this._connections.clear()
-        this.client.destroy()
-        this._clientToSceneObjectIdMap.clear()
+    get peerInfo(): readonly Readonly<ClientAndLatencyInfo>[] {
+        return [...this.clientToInfoMap.values()]
+    }
+
+    get info(): Readonly<ClientAndLatencyInfo> {
+        return { ...this._info, latency: this.latencyMS, lastUpdateTime: this._lastPingTs }
+    }
+
+    get displayName(): string {
+        return this._info.displayName
+    }
+
+    get latencyMS(): number {
+        if (
+            !this.client.ready ||
+            (this._hasPendingPing && this._lastPingTs != 0 && Date.now() - this._lastPingTs > 2000)
+        ) {
+            return -1
+        }
+        return this._lastRTT / 2
+    }
+
+    public toServerTime(time: number) {
+        return time - this._clientTimeDeltaMS
+    }
+    public fromServerTime(time: number) {
+        return time + this._clientTimeDeltaMS
+    }
+
+    private reportSessionEnd(outcome: MultiplayerSessionEndOutcome) {
+        if (this._info.creationTime == null || this._sessionEndReported) return
+        this._sessionEndReported = true
+
+        World.analyticsSystem?.event("Multiplayer Session End", {
+            outcome: outcome,
+            durationSeconds: 0.001 * (Date.now() - this._info.creationTime),
+            peakPlayers: this._peakPlayers,
+            avgLatencyMS: this._latencySamples > 0 ? this._latencySumMS / this._latencySamples : -1,
+        })
+    }
+
+    public destroy(outcome: MultiplayerSessionEndOutcome = "User Exit") {
+        this.reportSessionEnd(outcome)
+        this.client.close()
+        World.setMultiplayerSystem(undefined)
+        World.reset("own")
         this._onDestroyHooks.forEach(hook => {
             hook()
         })
-        World.setMultiplayerSystem(undefined)
     }
-
-    public convertSceneObjectId(peerId: string, objectId: RemoteSceneObjectId): LocalSceneObjectId {
-        return this._clientToSceneObjectIdMap.get(peerId)?.get(objectId) ?? (-1 as LocalSceneObjectId)
-    }
-
-    public convertSceneObjectIdReverse(peerId: string, objectId: LocalSceneObjectId): RemoteSceneObjectId | undefined {
-        return [...this._clientToSceneObjectIdMap.get(peerId)!.entries()].find(([_, l]) => objectId == l)?.[0]
-    }
-
-    public setSceneObjectIdMapping(peerId: string, remoteId: RemoteSceneObjectId, localId: LocalSceneObjectId) {
-        let peerMap = World.multiplayerSystem?._clientToSceneObjectIdMap.get(peerId)
-        if (peerMap == null) {
-            peerMap = new Map()
-            World.multiplayerSystem?._clientToSceneObjectIdMap.set(peerId, peerMap)
-        }
-        peerMap.set(remoteId, localId)
-    }
-}
-
-async function generateId(roomId: string, forceRegen: boolean = false): Promise<string> {
-    let id =
-        import.meta.env.DEV && new URLSearchParams(window.location.search).get("randomId")
-            ? undefined
-            : PreferencesSystem.getUserPreference("MultiplayerClientID")
-    if (!id || forceRegen) {
-        id = `client_${Math.random().toString(36).substring(2, 9)}`
-        PreferencesSystem.setUserPreference("MultiplayerClientID", id)
-        PreferencesSystem.savePreferences()
-    }
-    return `${id}-${await createSha256Hash({ roomId })}-${await createSha256Hash({ roomId, establishedClientId: id })}`
-}
-
-interface HashableData {
-    roomId?: string
-    establishedClientId?: string
-    newClientId?: string
-}
-
-async function createSha256Hash({ roomId, establishedClientId, newClientId }: HashableData) {
-    const msgBuffer = new TextEncoder().encode(`${roomId}${establishedClientId}${newClientId}`)
-    const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    return hashArray
-        .slice(0, 8)
-        .map(b => b.toString(16).padStart(2, "0"))
-        .join("")
 }
 
 export default MultiplayerSystem
