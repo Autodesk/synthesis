@@ -51,6 +51,37 @@
               PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
             };
           };
+          ci = pkgs.mkShell {
+            packages = with pkgs; [
+              bash
+              bun
+              cargo
+              curl
+              git-lfs
+              git
+              isort
+              mypy
+              nodejs
+              playwright-test
+              playwright-driver.browsers
+              python3
+              python3Packages.black
+              python3Packages.protobuf
+              python3Packages.requests
+              python3Packages.types-protobuf
+              python3Packages.types-requests
+              python3Packages.urllib3
+              rustc
+              unzip
+            ];
+
+            env = {
+              PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
+              PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+              PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+              SYNTHESIS_CI_SHELL = "1";
+            };
+          };
           exporter = pkgs.mkShell {
             packages = with pkgs; [
               python3
