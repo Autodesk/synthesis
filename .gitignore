@@ -12,5 +12,6 @@ renderer/
 **/.direnv
 .npmrc
 .envrc.local
+.ci/
 result
 result-*

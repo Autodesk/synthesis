@@ -6,7 +6,16 @@ ROOT_EXPORTER_DIR = "exporter/SynthesisFusionAddin"
 
 def main() -> None:
     result = subprocess.call(
-        ["isort", "--check-only", "--diff", "--settings-path", ROOT_EXPORTER_DIR, ROOT_EXPORTER_DIR],
+        [
+            "isort",
+            "--check-only",
+            "--diff",
+            "--settings-path",
+            ROOT_EXPORTER_DIR,
+            "--skip-glob",
+            "*/node_modules/*",
+            ROOT_EXPORTER_DIR,
+        ],
         shell=False,
     )
     if not result:
