@@ -38,7 +38,7 @@ const ContextMenu: React.FC = () => {
                 left: "0pt",
                 top: "0pt",
                 width: "100vw",
-                height: "100vh",
+                height: "var(--synthesis-viewport-height)",
             }}
             onPointerDown={() => setState(undefined)}
             onContextMenu={e => e.preventDefault()}

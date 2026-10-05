@@ -52,6 +52,18 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    --synthesis-viewport-height: 100vh;
+    --synthesis-viewport-half-height: 50vh;
+    --synthesis-panel-max-height: 85vh;
+}
+
+@supports (height: 100dvh) {
+    :root {
+        --synthesis-viewport-height: 100dvh;
+        --synthesis-viewport-half-height: 50dvh;
+        --synthesis-panel-max-height: 85dvh;
+    }
 }
 
 a {
@@ -66,7 +78,7 @@ a:hover {
 html {
     overflow: hidden;
     position: relative;
-    height: 100%;
+    height: var(--synthesis-viewport-height);
 }
 
 body {
@@ -76,7 +88,7 @@ body {
     display: flex;
     place-items: center;
     min-width: 320px;
-    min-height: 100vh;
+    min-height: var(--synthesis-viewport-height);
     overscroll-behavior: none;
 }
 
