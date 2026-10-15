@@ -14,9 +14,7 @@ import {
 } from "vitest/config"
 
 const serverPort = 3000
-const dockerServerPort = 80
 
-const useLocalAPS = false
 const useSsl = false
 
 const plugins = [
@@ -87,17 +85,6 @@ export default defineConfig(({ mode }): ViteUserConfig => {
           }
     proxies["/api/mira"] = assetProxy
     proxies["/api/match_configs"] = assetProxy
-    proxies["/api/aps"] = useLocalAPS
-        ? {
-              target: `http://localhost:${dockerServerPort}/`,
-              changeOrigin: true,
-              secure: false,
-          }
-        : {
-              target: `https://synthesis.autodesk.com/`,
-              changeOrigin: true,
-              secure: true,
-          }
     const baseAliases = [
         { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
         { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },

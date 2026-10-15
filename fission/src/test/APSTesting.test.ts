@@ -53,6 +53,20 @@ const createMockResponse = (data: unknown, ok: boolean = true) => ({
     json: vi.fn().mockResolvedValue(data),
 })
 
+// Pulls the params out of the authorize URL that requestAuthCode opened
+const lastAuthorizeParams = () => {
+    const calls = mockWindowOpen.mock.calls
+    return new URL(calls[calls.length - 1][0] as string).searchParams
+}
+
+const base64UrlSha256 = async (input: string) => {
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(input))
+    return btoa(String.fromCharCode(...new Uint8Array(digest)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "")
+}
+
 describe("APS Authentication System", () => {
     const mockAuth: APSAuth = {
         access_token: "test_access_token",
@@ -98,9 +112,8 @@ describe("APS Authentication System", () => {
             expect(APS.userInfo).toBeUndefined()
 
             // 2. User clicks login - request auth code
-            mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "challenge_123" }))
-
             await APS.requestAuthCode()
+            const state = lastAuthorizeParams().get("state")!
 
             // Should open authorization window
             expect(mockWindowOpen).toHaveBeenCalledTimes(1)
@@ -114,12 +127,10 @@ describe("APS Authentication System", () => {
             // Mock the token exchange endpoint
             mockFetch.mockResolvedValueOnce(
                 createMockResponse({
-                    response: {
-                        access_token: "fresh_access_token",
-                        refresh_token: "fresh_refresh_token",
-                        expires_in: 3600,
-                        token_type: 1,
-                    },
+                    access_token: "fresh_access_token",
+                    refresh_token: "fresh_refresh_token",
+                    expires_in: 3600,
+                    token_type: 1,
                 })
             )
 
@@ -133,7 +144,7 @@ describe("APS Authentication System", () => {
                 })
             )
 
-            await APS.convertAuthToken(authCode)
+            await APS.convertAuthToken(authCode, state)
 
             // 4. Verify user is now authenticated
             expect(await APS.isSignedIn()).toBe(true)
@@ -248,15 +259,10 @@ describe("APS Authentication System", () => {
         test("handles authentication failure gracefully", async () => {
             // === SCENARIO: Authentication fails at various points ===
 
-            // 1. Code challenge fails
-            mockFetch.mockRejectedValueOnce(new Error("Network error"))
-
+            // 1. Login starts without touching our server
             await APS.requestAuthCode()
-
-            // Should not open window on failure - but check that codeChallenge was called
-            expect(mockFetch).toHaveBeenCalledWith("/api/aps/challenge")
-            // Reset mock calls for next test
-            mockFetch.mockClear()
+            expect(mockFetch).not.toHaveBeenCalled()
+            let state = lastAuthorizeParams().get("state")!
             mockWindowOpen.mockClear()
 
             // 2. Token exchange fails
@@ -270,17 +276,17 @@ describe("APS Authentication System", () => {
                 )
             )
 
-            await APS.convertAuthToken("invalid_code")
+            await APS.convertAuthToken("invalid_code", state)
 
             // Should remain unauthenticated
             expect(await APS.isSignedIn()).toBe(false)
 
             // 3. User info loading fails
-            mockFetch.mockResolvedValueOnce(
-                createMockResponse({
-                    response: mockAuth,
-                })
-            )
+            await APS.requestAuthCode()
+            state = lastAuthorizeParams().get("state")!
+            mockWindowOpen.mockClear()
+
+            mockFetch.mockResolvedValueOnce(createMockResponse(mockAuth))
 
             mockFetch.mockResolvedValueOnce(
                 createMockResponse(
@@ -292,10 +298,7 @@ describe("APS Authentication System", () => {
                 )
             )
 
-            // Mock the re-login flow
-            mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "challenge_456" }))
-
-            await APS.convertAuthToken("valid_code")
+            await APS.convertAuthToken("valid_code", state)
 
             // Should trigger re-login flow
             expect(mockWindowOpen).toHaveBeenCalledWith(
@@ -329,10 +332,7 @@ describe("APS Authentication System", () => {
                 )
             )
 
-            // 3. Mock successful code challenge for re-auth
-            mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "new_challenge" }))
-
-            // 4. Try to get auth with shouldRelog = true
+            // 3. Try to get auth with shouldRelog = true
             const result = await APS.refreshAuthToken("invalid_refresh_token", true)
 
             // Should fail and trigger re-login
@@ -378,21 +378,18 @@ describe("APS Authentication System", () => {
             expect(APS.numApsCalls.size).toBe(0)
 
             // 2. Mock requests for complete flow
-            mockFetch
-                .mockResolvedValueOnce(createMockResponse({ challenge: "challenge" }))
-                .mockResolvedValueOnce(createMockResponse({ response: mockAuth }))
-                .mockResolvedValueOnce(
-                    createMockResponse({
-                        name: mockUserInfo.name,
-                        given_name: mockUserInfo.givenName,
-                        picture: mockUserInfo.picture,
-                        email: mockUserInfo.email,
-                    })
-                )
+            mockFetch.mockResolvedValueOnce(createMockResponse(mockAuth)).mockResolvedValueOnce(
+                createMockResponse({
+                    name: mockUserInfo.name,
+                    given_name: mockUserInfo.givenName,
+                    picture: mockUserInfo.picture,
+                    email: mockUserInfo.email,
+                })
+            )
 
             // 3. Perform authentication flow
             await APS.requestAuthCode()
-            await APS.convertAuthToken("test_code")
+            await APS.convertAuthToken("test_code", lastAuthorizeParams().get("state"))
 
             // 4. Verify API calls were tracked
             expect(APS.numApsCalls.get("userinfo")).toBe(1)
@@ -420,7 +417,7 @@ describe("APS Authentication System", () => {
             await APS.refreshAuthToken("test_refresh", false)
 
             // Should have tracked the refresh call
-            expect(APS.numApsCalls.get("authentication-v2-token")).toBe(1)
+            expect(APS.numApsCalls.get("authentication-v2-token")).toBe(2) // Code exchange and refresh
             expect(APS.numApsCalls.get("userinfo")).toBe(2) // Called twice now
         })
     })
@@ -459,11 +456,9 @@ describe("APS Authentication System", () => {
             })
 
             test("requestAuthCode generates correct authorization URL", async () => {
-                // This tests URL parameters that integration tests don't check
-                mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "test_challenge" }))
-
                 await APS.requestAuthCode()
 
+                expect(mockFetch).not.toHaveBeenCalled()
                 expect(mockWindowOpen).toHaveBeenCalledWith(
                     expect.stringContaining("https://developer.api.autodesk.com/authentication/v2/authorize")
                 )
@@ -472,28 +467,50 @@ describe("APS Authentication System", () => {
                 expect(callArgs).toContain("response_type=code")
                 // Fix URL encoding issue - scope gets URL encoded
                 expect(callArgs).toContain("scope=data%3Aread")
-                expect(callArgs).toContain("code_challenge=test_challenge")
+                expect(callArgs).toContain("code_challenge_method=S256")
+                expect(lastAuthorizeParams().get("state")).toBeTruthy()
+                expect(lastAuthorizeParams().get("code_challenge")).toBeTruthy()
             })
 
-            test("codeChallenge fetches challenge from correct endpoint", async () => {
-                // This tests specific return value and endpoint
-                mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "test_challenge" }))
+            test("authorize URL code_challenge is the S256 hash of the stored verifier", async () => {
+                await APS.requestAuthCode()
+                const params = lastAuthorizeParams()
 
-                const result = await APS.codeChallenge()
+                mockFetch.mockResolvedValueOnce(createMockResponse(mockAuth))
+                mockFetch.mockResolvedValueOnce(createMockResponse({}))
+                await APS.convertAuthToken("test_auth_code", params.get("state"))
 
-                expect(result).toBe("test_challenge")
-                expect(mockFetch).toHaveBeenCalledWith("/api/aps/challenge")
+                const body = mockFetch.mock.calls[0][1].body as URLSearchParams
+                const verifier = body.get("code_verifier")!
+                expect(await base64UrlSha256(verifier)).toBe(params.get("code_challenge"))
             })
 
-            test("convertAuthToken makes correct API call", async () => {
-                // This tests specific endpoint and parameters
-                mockFetch.mockResolvedValueOnce(
-                    createMockResponse({
-                        response: mockAuth,
-                    })
-                )
+            test("each login generates a new verifier and state", async () => {
+                const verifiers: string[] = []
+                const states: string[] = []
+                const challenges: string[] = []
+                for (let i = 0; i < 2; i++) {
+                    await APS.requestAuthCode()
+                    const params = lastAuthorizeParams()
+                    states.push(params.get("state")!)
+                    challenges.push(params.get("code_challenge")!)
 
-                // Mock loadUserInfo
+                    mockFetch.mockResolvedValueOnce(createMockResponse(mockAuth))
+                    mockFetch.mockResolvedValueOnce(createMockResponse({}))
+                    await APS.convertAuthToken("code", params.get("state"))
+                    verifiers.push((mockFetch.mock.calls[i * 2][1].body as URLSearchParams).get("code_verifier")!)
+                }
+
+                expect(states[0]).not.toBe(states[1])
+                expect(challenges[0]).not.toBe(challenges[1])
+                expect(verifiers[0]).not.toBe(verifiers[1])
+            })
+
+            test("convertAuthToken posts to the APS token endpoint with code_verifier and no client_secret", async () => {
+                await APS.requestAuthCode()
+                const state = lastAuthorizeParams().get("state")
+
+                mockFetch.mockResolvedValueOnce(createMockResponse(mockAuth))
                 mockFetch.mockResolvedValueOnce(
                     createMockResponse({
                         name: mockUserInfo.name,
@@ -503,9 +520,48 @@ describe("APS Authentication System", () => {
                     })
                 )
 
-                await APS.convertAuthToken("test_auth_code")
+                await APS.convertAuthToken("test_auth_code", state)
 
-                expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining("/api/aps/code?code=test_auth_code"))
+                expect(mockFetch).toHaveBeenCalledWith(
+                    "https://developer.api.autodesk.com/authentication/v2/token",
+                    expect.objectContaining({ method: "POST", body: expect.any(URLSearchParams) })
+                )
+                const body = mockFetch.mock.calls[0][1].body as URLSearchParams
+                expect(body.get("grant_type")).toBe("authorization_code")
+                expect(body.get("code")).toBe("test_auth_code")
+                expect(body.get("code_verifier")).toBeTruthy()
+                expect(body.get("redirect_uri")).toBeTruthy()
+                expect(body.has("client_secret")).toBe(false)
+                expect(APS.numApsCalls.get("authentication-v2-token")).toBe(1)
+            })
+
+            test("convertAuthToken rejects a wrong or missing state without calling fetch", async () => {
+                await APS.requestAuthCode()
+                await APS.convertAuthToken("test_auth_code", "wrong_state")
+                expect(mockFetch).not.toHaveBeenCalled()
+
+                await APS.requestAuthCode()
+                await APS.convertAuthToken("test_auth_code", null)
+                expect(mockFetch).not.toHaveBeenCalled()
+                expect(await APS.isSignedIn()).toBe(false)
+            })
+
+            test("convertAuthToken rejects when no login is pending", async () => {
+                await APS.convertAuthToken("test_auth_code", "some_state")
+                expect(mockFetch).not.toHaveBeenCalled()
+            })
+
+            test("convertAuthToken cannot be redeemed twice", async () => {
+                await APS.requestAuthCode()
+                const state = lastAuthorizeParams().get("state")
+
+                mockFetch.mockResolvedValueOnce(createMockResponse(mockAuth))
+                mockFetch.mockResolvedValueOnce(createMockResponse({}))
+                await APS.convertAuthToken("test_auth_code", state)
+                mockFetch.mockClear()
+
+                await APS.convertAuthToken("test_auth_code", state)
+                expect(mockFetch).not.toHaveBeenCalled()
             })
 
             test("refreshAuthToken successfully refreshes token", async () => {
@@ -577,14 +633,6 @@ describe("APS Authentication System", () => {
     })
 
     describe("Error handling", () => {
-        test("handles code challenge failure", async () => {
-            mockFetch.mockRejectedValueOnce(new Error("Network error"))
-
-            const result = await APS.codeChallenge()
-
-            expect(result).toBeUndefined()
-        })
-
         test("handles conversion failure", async () => {
             mockFetch.mockResolvedValueOnce(
                 createMockResponse(
@@ -596,7 +644,8 @@ describe("APS Authentication System", () => {
                 )
             )
 
-            await APS.convertAuthToken("invalid_code")
+            await APS.requestAuthCode()
+            await APS.convertAuthToken("invalid_code", lastAuthorizeParams().get("state"))
 
             // The function should handle the error gracefully
             expect(mockFetch).toHaveBeenCalled()
@@ -612,9 +661,6 @@ describe("APS Authentication System", () => {
                     false
                 )
             )
-
-            // Mock codeChallenge for re-login
-            mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "test_challenge" }))
 
             await APS.loadUserInfo(mockAuth)
 
