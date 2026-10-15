@@ -13,9 +13,24 @@ import {
     type ViteUserConfig,
 } from "vitest/config"
 
-const serverPort = 3000
+/**
+ * SYNTHESIS PARAMETERS
+ */
 
-const useSsl = false
+// Developers can override any of these with SYNTHESIS_* variables in a local, gitignored `.env` file
+// (see `.env.template`). Variables set in the shell take precedence over the file.
+const localEnv = loadEnv("", process.cwd(), "SYNTHESIS_")
+
+const serverPort = Number(localEnv.SYNTHESIS_SERVER_PORT ?? 3000)
+
+const useSsl = ["true", "1"].includes(localEnv.SYNTHESIS_USE_SSL ?? "false")
+
+// APS configuration. These default to production; internal developers can override them in `.env`
+// to test against a locally running Synthesis API.
+const apsClientId = localEnv.SYNTHESIS_APS_CLIENT_ID ?? "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
+const apsCallbackUrl = localEnv.SYNTHESIS_APS_CALLBACK_URL ?? "https://synthesis.autodesk.com/fission/"
+const apsAuthenticationBaseUrl = localEnv.SYNTHESIS_APS_AUTHENTICATION_BASE_URL ?? "https://developer.api.autodesk.com"
+const apsUserinfoBaseUrl = localEnv.SYNTHESIS_APS_USERINFO_BASE_URL ?? "https://api.aps.autodesk.com"
 
 const plugins = [
     react(),
@@ -176,6 +191,10 @@ export default defineConfig(({ mode }): ViteUserConfig => {
         },
         define: {
             GIT_COMMIT: JSON.stringify(commitHash),
+            APS_CLIENT_ID: JSON.stringify(apsClientId),
+            APS_CALLBACK_URL: JSON.stringify(apsCallbackUrl),
+            APS_AUTHENTICATION_BASE_URL: JSON.stringify(apsAuthenticationBaseUrl),
+            APS_USERINFO_BASE_URL: JSON.stringify(apsUserinfoBaseUrl),
         },
         // Pre-bundle every react-icons subpath the app imports. Listing
         // them here bundles them up front so no reload happens once tests

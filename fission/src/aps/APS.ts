@@ -1,20 +1,18 @@
 import { Mutex } from "async-mutex"
+import { AUTHENTICATION_BASE_URL, CALLBACK_URL, CLIENT_ID, USERINFO_BASE_URL } from "@/aps/APSConfig"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 
+// openid and the profapi scopes are required by the userinfo endpoint for the name, email and picture
+const APS_SCOPES = "data:read openid profapi:core-std-profile:read profapi:img-profile:read"
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
-const APS_SCOPES = "data:read"
-const PROD_CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
-// TODO(SYNTH-382): Replace with the ID of the dev APS client (redirect URIs http://localhost:3000/ and http://localhost:3000/fission/)
-const DEV_CLIENT_ID = "TODO_SYNTH_382_DEV_APS_CLIENT_ID"
-const CLIENT_ID = import.meta.env.DEV ? DEV_CLIENT_ID : PROD_CLIENT_ID
 
-const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
-const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
-const ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE = "https://developer.api.autodesk.com/authentication/v2/revoke"
-const ENDPOINT_AUTODESK_USERINFO = "https://api.aps.autodesk.com/userinfo"
+const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = `${AUTHENTICATION_BASE_URL}/authentication/v2/authorize`
+const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = `${AUTHENTICATION_BASE_URL}/authentication/v2/token`
+const ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE = `${AUTHENTICATION_BASE_URL}/authentication/v2/revoke`
+const ENDPOINT_AUTODESK_USERINFO = `${USERINFO_BASE_URL}/userinfo`
 
 // biome-ignore-start lint/style/useNamingConvention: returned from api
 export interface APSAuth {
@@ -198,10 +196,6 @@ class APS {
      */
     static async requestAuthCode() {
         await this.requestMutex.runExclusive(async () => {
-            const callbackUrl = import.meta.env.DEV
-                ? `http://localhost:3000${import.meta.env.BASE_URL}`
-                : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
-
             try {
                 const verifier = randomBase64Url(32)
                 const state = randomBase64Url(16)
@@ -212,7 +206,7 @@ class APS {
                 const params = new URLSearchParams({
                     response_type: "code",
                     client_id: CLIENT_ID,
-                    redirect_uri: callbackUrl,
+                    redirect_uri: CALLBACK_URL,
                     scope: APS_SCOPES,
                     nonce: Date.now().toString(),
                     prompt: "login",
@@ -307,10 +301,6 @@ class APS {
             return
         }
 
-        const callbackUrl = import.meta.env.DEV
-            ? `http://localhost:3000${import.meta.env.BASE_URL}`
-            : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
-
         try {
             APS.incApsCalls("authentication-v2-token")
             const res = await fetch(ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN, {
@@ -323,7 +313,7 @@ class APS {
                     grant_type: "authorization_code",
                     code: code,
                     code_verifier: pending.verifier,
-                    redirect_uri: callbackUrl,
+                    redirect_uri: CALLBACK_URL,
                 }),
             })
             const json = await res.json()

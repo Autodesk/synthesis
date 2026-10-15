@@ -1,5 +1,24 @@
 import { afterEach, afterAll, beforeEach, describe, expect, test, vi } from "vitest"
 import { mockConsole } from "@/test/mocks/Common.ts"
+
+// Fixed APS config so these tests don't depend on the developer's vite config
+const testEnv = vi.hoisted(() => ({
+    clientId: "test_client_id",
+    callbackUrl: "https://callback.test/",
+    authBaseUrl: "https://auth.test",
+    userinfoBaseUrl: "https://userinfo.test",
+}))
+vi.mock("@/aps/APSConfig", () => ({
+    CLIENT_ID: testEnv.clientId,
+    CALLBACK_URL: testEnv.callbackUrl,
+    AUTHENTICATION_BASE_URL: testEnv.authBaseUrl,
+    USERINFO_BASE_URL: testEnv.userinfoBaseUrl,
+}))
+const AUTHORIZE_URL = `${testEnv.authBaseUrl}/authentication/v2/authorize`
+const TOKEN_URL = `${testEnv.authBaseUrl}/authentication/v2/token`
+const REVOKE_URL = `${testEnv.authBaseUrl}/authentication/v2/revoke`
+const USERINFO_URL = `${testEnv.userinfoBaseUrl}/userinfo`
+
 // Mock dependencies before importing APS
 
 vi.mock("@/systems/World", () => ({
@@ -117,9 +136,7 @@ describe("APS Authentication System", () => {
 
             // Should open authorization window
             expect(mockWindowOpen).toHaveBeenCalledTimes(1)
-            expect(mockWindowOpen).toHaveBeenCalledWith(
-                expect.stringContaining("https://developer.api.autodesk.com/authentication/v2/authorize")
-            )
+            expect(mockWindowOpen).toHaveBeenCalledWith(expect.stringContaining(AUTHORIZE_URL))
 
             // 3. User authorizes and comes back with auth code
             const authCode = "auth_code_123"
@@ -212,7 +229,7 @@ describe("APS Authentication System", () => {
 
             // Should have refreshed the token
             expect(mockFetch).toHaveBeenCalledWith(
-                "https://developer.api.autodesk.com/authentication/v2/token",
+                TOKEN_URL,
                 expect.objectContaining({
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -241,7 +258,7 @@ describe("APS Authentication System", () => {
 
             // Should have revoked the token
             expect(mockFetch).toHaveBeenCalledWith(
-                "https://developer.api.autodesk.com/authentication/v2/revoke",
+                REVOKE_URL,
                 expect.objectContaining({
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -301,9 +318,7 @@ describe("APS Authentication System", () => {
             await APS.convertAuthToken("valid_code", state)
 
             // Should trigger re-login flow
-            expect(mockWindowOpen).toHaveBeenCalledWith(
-                expect.stringContaining("https://developer.api.autodesk.com/authentication/v2/authorize")
-            )
+            expect(mockWindowOpen).toHaveBeenCalledWith(expect.stringContaining(AUTHORIZE_URL))
         })
 
         test("handles token refresh failure and triggers re-authentication", async () => {
@@ -337,9 +352,7 @@ describe("APS Authentication System", () => {
 
             // Should fail and trigger re-login
             expect(result).toBe(false)
-            expect(mockWindowOpen).toHaveBeenCalledWith(
-                expect.stringContaining("https://developer.api.autodesk.com/authentication/v2/authorize")
-            )
+            expect(mockWindowOpen).toHaveBeenCalledWith(expect.stringContaining(AUTHORIZE_URL))
         })
 
         test("user returns to app after existing session", async () => {
@@ -446,7 +459,7 @@ describe("APS Authentication System", () => {
                 await APS.logout()
 
                 expect(mockFetch).toHaveBeenCalledWith(
-                    "https://developer.api.autodesk.com/authentication/v2/revoke",
+                    REVOKE_URL,
                     expect.objectContaining({
                         method: "POST",
                     })
@@ -459,15 +472,17 @@ describe("APS Authentication System", () => {
                 await APS.requestAuthCode()
 
                 expect(mockFetch).not.toHaveBeenCalled()
-                expect(mockWindowOpen).toHaveBeenCalledWith(
-                    expect.stringContaining("https://developer.api.autodesk.com/authentication/v2/authorize")
-                )
+                expect(mockWindowOpen).toHaveBeenCalledWith(expect.stringContaining(AUTHORIZE_URL))
 
                 const callArgs = mockWindowOpen.mock.calls[0][0]
                 expect(callArgs).toContain("response_type=code")
                 // Fix URL encoding issue - scope gets URL encoded
-                expect(callArgs).toContain("scope=data%3Aread")
+                expect(callArgs).toContain(
+                    "scope=data%3Aread+openid+profapi%3Acore-std-profile%3Aread+profapi%3Aimg-profile%3Aread"
+                )
                 expect(callArgs).toContain("code_challenge_method=S256")
+                expect(lastAuthorizeParams().get("client_id")).toBe(testEnv.clientId)
+                expect(lastAuthorizeParams().get("redirect_uri")).toBe(testEnv.callbackUrl)
                 expect(lastAuthorizeParams().get("state")).toBeTruthy()
                 expect(lastAuthorizeParams().get("code_challenge")).toBeTruthy()
             })
@@ -523,14 +538,15 @@ describe("APS Authentication System", () => {
                 await APS.convertAuthToken("test_auth_code", state)
 
                 expect(mockFetch).toHaveBeenCalledWith(
-                    "https://developer.api.autodesk.com/authentication/v2/token",
+                    TOKEN_URL,
                     expect.objectContaining({ method: "POST", body: expect.any(URLSearchParams) })
                 )
                 const body = mockFetch.mock.calls[0][1].body as URLSearchParams
                 expect(body.get("grant_type")).toBe("authorization_code")
                 expect(body.get("code")).toBe("test_auth_code")
                 expect(body.get("code_verifier")).toBeTruthy()
-                expect(body.get("redirect_uri")).toBeTruthy()
+                expect(body.get("client_id")).toBe(testEnv.clientId)
+                expect(body.get("redirect_uri")).toBe(testEnv.callbackUrl)
                 expect(body.has("client_secret")).toBe(false)
                 expect(APS.numApsCalls.get("authentication-v2-token")).toBe(1)
             })
@@ -582,7 +598,7 @@ describe("APS Authentication System", () => {
 
                 expect(result).toBe(true)
                 expect(mockFetch).toHaveBeenCalledWith(
-                    "https://developer.api.autodesk.com/authentication/v2/token",
+                    TOKEN_URL,
                     expect.objectContaining({
                         method: "POST",
                         body: expect.any(URLSearchParams),
@@ -604,7 +620,7 @@ describe("APS Authentication System", () => {
                 await APS.loadUserInfo(mockAuth)
 
                 expect(mockFetch).toHaveBeenCalledWith(
-                    expect.stringContaining("autodesk.com"),
+                    USERINFO_URL,
                     expect.objectContaining({
                         method: "GET",
                         headers: expect.objectContaining({
