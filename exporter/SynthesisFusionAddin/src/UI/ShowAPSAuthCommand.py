@@ -8,7 +8,7 @@ from typing import Any
 import adsk.core
 
 from src import gm
-from src.APS.APS import CLIENT_ID, auth_path, convertAuthToken, getCodeChallenge
+from src.APS.APS import CLIENT_ID, auth_path, convertAuthToken, startLogin
 from src.Logging import getLogger
 
 logger = getLogger()
@@ -22,10 +22,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
             palette = gm.ui.palettes.itemById("authPalette")
             if not palette:
                 callbackUrl = "https://synthesis.autodesk.com/api/aps/exporter/"
-                challenge = getCodeChallenge()
-                if challenge is None:
-                    logger.error("Code challenge is None when attempting to authorize for APS.")
-                    return
+                challenge, state = startLogin()
                 params = {
                     "response_type": "code",
                     "client_id": CLIENT_ID,
@@ -35,6 +32,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                     "prompt": "login",
                     "code_challenge": challenge,
                     "code_challenge_method": "S256",
+                    "state": state,
                 }
                 query = "&".join(map(lambda pair: f"{pair[0]}={pair[1]}", params.items()))
                 url = "https://developer.api.autodesk.com/authentication/v2/authorize?" + query
@@ -111,7 +109,12 @@ class MyHTMLEventHandler(adsk.core.HTMLEventHandler):
             data = json.loads(args.data)
             # gm.ui.messageBox(msg)
 
-            convertAuthToken(data["code"])
+            if "error" in data:
+                if palette:
+                    palette.deleteMe()
+                return
+
+            convertAuthToken(data["code"], data.get("state"))
         except:
             gm.ui.messageBox("Failed:{}\n".format(traceback.format_exc()))
             logger.error("Failed:{}\n".format(traceback.format_exc()))

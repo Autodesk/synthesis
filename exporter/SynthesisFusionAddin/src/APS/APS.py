@@ -1,8 +1,11 @@
+import base64
+import hashlib
 import http.client
 import json
 import os
 import pathlib
 import pickle
+import secrets
 import time
 import urllib.parse
 import urllib.request
@@ -22,6 +25,9 @@ auth_path = os.path.abspath(os.path.join(ADDIN_PATH, "..", ".aps_auth"))
 
 APS_AUTH = None
 APS_USER_INFO = None
+
+# (verifier, state) for the login in progress; only ever held in memory
+_PENDING_LOGIN: tuple[str, str] | None = None
 
 
 @dataclass
@@ -58,11 +64,13 @@ def _res_json(res: http.client.HTTPResponse) -> dict[str, Any]:
     return dict(json.loads(res.read().decode(str(res.info().get_param("charset")) or "utf-8")))
 
 
-def getCodeChallenge() -> str | None:
-    endpoint = "https://synthesis.autodesk.com/api/aps/challenge/"
-    res: http.client.HTTPResponse = urllib.request.urlopen(endpoint)
-    data = _res_json(res)
-    return str(data["challenge"])
+def startLogin() -> tuple[str, str]:
+    global _PENDING_LOGIN
+    verifier = secrets.token_urlsafe(32)
+    state = secrets.token_urlsafe(16)
+    _PENDING_LOGIN = (verifier, state)
+    challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode("ascii")).digest()).rstrip(b"=").decode("ascii")
+    return challenge, state
 
 
 def getAuth() -> APSAuth | None:
@@ -88,17 +96,37 @@ def getAuth() -> APSAuth | None:
     return APS_AUTH
 
 
-def convertAuthToken(code: str) -> None:
-    global APS_AUTH
-    authUrl = f'https://synthesis.autodesk.com/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("https://synthesis.autodesk.com/api/aps/exporter/")}'
-    res = urllib.request.urlopen(authUrl)
-    data = _res_json(res)["response"]
+def convertAuthToken(code: str, state: str | None) -> None:
+    global APS_AUTH, _PENDING_LOGIN
+    pending = _PENDING_LOGIN
+    # Clear before redeeming so each verifier is only used once
+    _PENDING_LOGIN = None
+    if pending is None or state is None or not secrets.compare_digest(pending[1], state):
+        raise Exception("APS login state mismatch.")
+    verifier = pending[0]
+    body = urllib.parse.urlencode(
+        {
+            "client_id": CLIENT_ID,
+            "grant_type": "authorization_code",
+            "code": code,
+            "code_verifier": verifier,
+            "redirect_uri": "https://synthesis.autodesk.com/api/aps/exporter/",
+        }
+    ).encode("utf-8")
+    req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
+    req.method = "POST"
+    req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
+    try:
+        res = urllib.request.urlopen(req)
+    except urllib.request.HTTPError as e:
+        raise Exception(f"APS token exchange failed: {e.code} - {e.reason}") from e
+    data = _res_json(res)
     curr_time = time.time()
     APS_AUTH = APSAuth(
         access_token=data["access_token"],
         refresh_token=data["refresh_token"],
         expires_in=data["expires_in"],
-        expires_at=int(curr_time + data["expires_in"] * 1000),
+        expires_at=int((curr_time + data["expires_in"]) * 1000),
         token_type=data["token_type"],
     )
     with open(auth_path, "wb") as f:
@@ -138,7 +166,7 @@ def refreshAuthToken() -> None:
             access_token=data["access_token"],
             refresh_token=data["refresh_token"],
             expires_in=data["expires_in"],
-            expires_at=int(curr_time + data["expires_in"] * 1000),
+            expires_at=int((curr_time + data["expires_in"]) * 1000),
             token_type=data["token_type"],
         )
         with open(auth_path, "wb") as f:
