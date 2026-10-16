@@ -201,15 +201,12 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
 
     try {
         APS.incApsCalls("data-v1-projects-x-folders-x-contents")
-        return await fetch(
-            `${DATA_MANAGEMENT_BASE_URL}/data/v1/projects/${project.id}/folders/${folder.id}/contents`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${auth.access_token}`,
-                },
-            }
-        )
+        return await fetch(`${DATA_MANAGEMENT_BASE_URL}/data/v1/projects/${project.id}/folders/${folder.id}/contents`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${auth.access_token}`,
+            },
+        })
             .then(x => x.json())
             .then(x => {
                 console.log("Raw Folder Data")

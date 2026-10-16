@@ -230,9 +230,7 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
         },
     }
 
-    res = requests.post(
-        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders", headers=headers, json=data
-    )
+    res = requests.post(f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders", headers=headers, json=data)
     if not res.ok:
         return Err(f"Failed to create new folder: {res.text}", ErrorSeverity.Fatal)
     json: dict[str, Any] = res.json()
@@ -384,9 +382,7 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
     """
 
     headers = {"Authorization": f"Bearer {auth}"}
-    project_list_res = requests.get(
-        f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs/{hub_id}/projects", headers=headers
-    )
+    project_list_res = requests.get(f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs/{hub_id}/projects", headers=headers)
     if not project_list_res.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {project_list_res.text}")
         return None

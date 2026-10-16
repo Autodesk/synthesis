@@ -9,7 +9,12 @@ import adsk.core
 
 from src import gm
 from src.APS.APS import auth_path, convertAuthToken, startLogin
-from src.APS.APSConfig import APS_SCOPES, AUTHENTICATION_BASE_URL, CALLBACK_URL, CLIENT_ID
+from src.APS.APSConfig import (
+    APS_SCOPES,
+    AUTHENTICATION_BASE_URL,
+    CALLBACK_URL,
+    CLIENT_ID,
+)
 from src.Logging import getLogger
 
 logger = getLogger()

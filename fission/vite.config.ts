@@ -30,8 +30,7 @@ const useSsl = ["true", "1"].includes(localEnv.SYNTHESIS_USE_SSL ?? "false")
 const apsClientId = localEnv.SYNTHESIS_APS_CLIENT_ID ?? "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 const apsCallbackUrl = localEnv.SYNTHESIS_APS_CALLBACK_URL ?? "https://synthesis.autodesk.com/fission/"
 const apsAuthenticationBaseUrl = localEnv.SYNTHESIS_APS_AUTHENTICATION_BASE_URL ?? "https://developer.api.autodesk.com"
-const apsDataManagementBaseUrl =
-    localEnv.SYNTHESIS_APS_DATA_MANAGEMENT_BASE_URL ?? "https://developer.api.autodesk.com"
+const apsDataManagementBaseUrl = localEnv.SYNTHESIS_APS_DATA_MANAGEMENT_BASE_URL ?? "https://developer.api.autodesk.com"
 const apsUserinfoBaseUrl = localEnv.SYNTHESIS_APS_USERINFO_BASE_URL ?? "https://api.aps.autodesk.com"
 
 const plugins = [

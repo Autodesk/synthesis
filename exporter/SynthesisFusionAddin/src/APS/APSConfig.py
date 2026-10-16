@@ -38,4 +38,6 @@ CALLBACK_URL = _get("SYNTHESIS_APS_CALLBACK_URL")
 AUTHENTICATION_BASE_URL = _get("SYNTHESIS_APS_AUTHENTICATION_BASE_URL").rstrip("/")
 DATA_MANAGEMENT_BASE_URL = _get("SYNTHESIS_APS_DATA_MANAGEMENT_BASE_URL").rstrip("/")
 USERINFO_BASE_URL = _get("SYNTHESIS_APS_USERINFO_BASE_URL").rstrip("/")
-APS_SCOPES = "data:create data:write data:search data:read openid profapi:core-std-profile:read profapi:img-profile:read"
+APS_SCOPES = (
+    "data:create data:write data:search data:read openid profapi:core-std-profile:read profapi:img-profile:read"
+)
