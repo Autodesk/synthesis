@@ -6,12 +6,14 @@ const testEnv = vi.hoisted(() => ({
     clientId: "test_client_id",
     callbackUrl: "https://callback.test/",
     authBaseUrl: "https://auth.test",
+    dataManagementBaseUrl: "https://data.test",
     userinfoBaseUrl: "https://userinfo.test",
 }))
 vi.mock("@/aps/APSConfig", () => ({
     CLIENT_ID: testEnv.clientId,
     CALLBACK_URL: testEnv.callbackUrl,
     AUTHENTICATION_BASE_URL: testEnv.authBaseUrl,
+    DATA_MANAGEMENT_BASE_URL: testEnv.dataManagementBaseUrl,
     USERINFO_BASE_URL: testEnv.userinfoBaseUrl,
 }))
 const AUTHORIZE_URL = `${testEnv.authBaseUrl}/authentication/v2/authorize`

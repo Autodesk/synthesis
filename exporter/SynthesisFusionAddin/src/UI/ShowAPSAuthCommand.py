@@ -8,7 +8,8 @@ from typing import Any
 import adsk.core
 
 from src import gm
-from src.APS.APS import CLIENT_ID, auth_path, convertAuthToken, startLogin
+from src.APS.APS import auth_path, convertAuthToken, startLogin
+from src.APS.APSConfig import APS_SCOPES, AUTHENTICATION_BASE_URL, CALLBACK_URL, CLIENT_ID
 from src.Logging import getLogger
 
 logger = getLogger()
@@ -21,13 +22,12 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
             global palette
             palette = gm.ui.palettes.itemById("authPalette")
             if not palette:
-                callbackUrl = "https://synthesis.autodesk.com/api/aps/exporter/"
                 challenge, state = startLogin()
                 params = {
                     "response_type": "code",
                     "client_id": CLIENT_ID,
-                    "redirect_uri": urllib.parse.quote_plus(callbackUrl),
-                    "scope": "data:create data:write data:search data:read",
+                    "redirect_uri": urllib.parse.quote_plus(CALLBACK_URL),
+                    "scope": APS_SCOPES,
                     "nonce": time.time(),
                     "prompt": "login",
                     "code_challenge": challenge,
@@ -35,7 +35,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                     "state": state,
                 }
                 query = "&".join(map(lambda pair: f"{pair[0]}={pair[1]}", params.items()))
-                url = "https://developer.api.autodesk.com/authentication/v2/authorize?" + query
+                url = f"{AUTHENTICATION_BASE_URL}/authentication/v2/authorize?" + query
                 palette = gm.ui.palettes.add("authPalette", "APS Authentication", url, True, True, True, 400, 400)
                 palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
                 # register events

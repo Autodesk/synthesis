@@ -30,6 +30,8 @@ const useSsl = ["true", "1"].includes(localEnv.SYNTHESIS_USE_SSL ?? "false")
 const apsClientId = localEnv.SYNTHESIS_APS_CLIENT_ID ?? "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 const apsCallbackUrl = localEnv.SYNTHESIS_APS_CALLBACK_URL ?? "https://synthesis.autodesk.com/fission/"
 const apsAuthenticationBaseUrl = localEnv.SYNTHESIS_APS_AUTHENTICATION_BASE_URL ?? "https://developer.api.autodesk.com"
+const apsDataManagementBaseUrl =
+    localEnv.SYNTHESIS_APS_DATA_MANAGEMENT_BASE_URL ?? "https://developer.api.autodesk.com"
 const apsUserinfoBaseUrl = localEnv.SYNTHESIS_APS_USERINFO_BASE_URL ?? "https://api.aps.autodesk.com"
 
 const plugins = [
@@ -194,6 +196,7 @@ export default defineConfig(({ mode }): ViteUserConfig => {
             APS_CLIENT_ID: JSON.stringify(apsClientId),
             APS_CALLBACK_URL: JSON.stringify(apsCallbackUrl),
             APS_AUTHENTICATION_BASE_URL: JSON.stringify(apsAuthenticationBaseUrl),
+            APS_DATA_MANAGEMENT_BASE_URL: JSON.stringify(apsDataManagementBaseUrl),
             APS_USERINFO_BASE_URL: JSON.stringify(apsUserinfoBaseUrl),
         },
         // Pre-bundle every react-icons subpath the app imports. Listing

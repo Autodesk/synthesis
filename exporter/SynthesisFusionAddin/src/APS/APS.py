@@ -15,12 +15,19 @@ from typing import Any
 import requests
 
 from src import ADDIN_PATH, gm
+from src.APS.APSConfig import (
+    APS_SCOPES,
+    AUTHENTICATION_BASE_URL,
+    CALLBACK_URL,
+    CLIENT_ID,
+    DATA_MANAGEMENT_BASE_URL,
+    USERINFO_BASE_URL,
+)
 from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
 from src.Logging import getLogger
 
 logger = getLogger()
 
-CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 auth_path = os.path.abspath(os.path.join(ADDIN_PATH, "..", ".aps_auth"))
 
 APS_AUTH = None
@@ -43,17 +50,8 @@ class APSAuth:
 class APSUserInfo:
     name: str
     given_name: str
-    family_name: str
-    preferred_username: str
-    email: str
-    email_verified: bool
-    profile: str
-    locale: str
-    country_code: str
-    about_me: str
-    language: str
-    company: str
     picture: str
+    email: str
 
 
 def getAPSAuth() -> APSAuth | None:
@@ -110,10 +108,10 @@ def convertAuthToken(code: str, state: str | None) -> None:
             "grant_type": "authorization_code",
             "code": code,
             "code_verifier": verifier,
-            "redirect_uri": "https://synthesis.autodesk.com/api/aps/exporter/",
+            "redirect_uri": CALLBACK_URL,
         }
     ).encode("utf-8")
-    req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
+    req = urllib.request.Request(f"{AUTHENTICATION_BASE_URL}/authentication/v2/token", data=body)
     req.method = "POST"
     req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
     try:
@@ -152,10 +150,10 @@ def refreshAuthToken() -> None:
             "client_id": CLIENT_ID,
             "grant_type": "refresh_token",
             "refresh_token": APS_AUTH.refresh_token,
-            "scope": "data:create data:write data:search data:read",
+            "scope": APS_SCOPES,
         }
     ).encode("utf-8")
-    req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
+    req = urllib.request.Request(f"{AUTHENTICATION_BASE_URL}/authentication/v2/token", data=body)
     req.method = "POST"
     req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
     try:
@@ -183,25 +181,16 @@ def loadUserInfo() -> Result[APSUserInfo]:
     if not APS_AUTH:
         return Err("Aps Authentication is undefined", ErrorSeverity.Fatal)
     global APS_USER_INFO
-    req = urllib.request.Request("https://api.userprofile.autodesk.com/userinfo")
-    req.add_header(key="Authorization", val=APS_AUTH.access_token)
+    req = urllib.request.Request(f"{USERINFO_BASE_URL}/userinfo")
+    req.add_header(key="Authorization", val=f"Bearer {APS_AUTH.access_token}")
     try:
         res = urllib.request.urlopen(req)
         data = _res_json(res)
         APS_USER_INFO = APSUserInfo(
             name=data["name"],
             given_name=data["given_name"],
-            family_name=data["family_name"],
-            preferred_username=data["preferred_username"],
-            email=data["email"],
-            email_verified=data["email_verified"],
-            profile=data["profile"],
-            locale=data["locale"],
-            country_code=data["country_code"],
-            about_me=data["about_me"],
-            language=data["language"],
-            company=data["company"],
             picture=data["picture"],
+            email=data["email"],
         )
         return Ok(APS_USER_INFO)
     except urllib.request.HTTPError as e:
@@ -242,7 +231,7 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
     }
 
     res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders", headers=headers, json=data
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders", headers=headers, json=data
     )
     if not res.ok:
         return Err(f"Failed to create new folder: {res.text}", ErrorSeverity.Fatal)
@@ -365,7 +354,7 @@ def get_hub_id(auth: str, hub_name: str) -> str | None:
     """
 
     headers = {"Authorization": f"Bearer {auth}"}
-    hub_list_res = requests.get("https://developer.api.autodesk.com/project/v1/hubs", headers=headers)
+    hub_list_res = requests.get(f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs", headers=headers)
     if not hub_list_res.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {hub_list_res.text}")
         return None
@@ -396,7 +385,7 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
 
     headers = {"Authorization": f"Bearer {auth}"}
     project_list_res = requests.get(
-        f"https://developer.api.autodesk.com/project/v1/hubs/{hub_id}/projects", headers=headers
+        f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs/{hub_id}/projects", headers=headers
     )
     if not project_list_res.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {project_list_res.text}")
@@ -412,7 +401,7 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
 def get_item_id(auth: str, project_id: str, parent_folder_id: str, folder_name: str, item_type: str) -> str | None:
     headers = {"Authorization": f"Bearer {auth}"}
     res = requests.get(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{parent_folder_id}/contents",
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders/{parent_folder_id}/contents",
         headers=headers,
     )
     if not res.ok:
@@ -484,7 +473,7 @@ def update_file_version(
         "data": {"type": "versions", "attributes": attributes, "relationships": relationships},
     }
     update_res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/versions", headers=headers, json=data
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/versions", headers=headers, json=data
     )
     if not update_res.ok:
         return Err(f"Updating file to new version failed\nUPLOAD ERROR:\n{update_res.text}", ErrorSeverity.Fatal)
@@ -521,7 +510,7 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> R
     params = {"filter[attributes.name]": file_name}
 
     file_res = requests.get(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{folder_id}/search",
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders/{folder_id}/search",
         headers=headers,
         params=params,
     )
@@ -573,7 +562,7 @@ def create_storage_location(auth: str, project_id: str, folder_id: str, file_nam
         "Content-Type": "application/vnd.api+json",
     }
     storage_location_res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/storage", json=data, headers=headers
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/storage", json=data, headers=headers
     )
     if not storage_location_res.ok:
         return Err(
@@ -606,7 +595,7 @@ def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> Result[t
         "Authorization": f"Bearer {auth}",
     }
     signed_url_res = requests.get(
-        f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
+        f"{DATA_MANAGEMENT_BASE_URL}/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
         headers=headers,
     )
     if not signed_url_res.ok:
@@ -657,7 +646,7 @@ def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str
     data = {"uploadKey": upload_key}
 
     completed_res = requests.post(
-        f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
+        f"{DATA_MANAGEMENT_BASE_URL}/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
         json=data,
         headers=headers,
     )
@@ -732,7 +721,7 @@ def create_first_file_version(
     }
 
     first_version_res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/items", json=data, headers=headers
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/items", json=data, headers=headers
     )
     if not first_version_res.ok:
         return Err(f"Failed to create first file version:\nUPLOAD ERROR: {first_version_res.text}", ErrorSeverity.Fatal)
