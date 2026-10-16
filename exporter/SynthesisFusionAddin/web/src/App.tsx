@@ -5,24 +5,12 @@ import { RestartAlt, Settings, SportsFootball } from "@mui/icons-material"
 import DownloadIcon from "@mui/icons-material/Download"
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
 import SaveIcon from "@mui/icons-material/Save"
-import {
-    AppBar,
-    Backdrop,
-    Box,
-    Button,
-    CircularProgress,
-    Container,
-    Stack,
-    Tab,
-    Tabs,
-    ThemeProvider,
-} from "@mui/material"
+import { AppBar, Backdrop, Box, Button, CircularProgress, Container, Stack, Tab, Tabs, useTheme } from "@mui/material"
 import { current } from "immer"
 import { useImmer } from "use-immer"
 import { sendData, sendDataAndToast } from "./lib"
 import { Global_SetAlert } from "./lib/GlobalUtils.tsx"
 import { createJoint } from "./lib/joints.ts"
-import { theme } from "./lib/theme.ts"
 import {
     DefaultExporterConfig,
     type ExporterConfig,
@@ -49,6 +37,8 @@ function TabPanel(props: { children?: React.ReactNode; value: number; index: num
 }
 
 function App() {
+    const theme = useTheme()
+
     const [activeTab, setActiveTab] = useState(0)
     const [generalConfig, updateGeneralConfig] = useImmer(DefaultExporterConfig())
     const [joints, updateJoints] = useImmer<Joint[]>([])
@@ -177,7 +167,7 @@ function App() {
             })
         })
     return (
-        <ThemeProvider theme={theme}>
+        <>
             <Backdrop
                 sx={theme => ({
                     color: "#fff",
@@ -211,7 +201,7 @@ function App() {
             <AppBar position={"sticky"}>
                 <Box>
                     <Tabs
-                        sx={{ bgcolor: "white" }}
+                        sx={{ bgcolor: theme.palette.background.default }}
                         value={activeTab}
                         onChange={(_, v) => {
                             setActiveTab(v as number)
@@ -266,7 +256,7 @@ function App() {
             <Container
                 sx={{
                     position: "sticky",
-                    bgcolor: "white",
+                    bgcolor: theme.palette.background.default,
                     display: "flex",
                     flexDirection: "row",
                     gap: "0.5rem",
@@ -309,7 +299,7 @@ function App() {
                     Save
                 </Button>
             </Container>
-        </ThemeProvider>
+        </>
     )
 }
 

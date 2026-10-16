@@ -47,8 +47,13 @@ const Synthesis = () => {
 
     useEffect(() => {
         const urlParams = new URLSearchParams(document.location.search)
+        if (urlParams.has("error")) {
+            // The user cancelled or APS rejected the login, so there is nothing to hand to the opener
+            window.close()
+            return
+        }
         if (urlParams.has("code")) {
-            window.opener.convertAuthToken(urlParams.get("code"))
+            window.opener.convertAuthToken(urlParams.get("code"), urlParams.get("state"))
             window.close()
             return
         }
