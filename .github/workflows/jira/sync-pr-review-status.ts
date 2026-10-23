@@ -154,17 +154,11 @@ const getUpdate = async (): Promise<StatusUpdate | null> => {
 
     const pullRequest = await pullRequestFor(recordedPullRequestNumber)
 
+    const reviews = await pullRequestReviews(recordedPullRequestNumber)
+
     if (sourceEventName === "pull_request_review") {
         const reviewId = event.review?.id
         if (!Number.isSafeInteger(reviewId) || reviewId < 1) throw new Error("The recorded review ID is invalid")
-
-        let reviews: Review[]
-        try {
-            reviews = await pullRequestReviews(recordedPullRequestNumber)
-        } catch (error) {
-            console.info("Could not reconcile the current GitHub review state; using the submitted event state.", error)
-            return changesRequestedUpdate(pullRequest)
-        }
 
         const review = reviews.find(candidate => candidate.id === reviewId)
         if (!review) {
@@ -172,40 +166,8 @@ const getUpdate = async (): Promise<StatusUpdate | null> => {
             return changesRequestedUpdate(pullRequest)
         }
         if (review.state?.toUpperCase() !== "CHANGES_REQUESTED") return null
-
-        const latestReviews = latestReviewDecisionsByReviewer(reviews)
-        let reviewRequests: ReviewRequests
-        try {
-            reviewRequests = await pullRequestReviewRequests(recordedPullRequestNumber)
-        } catch (error) {
-            console.info(
-                "Could not reconcile the current GitHub review requests; using the submitted event state.",
-                error
-            )
-            return changesRequestedUpdate(pullRequest)
-        }
-
-        const requestedReviewers = new Set(
-            (reviewRequests.users ?? [])
-                .map(reviewer => normalizeLogin(reviewer.login))
-                .filter((reviewer): reviewer is string => Boolean(reviewer))
-        )
-        const changeRequestReviewers = [...latestReviews.entries()]
-            .filter(([, latestReview]) => latestReview.state?.toUpperCase() === "CHANGES_REQUESTED")
-            .map(([reviewer]) => reviewer)
-
-        if (changeRequestReviewers.some(reviewer => !requestedReviewers.has(reviewer))) {
-            return changesRequestedUpdate(pullRequest)
-        }
-
-        return {
-            event: "review_requested",
-            pullRequest,
-            targetStatus: "Reopened",
-        }
     }
 
-    const reviews = await pullRequestReviews(recordedPullRequestNumber)
     const latestReviews = latestReviewDecisionsByReviewer(reviews)
 
     if (sourceEventName === "pull_request") {

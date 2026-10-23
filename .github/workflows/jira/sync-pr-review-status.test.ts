@@ -137,6 +137,50 @@ describe("Jira pull request review status synchronization", () => {
         ])
     })
 
+    test("requests nothing when the change requester later approved", async () => {
+        const result = await execute({
+            action: "submitted",
+            review: { id: 1, state: "changes_requested" },
+            reviews: [
+                { id: 1, state: "CHANGES_REQUESTED", user: { login: "alice" } },
+                { id: 2, state: "APPROVED", user: { login: "alice" } },
+            ],
+            sourceEvent: "pull_request_review",
+        })
+
+        expect(result.exitCode).toBe(0)
+        expect(result.webhookRequests).toEqual([])
+    })
+
+    test("requests nothing when the submitted change request was dismissed", async () => {
+        const result = await execute({
+            action: "submitted",
+            review: { id: 1, state: "changes_requested" },
+            reviews: [{ id: 1, state: "DISMISSED", user: { login: "alice" } }],
+            sourceEvent: "pull_request_review",
+        })
+
+        expect(result.exitCode).toBe(0)
+        expect(result.webhookRequests).toEqual([])
+    })
+
+    test("requests Reopened when the change requester is already requested again", async () => {
+        const result = await execute({
+            action: "submitted",
+            requestedReviewers: ["alice"],
+            review: { id: 1, state: "changes_requested" },
+            reviews: [{ id: 1, state: "CHANGES_REQUESTED", user: { login: "alice" } }],
+            sourceEvent: "pull_request_review",
+        })
+
+        expect(result.exitCode).toBe(0)
+        expect(result.webhookRequests[0]?.body).toEqual({
+            event: "review_requested",
+            issueKey: "SYNTH-123",
+            targetStatus: "Reopened",
+        })
+    })
+
     test("requests Reopened when a change-requested reviewer is requested again", async () => {
         const result = await execute({
             action: "review_requested",
