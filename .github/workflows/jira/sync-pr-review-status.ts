@@ -28,15 +28,28 @@ type GitHubEvent = {
 }
 
 type JiraEvent = "changes_requested" | "review_requested"
+// These are Jira workflow statuses, not board column labels. Reopened is the
+// Addressing Feedback column and Resolved is the Review column on the Synthesis board.
+const jiraStatusByEvent = {
+    changes_requested: "Reopened",
+    review_requested: "Resolved",
+} as const
+type JiraStatus = (typeof jiraStatusByEvent)[JiraEvent]
 
 type JiraUpdate = {
     event: JiraEvent
     issueKey: string
     pullRequest: PullRequest
-    targetStatus: "Addressing Feedback" | "In Review"
+    targetStatus: JiraStatus
 }
 
 type StatusUpdate = Omit<JiraUpdate, "issueKey">
+
+const changesRequestedUpdate = (pullRequest: PullRequest): StatusUpdate => ({
+    event: "changes_requested",
+    pullRequest,
+    targetStatus: jiraStatusByEvent.changes_requested,
+})
 
 const eventPath = process.env.GITHUB_EVENT_PATH
 const repositoryFullName = process.env.GITHUB_REPOSITORY
@@ -146,16 +159,22 @@ const getUpdate = async (): Promise<StatusUpdate | null> => {
     if (!recordedPullRequestNumber) return null
 
     const pullRequest = await pullRequestFor(recordedPullRequestNumber)
+
     const reviews = await pullRequestReviews(recordedPullRequestNumber)
-    const latestReviews = latestReviewDecisionsByReviewer(reviews)
 
     if (sourceEventName === "pull_request_review") {
-        const reviewId = event.review.id
+        const reviewId = event.review?.id
         if (!Number.isSafeInteger(reviewId) || reviewId < 1) throw new Error("The recorded review ID is invalid")
 
         const review = reviews.find(candidate => candidate.id === reviewId)
-        if (review?.state?.toUpperCase() !== "CHANGES_REQUESTED") return null
+        if (!review) {
+            console.info("The submitted review was not returned by GitHub; using the submitted event state.")
+            return changesRequestedUpdate(pullRequest)
+        }
+        if (review.state?.toUpperCase() !== "CHANGES_REQUESTED") return null
     }
+
+    const latestReviews = latestReviewDecisionsByReviewer(reviews)
 
     if (sourceEventName === "pull_request") {
         const requestedReviewer = normalizeLogin(event.requested_reviewer?.login)
@@ -176,17 +195,13 @@ const getUpdate = async (): Promise<StatusUpdate | null> => {
     if (changeRequestReviewers.length === 0) return null
 
     if (changeRequestReviewers.some(reviewer => !requestedReviewers.has(reviewer))) {
-        return {
-            event: "changes_requested",
-            pullRequest,
-            targetStatus: "Addressing Feedback",
-        }
+        return changesRequestedUpdate(pullRequest)
     }
 
     return {
         event: "review_requested",
         pullRequest,
-        targetStatus: "In Review",
+        targetStatus: jiraStatusByEvent.review_requested,
     }
 }
 
@@ -208,6 +223,7 @@ const sendToJira = async (update: JiraUpdate) => {
         body: JSON.stringify({
             event: update.event,
             issueKey: update.issueKey,
+            targetStatus: update.targetStatus,
         }),
         headers: {
             "Content-Type": "application/json",
@@ -219,7 +235,7 @@ const sendToJira = async (update: JiraUpdate) => {
     if (!response.ok) throw new Error(`Jira webhook for ${update.issueKey} returned ${response.status}`)
 
     console.info(
-        `Requested ${update.targetStatus} for ${update.issueKey} from pull request #${update.pullRequest.number}.`
+        `Requested Jira status ${update.targetStatus} for ${update.issueKey} from pull request #${update.pullRequest.number}.`
     )
 }
 
@@ -227,4 +243,6 @@ const update = await getUpdate()
 if (update) {
     const issueKey = issueKeyFor(update.pullRequest)
     if (issueKey) await sendToJira({ ...update, issueKey })
+} else {
+    console.info(`No Jira status update matched the ${sourceEventName} event.`)
 }
