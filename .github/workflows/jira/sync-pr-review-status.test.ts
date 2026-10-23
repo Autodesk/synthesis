@@ -102,7 +102,7 @@ const execute = async (scenario: Scenario) => {
 }
 
 describe("Jira pull request review status synchronization", () => {
-    test("requests In Progress when the change requester is not requested again", async () => {
+    test("requests Reopened when the change requester is not requested again", async () => {
         const result = await execute({
             action: "submitted",
             review: { id: 1, state: "changes_requested" },
@@ -115,11 +115,11 @@ describe("Jira pull request review status synchronization", () => {
         expect(result.webhookRequests[0]?.body).toEqual({
             event: "changes_requested",
             issueKey: "SYNTH-123",
-            targetStatus: "In Progress",
+            targetStatus: "Reopened",
         })
     })
 
-    test("requests In Progress from the submitted change request event", async () => {
+    test("requests Reopened from the submitted change request event", async () => {
         const result = await execute({
             action: "submitted",
             review: { id: 1, state: "changes_requested" },
@@ -131,7 +131,7 @@ describe("Jira pull request review status synchronization", () => {
         expect(result.stderr).toBe("")
         expect(result.webhookRequests).toEqual([
             {
-                body: { event: "changes_requested", issueKey: "SYNTH-123", targetStatus: "In Progress" },
+                body: { event: "changes_requested", issueKey: "SYNTH-123", targetStatus: "Reopened" },
                 token: "test-webhook-token",
             },
         ])
@@ -164,7 +164,7 @@ describe("Jira pull request review status synchronization", () => {
         expect(result.webhookRequests).toEqual([])
     })
 
-    test("requests Reopened when the change requester is already requested again", async () => {
+    test("requests Resolved when the change requester is already requested again", async () => {
         const result = await execute({
             action: "submitted",
             requestedReviewers: ["alice"],
@@ -177,11 +177,11 @@ describe("Jira pull request review status synchronization", () => {
         expect(result.webhookRequests[0]?.body).toEqual({
             event: "review_requested",
             issueKey: "SYNTH-123",
-            targetStatus: "Reopened",
+            targetStatus: "Resolved",
         })
     })
 
-    test("requests Reopened when a change-requested reviewer is requested again", async () => {
+    test("requests Resolved when a change-requested reviewer is requested again", async () => {
         const result = await execute({
             action: "review_requested",
             requestedReviewer: "alice",
@@ -195,7 +195,7 @@ describe("Jira pull request review status synchronization", () => {
         expect(result.webhookRequests[0]?.body).toEqual({
             event: "review_requested",
             issueKey: "SYNTH-123",
-            targetStatus: "Reopened",
+            targetStatus: "Resolved",
         })
     })
 })

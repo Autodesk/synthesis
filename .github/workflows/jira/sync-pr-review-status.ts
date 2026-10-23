@@ -28,7 +28,9 @@ type GitHubEvent = {
 }
 
 type JiraEvent = "changes_requested" | "review_requested"
-type JiraStatus = "In Progress" | "Reopened"
+// These are Jira workflow statuses, not board column labels. Reopened is the
+// Addressing Feedback column and Resolved is the Review column on the Synthesis board.
+type JiraStatus = "Reopened" | "Resolved"
 
 type JiraUpdate = {
     event: JiraEvent
@@ -42,7 +44,7 @@ type StatusUpdate = Omit<JiraUpdate, "issueKey">
 const changesRequestedUpdate = (pullRequest: PullRequest): StatusUpdate => ({
     event: "changes_requested",
     pullRequest,
-    targetStatus: "In Progress",
+    targetStatus: "Reopened",
 })
 
 const eventPath = process.env.GITHUB_EVENT_PATH
@@ -195,7 +197,7 @@ const getUpdate = async (): Promise<StatusUpdate | null> => {
     return {
         event: "review_requested",
         pullRequest,
-        targetStatus: "Reopened",
+        targetStatus: "Resolved",
     }
 }
 
