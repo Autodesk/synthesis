@@ -145,7 +145,7 @@ const WSViewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
             <TableContainer
                 sx={{
                     maxWidth: "80vw",
-                    maxHeight: "80vh",
+                    maxHeight: "calc(var(--synthesis-viewport-height) * 0.8)",
                 }}
             >
                 <Table>

@@ -37,7 +37,7 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                     left: "50%",
                     transform: "translate(-50%, -50%)",
                     p: 0,
-                    maxHeight: "85vh",
+                    maxHeight: "var(--synthesis-panel-max-height)",
                     minWidth: "20vw",
                     bgcolor: "background.default",
                     flexDirection: "column",

@@ -494,7 +494,7 @@ const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
                     sx={{
                         display: "flex",
                         width: "70vw",
-                        height: "70vh",
+                        height: "calc(var(--synthesis-viewport-height) * 0.7)",
                     }}
                 >
                     {configState === "wiring" && (

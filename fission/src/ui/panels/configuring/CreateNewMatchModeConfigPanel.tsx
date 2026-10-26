@@ -398,7 +398,7 @@ const CreateNewMatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ p
                 borderRadius: "0.5rem",
                 minWidth: "350px",
                 maxWidth: "500px",
-                maxHeight: "70vh",
+                maxHeight: "calc(var(--synthesis-viewport-height) * 0.7)",
                 height: "fit-content",
             }}
         >

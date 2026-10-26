@@ -74,7 +74,7 @@ const TouchControls: React.FC = () => {
             <div
                 style={{
                     position: "fixed",
-                    bottom: "5vh",
+                    bottom: "calc(var(--synthesis-viewport-height) * 0.05)",
                     left: "5vw",
                     pointerEvents: "auto",
                 }}
@@ -93,7 +93,7 @@ const TouchControls: React.FC = () => {
             <div
                 style={{
                     position: "fixed",
-                    bottom: "5vh",
+                    bottom: "calc(var(--synthesis-viewport-height) * 0.05)",
                     right: "5vw",
                     pointerEvents: "auto",
                 }}

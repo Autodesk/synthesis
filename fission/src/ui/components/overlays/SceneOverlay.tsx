@@ -83,7 +83,7 @@ const SceneOverlay: React.FC = () => {
                 left: "0pt",
                 top: "0pt",
                 width: "100vw",
-                height: "100vh",
+                height: "var(--synthesis-viewport-height)",
                 overflow: "hidden",
                 pointerEvents: "none",
             }}

@@ -10,7 +10,11 @@ export const UIRenderer: React.FC = () => {
     return (
         <>
             <Scoreboard />
-            <div id="panel-container" className="relative pointer-events-none w-screen h-screen">
+            <div
+                id="panel-container"
+                className="relative pointer-events-none w-screen"
+                style={{ height: "var(--synthesis-viewport-height)" }}
+            >
                 {panels.map((p, _i) => (
                     <Panel key={`panel-${p.id}`} panel={p}>
                         {React.createElement(p.content)}

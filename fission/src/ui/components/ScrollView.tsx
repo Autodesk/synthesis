@@ -11,7 +11,7 @@ const ScrollView: React.FC<React.PropsWithChildren<ScrollViewProps>> = ({ childr
             sx={{
                 width: "100%",
                 overflowY: "scroll",
-                maxHeight: maxHeight || "70vh",
+                maxHeight: maxHeight || "calc(var(--synthesis-viewport-height) * 0.7)",
             }}
         >
             {children}
