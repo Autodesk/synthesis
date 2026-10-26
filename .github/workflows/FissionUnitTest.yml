@@ -11,8 +11,43 @@ on:
     branches: [prod, dev]
 
 jobs:
+  setupCaches:
+    name: Prepare Assetpack
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "fission"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Remove zstd for gzip cache compatibility with container jobs  # This is super scuffed but that's just how the oil gushes
+        run: |
+          sudo apt-get remove -y zstd
+          sudo rm /usr/local/bin/zstd
+          zstd --help || true
+
+      - name: Cache Unzipped Synthesis Assets
+        id: cache-assets
+        uses: actions/cache@v6
+        with:
+          path: fission/public/Downloadables
+          key: assets-${{hashFiles('fission/public/assetpack.zip')}}
+
+      - name: Download Synthesis assetpack if not cached
+        if: steps.cache-assets.outputs.cache-hit != 'true'
+        run: |
+          cd ..
+          git config --global --add safe.directory `pwd`
+          git lfs pull
+  
+          cd fission
+          unzip -o public/assetpack.zip -d public/ || echo
+
+
   runUnitTests:
     name: Playwright Unit Tests
+    needs: setupCaches
     container:
       image: mcr.microsoft.com/playwright:v1.61.0-noble
     runs-on: ubuntu-latest
@@ -23,44 +58,15 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v7
 
-      - name: Install System Dependencies
-        run: |
-          apt-get update
-          apt-get install -y git-lfs unzip
+      - name: Setup Fission Bun
+        uses: ./.github/actions/FissionSetup
 
-      - name: Bun Setup
-        uses: oven-sh/setup-bun@v2
+      - name: Restore Unzipped Synthesis Assets
+        uses: actions/cache/restore@v6
         with:
-          bun-version: ${{ env.BUN_VERSION }}
-
-      - name: Cache Unzipped Synthesis Assets
-        id: cache-assets
-        uses: actions/cache@v6
-        with:
+          fail-on-cache-miss: true
           path: fission/public/Downloadables
-          key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
-
-      - name: Download Synthesis assetpack if not cached
-        if: steps.cache-assets.outputs.cache-hit != 'true'
-        run: |
-          cd ..
-          git config --global --add safe.directory `pwd`
-          git lfs pull
-
-          cd fission
-          unzip -o public/assetpack.zip -d public/ || echo
-
-      - name: Cache Node Dependencies
-        uses: actions/cache@v6
-        with:
-          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/bun.lock')}}"
-          path: "fission/node_modules"
-          restore-keys: |
-            ${{runner.os}}-npm-fission-
-            ${{runner.os}}-npm
-
-      - name: Install Dependencies
-        run: bun install --frozen-lockfile
+          key: assets-${{hashFiles('fission/public/assetpack.zip')}}
 
       - name: Run Tests
         run: |
@@ -69,7 +75,7 @@ jobs:
 
   runAssetpackTests:
     name: Assetpack Tests
-    needs: runUnitTests
+    needs: setupCaches
     container:
       image: mcr.microsoft.com/playwright:v1.61.0-noble
     runs-on: ubuntu-latest
@@ -80,31 +86,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v7
 
-      - name: Install System Dependencies
-        run: |
-          apt-get update
-          apt-get install -y unzip
+      - name: Setup Fission Bun
+        uses: ./.github/actions/FissionSetup
 
-      - name: Bun Setup
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ env.BUN_VERSION }}
-
-      - name: Cache Unzipped Synthesis Assets
+      - name: Restore Unzipped Synthesis Assets
         id: cache-assets
-        uses: actions/cache@v6
+        uses: actions/cache/restore@v6
         with:
+          fail-on-cache-miss: true
           path: fission/public/Downloadables
-          key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
+          key: assets-${{hashFiles('fission/public/assetpack.zip')}}
 
-      - name: Cache Node Dependencies
-        uses: actions/cache@v6
-        with:
-          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/bun.lock')}}"
-          path: "fission/node_modules"
-          restore-keys: |
-            ${{runner.os}}-npm-fission-
-            ${{runner.os}}-npm
 
       - name: Run Assetpack Tests
         run: |
@@ -112,3 +104,100 @@ jobs:
           grep -q "GH ACTIONS VITEST PASSED" output.txt
         env:
           VITE_RUN_ASSETPACK_TEST: true
+  runMultiplayerTests:
+    name: Multiplayer Tests
+    needs: setupCaches
+    container:
+      image: mcr.microsoft.com/playwright:v1.61.0-noble
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "fission"
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v7
+
+      - name: Setup Fission Bun
+        uses: ./.github/actions/FissionSetup
+
+      - name: Restore Unzipped Synthesis Assets
+        id: cache-assets
+        uses: actions/cache/restore@v6
+        with:
+          fail-on-cache-miss: true
+          path: fission/public/Downloadables
+          key: assets-${{hashFiles('fission/public/assetpack.zip')}}
+
+
+      - name: Install linker
+        run:
+          apt-get update -y && 
+          apt-get install -y build-essential
+
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Build server
+        shell: bash
+        working-directory: "glueball"
+        run: cargo build
+
+      - name: Start server
+        shell: bash
+        working-directory: "glueball"
+        run: |
+          ./target/debug/glueball --secure --headless --permanent-room TEST01 > server.log 2>&1 &
+          echo $! > server.pid
+          
+          # Wait for server to start
+          for i in {1..30}; do
+            if curl --insecure --fail --silent https://localhost:2610/ > /dev/null; then
+              echo "Server ready"
+              exit 0
+            fi
+          
+            if ! kill -0 "$(cat server.pid)" 2>/dev/null; then
+              echo "Server exited"
+              cat server.log
+              exit 1
+            fi
+          
+            sleep 1
+          done
+          
+          echo "Timed out while waiting for server startup"
+          cat server.log
+          exit 1
+
+      - name: Run Multiplayer Tests
+        run: |
+          HOME=/root bun run test src/test/multiplayer/ 2>&1 | tee output.txt
+          grep -q "GH ACTIONS VITEST PASSED" output.txt
+        env:
+          VITE_RUN_MULTIPLAYER_TEST: true
+
+      - name: Stop server
+        if: always()
+        working-directory: "glueball"
+        shell: bash
+        run: |
+          if [[ -f server.pid ]]; then
+            PID="$(cat server.pid)"
+  
+            if kill -0 "$PID" 2>/dev/null; then
+              kill "$PID"
+  
+              # Wait for clean shutdown
+              for i in {1..10}; do
+                kill -0 "$PID" 2>/dev/null || exit 0
+                sleep 1
+              done
+  
+              kill -9 "$PID" 2>/dev/null || true
+            fi
+          fi
+
+      - name: Show server logs on failure
+        if: failure()
+        working-directory: "glueball"
+        run: cat server.log || true

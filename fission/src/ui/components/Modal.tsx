@@ -26,7 +26,7 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
         <MUIModal
             open={modal !== undefined}
             onClose={() => {
-                if (props.allowClickAway) closeModal(CloseType.Cancel)
+                if (props.allowClickAway) closeModal(CloseType.CANCEL)
             }}
         >
             <Card
@@ -78,13 +78,13 @@ export const Modal = <T, P>({ children, modal, parent }: ModalElementProps<T, P>
                         }}
                     >
                         {!props.hideCancel && (
-                            <Button onClick={() => closeModal(CloseType.Cancel)} variant="outlined" color="secondary">
+                            <Button onClick={() => closeModal(CloseType.CANCEL)} variant="outlined" color="secondary">
                                 {props.cancelText ?? "Cancel"}
                             </Button>
                         )}
                         {!props.hideAccept && (
                             <Button
-                                onClick={() => closeModal(CloseType.Accept)}
+                                onClick={() => closeModal(CloseType.ACCEPT)}
                                 variant="contained"
                                 color="primary"
                                 disabled={props.disableAccept}

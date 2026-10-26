@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
-
+import { afterEach, afterAll, beforeEach, describe, expect, test, vi } from "vitest"
+import { mockConsole } from "@/test/mocks/Common.ts"
 // Mock dependencies before importing APS
+
 vi.mock("@/systems/World", () => ({
     default: {
-        AnalyticsSystem: {
-            Event: vi.fn(),
-            Exception: vi.fn(),
+        get analyticsSystem() {
+            return { event: vi.fn(), exception: vi.fn() }
         },
     },
 }))
@@ -54,11 +54,6 @@ const createMockResponse = (data: unknown, ok: boolean = true) => ({
 })
 
 describe("APS Authentication System", () => {
-    const originalConsoleLog = console.log
-    const originalConsoleError = console.error
-    const originalConsoleWarn = console.warn
-    const originalConsoleDebug = console.debug
-
     const mockAuth: APSAuth = {
         access_token: "test_access_token",
         refresh_token: "test_refresh_token",
@@ -77,25 +72,20 @@ describe("APS Authentication System", () => {
     beforeEach(() => {
         // Clear localStorage and reset mocks
         localStorage.clear()
-        vi.clearAllMocks()
 
         // Reset APS state
         APS.resetNumApsCalls()
         APS.authCode = undefined
 
         // Mock console methods
-        console.log = vi.fn()
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.debug = vi.fn()
+        mockConsole()
     })
 
     afterEach(() => {
         vi.clearAllMocks()
-        console.log = originalConsoleLog
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.debug = originalConsoleDebug
+    })
+    afterAll(() => {
+        vi.restoreAllMocks()
     })
 
     describe("End-to-End User Journeys", () => {

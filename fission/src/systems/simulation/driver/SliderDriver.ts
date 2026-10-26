@@ -3,12 +3,14 @@ import type { mirabuf } from "@/proto/mirabuf"
 import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { type NoraNumber, NoraTypes } from "../Nora"
 import Driver, { DriverControlMode, type DriverID } from "./Driver"
+import { BaseUnit, DerivativeOrder, noraType, type NoraValueOf, num } from "../Nora"
 
 const MAX_FORCE_WITHOUT_GRAV = 500
 
-class SliderDriver extends Driver {
+const SLIDER_TYPE = noraType([num(BaseUnit.POSITION, DerivativeOrder.ZERO, "Position")])
+
+class SliderDriver extends Driver<typeof SLIDER_TYPE> {
     private _constraint: Jolt.SliderConstraint
 
     private _controlMode: DriverControlMode = DriverControlMode.VELOCITY
@@ -107,12 +109,14 @@ class SliderDriver extends Driver {
         }
     }
 
-    public getReceiverType(): NoraTypes {
-        return NoraTypes.NUMBER
+    public get receiverType() {
+        return SLIDER_TYPE
     }
-    public setReceiverValue(val: NoraNumber): void {
-        this.accelerationDirection = val
+
+    protected receiveValue([val]: NoraValueOf<typeof SLIDER_TYPE>): void {
+        this.accelerationDirection = val.value
     }
+
     public displayName(): string {
         return `${this.info?.name ?? "-"} [Slider]`
     }

@@ -199,7 +199,7 @@ describe("CustomFieldViewControls", () => {
             })
 
             expect(World.sceneRenderer.setCameraControls).toHaveBeenCalledWith("Target")
-            expect(targetControls.mode).toBe(CameraMode.Follow)
+            expect(targetControls.mode).toBe(CameraMode.FOLLOW)
             expect(targetControls.focusProvider).toBeUndefined()
             expect(camera.position.distanceTo(positionBeforeHandoff)).toBeLessThan(1)
 

@@ -3,20 +3,27 @@
 {
   description = "Synthesis' Web-Based Robotics Simulator";
 
-  inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+  nixConfig = {
+    commit-lock-file-summary = "chore: update flake.lock";
+  };
+
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    systems.url = "github:nix-systems/triplet";
+  };
 
   outputs =
-    { self, nixpkgs }:
+    {
+      self,
+      nixpkgs,
+      systems,
+    }:
     let
-      supportedSystems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
-      forEachSupportedSystem =
+      inherit (nixpkgs) lib;
+
+      forEachSystem =
         f:
-        nixpkgs.lib.genAttrs supportedSystems (
+        lib.genAttrs (import systems) (
           system:
           f {
             inherit system;
@@ -25,7 +32,7 @@
         );
     in
     {
-      devShells = forEachSupportedSystem (
+      devShells = forEachSystem (
         { pkgs, system }:
         {
           default = self.devShells.${system}.fission;
@@ -34,33 +41,61 @@
               nodejs
               bun
               git-lfs
-              # playwright-driver.browsers
+              playwright-test
+              playwright-driver.browsers
             ];
 
-            # env = {
-            #   PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
-            #   PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
-            # };
+            env = {
+              PLAYWRIGHT_BROWSERS_PATH = pkgs.playwright-driver.browsers;
+              PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+              PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1";
+            };
           };
           exporter = pkgs.mkShell {
             packages = with pkgs; [
               python3
+              python3Packages.mypy
+              python3Packages.protobuf
+              python3Packages.requests
+              python3Packages.types-protobuf
+              python3Packages.types-requests
+              python3Packages.urllib3
               black
               isort
               bun
+              protobuf
             ];
           };
-          multiplayer = pkgs.mkShell {
+          glueball = pkgs.mkShell {
             packages = with pkgs; [
-              bun
+              cargo
+              clippy
+              rustfmt
+              rust-analyzer
             ];
           };
         }
       );
 
-      formatter = forEachSupportedSystem ({ pkgs, ... }: pkgs.nixfmt-tree);
+      packages = forEachSystem (
+        { pkgs, ... }: {
+          glueball = pkgs.callPackage ./glueball/package.nix { };
+        }
+      );
 
-      # Build all devShells, instead of just verifying they are derivations
-      checks = forEachSupportedSystem ({ system, ... }: self.devShells.${system});
+      formatter = forEachSystem ({ pkgs, ... }: pkgs.nixfmt-tree);
+
+      # Build all devShells and packages, instead of just verifying they are
+      # derivations
+      checks = forEachSystem (
+        { system, ... }:
+        let
+          prefixAttrs = prefix: lib.mapAttrs' (n: lib.nameValuePair "${prefix}-${n}");
+        in
+        lib.foldr lib.attrsets.unionOfDisjoint { } [
+          (prefixAttrs "dev-shell" self.devShells.${system})
+          (prefixAttrs "package" self.packages.${system} )
+        ]
+      );
     };
 }

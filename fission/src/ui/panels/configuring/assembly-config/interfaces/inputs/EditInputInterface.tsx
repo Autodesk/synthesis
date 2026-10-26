@@ -38,98 +38,6 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         input instanceof AxisInput ? input.joystickInverted : false
     )
 
-    /** Show the correct selection mode based on input type and how it's configured */
-    const inputConfig = () => {
-        if (useGamepad) {
-            // Joystick Button
-            if (input instanceof ButtonInput) {
-                return (
-                    <JoystickButtonSelection
-                        input={input}
-                        selectedInput={selectedInput}
-                        setSelectedInput={setSelectedInput}
-                    />
-                )
-            }
-
-            // Gamepad axis
-            else if (input instanceof AxisInput) {
-                return (
-                    <div key={input.inputName}>
-                        {input.useGamepadButtons ? (
-                            <GamepadButtonAxisSelection
-                                input={input}
-                                selectedInput={selectedInput}
-                                setSelectedInput={setSelectedInput}
-                            />
-                        ) : (
-                            // Gamepad joystick axis
-                            <JoystickAxisSelection
-                                input={input}
-                                selectedInput={selectedInput}
-                                setSelectedInput={setSelectedInput}
-                                setChosenGamepadAxis={setChosenGamepadAxis}
-                            />
-                        )}
-
-                        {/* // Button to switch between two buttons and a joystick axis */}
-                        <Checkbox
-                            label="Use Gamepad Buttons"
-                            checked={useGamepadButtons}
-                            onClick={checked => {
-                                input.useGamepadButtons = checked
-                                setUseGamepadButtons(checked)
-                            }}
-                        />
-                        {/* // Button to invert the joystick axis */}
-                        <Checkbox
-                            label="Invert Joystick"
-                            checked={joystickInverted}
-                            onClick={checked => {
-                                input.joystickInverted = checked
-                                setJoystickInverted(checked)
-                            }}
-                        />
-                        <Divider />
-                    </div>
-                )
-            }
-        } else if (useTouchControls) {
-            // here
-            if (input instanceof AxisInput) {
-                return (
-                    <div key={input.inputName}>
-                        <TouchControlsAxisSelection
-                            input={input}
-                            selectedInput={selectedInput}
-                            setSelectedInput={setSelectedInput}
-                            setChosenTouchControlsAxis={setChosenTouchControlsAxis}
-                        />
-                        {/* // Button to invert the joystick axis */}
-                        <Checkbox
-                            label="Invert Joystick"
-                            checked={joystickInverted}
-                            onClick={checked => {
-                                input.joystickInverted = checked
-                                setJoystickInverted(checked)
-                            }}
-                        />
-                        <Divider />
-                    </div>
-                )
-            }
-        } else {
-            // Keyboard button
-            if (input instanceof ButtonInput) {
-                return KeyboardButtonSelection({ input, setSelectedInput, selectedInput })
-            }
-            // Keyboard Axis
-            else if (input instanceof AxisInput) {
-                return KeyboardAxisSelection({ input, setSelectedInput, selectedInput })
-            }
-        }
-    }
-
     useEffect(() => {
         const checkGamepadState = () => {
             if (InputSystem.gamepad !== null) {
@@ -240,7 +148,93 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                 })
             }}
         >
-            {inputConfig()}
+            {useGamepad ? (
+                // Joystick Button
+                input instanceof ButtonInput ? (
+                    <JoystickButtonSelection
+                        input={input}
+                        selectedInput={selectedInput}
+                        setSelectedInput={setSelectedInput}
+                    />
+                ) : (
+                    // Gamepad axis
+                    input instanceof AxisInput && (
+                        <div key={input.inputName}>
+                            {input.useGamepadButtons ? (
+                                <GamepadButtonAxisSelection
+                                    input={input}
+                                    selectedInput={selectedInput}
+                                    setSelectedInput={setSelectedInput}
+                                />
+                            ) : (
+                                // Gamepad joystick axis
+                                <JoystickAxisSelection
+                                    input={input}
+                                    selectedInput={selectedInput}
+                                    setSelectedInput={setSelectedInput}
+                                    setChosenGamepadAxis={setChosenGamepadAxis}
+                                />
+                            )}
+
+                            {/* // Button to switch between two buttons and a joystick axis */}
+                            <Checkbox
+                                label="Use Gamepad Buttons"
+                                checked={useGamepadButtons}
+                                onClick={checked => {
+                                    input.useGamepadButtons = checked
+                                    setUseGamepadButtons(checked)
+                                }}
+                            />
+                            {/* // Button to invert the joystick axis */}
+                            <Checkbox
+                                label="Invert Joystick"
+                                checked={joystickInverted}
+                                onClick={checked => {
+                                    input.joystickInverted = checked
+                                    setJoystickInverted(checked)
+                                }}
+                            />
+                            <Divider />
+                        </div>
+                    )
+                )
+            ) : useTouchControls ? (
+                input instanceof AxisInput && (
+                    <div key={input.inputName}>
+                        <TouchControlsAxisSelection
+                            input={input}
+                            selectedInput={selectedInput}
+                            setSelectedInput={setSelectedInput}
+                            setChosenTouchControlsAxis={setChosenTouchControlsAxis}
+                        />
+                        {/* // Button to invert the joystick axis */}
+                        <Checkbox
+                            label="Invert Joystick"
+                            checked={joystickInverted}
+                            onClick={checked => {
+                                input.joystickInverted = checked
+                                setJoystickInverted(checked)
+                            }}
+                        />
+                        <Divider />
+                    </div>
+                )
+            ) : input instanceof ButtonInput ? (
+                <KeyboardButtonSelection
+                    input={input}
+                    setSelectedInput={setSelectedInput}
+                    selectedInput={selectedInput}
+                />
+            ) : (
+                // Keyboard Axis
+                input instanceof AxisInput && (
+                    <KeyboardAxisSelection
+                        input={input}
+                        setSelectedInput={setSelectedInput}
+                        selectedInput={selectedInput}
+                    />
+                )
+            )}
         </Box>
     )
 }

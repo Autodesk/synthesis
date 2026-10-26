@@ -152,6 +152,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
         <Stack
             direction="row"
             key={id}
+            data-testid="match-mode-config"
             justifyContent={"space-between"}
             alignItems={"center"}
             gap={"1rem"}
@@ -181,7 +182,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
 }
 
 const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
-    const { openPanel, closePanel, openModal, configureScreen } = useUIContext()
+    const { openPanel, closePanel, configureScreen } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
     const [useSpawnPositions, setUseSpawnPositions] = useState(false)
@@ -192,23 +193,35 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
     }, [configureScreen, panel])
 
     useEffect(() => {
-        const loadConfigs = () => {
+        let cancelled = false
+
+        const loadConfigs = async () => {
             try {
-                const defaultConfigs = DefaultMatchModeConfigs.configs
-                console.log(defaultConfigs)
-                const localConfigs = JSON.parse(window.localStorage.getItem("match-mode-configs") || "[]")
+                // The defaults come from a manifest request that may still be in flight when the panel opens.
+                const defaultConfigs = await DefaultMatchModeConfigs.getConfigs()
+                if (cancelled) return
 
-                const combinedConfigs = [...defaultConfigs, ...localConfigs]
-                const uniqueConfigsById = Array.from(new Map(combinedConfigs.map(item => [item.id, item])).values())
+                const localConfigs: MatchModeConfig[] = JSON.parse(
+                    window.localStorage.getItem("match-mode-configs") || "[]"
+                )
 
-                setMatchModeConfigs(uniqueConfigsById)
+                // `prev` last so configs added while the manifest was loading survive.
+                setMatchModeConfigs(prev =>
+                    Array.from(
+                        new Map([...defaultConfigs, ...localConfigs, ...prev].map(item => [item.id, item])).values()
+                    )
+                )
             } catch (err) {
                 console.error("Error loading match mode configs:", err)
                 globalAddToast("error", "Error Loading Match Mode Configs", "Please check the console for more details")
             }
         }
 
-        loadConfigs()
+        void loadConfigs()
+
+        return () => {
+            cancelled = true
+        }
     }, [])
 
     useEffect(() => {
@@ -231,14 +244,14 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                                 globalAddToast(
                                     "error",
                                     "Match Mode Already Running",
-                                    "You can't modify the match mode ruleset while a match is running"
+                                    "You can't start a new match while one is already running"
                                 )
                                 return
                             }
                             MatchMode.getInstance().setMatchModeConfig(config)
 
-                            await MatchMode.getInstance().start(true, useSpawnPositions)
-                            closePanel(panel!.id, CloseType.Accept)
+                            await MatchMode.getInstance().start(null, true, useSpawnPositions)
+                            closePanel(panel!.id, CloseType.ACCEPT)
                         }}
                         secondaryOnClick={
                             !config.isDefault
@@ -255,7 +268,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
                     />
                 )
             }),
-        [matchModeConfigs, openModal, closePanel, useSpawnPositions]
+        [matchModeConfigs, closePanel, useSpawnPositions, panel]
     )
 
     const fileUploadRef = useRef<HTMLInputElement>(null)
@@ -326,7 +339,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) =
 
     const createNewMatchModeConfig = () => {
         openPanel(CreateNewMatchModeConfigPanel, undefined)
-        closePanel(panel!.id, CloseType.Overwrite)
+        closePanel(panel!.id, CloseType.OVERWRITE)
     }
 
     return (

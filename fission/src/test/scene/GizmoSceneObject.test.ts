@@ -136,6 +136,47 @@ describe("GizmoSceneObject", () => {
         })
     })
 
+    describe("syncToParent()", () => {
+        test("should reseat via parent's postGizmoCreation and rebake offsets", () => {
+            mockParentObject.postGizmoCreation = vi.fn()
+
+            gizmoSceneObject.setTransform(new THREE.Matrix4())
+            const bakeSpy = vi.spyOn(
+                gizmoSceneObject as unknown as { bakeRelativeTransformations: () => void },
+                "bakeRelativeTransformations"
+            )
+
+            gizmoSceneObject.syncToParent()
+
+            expect(mockParentObject.postGizmoCreation).toHaveBeenCalledWith(gizmoSceneObject)
+            expect(bakeSpy).toHaveBeenCalledTimes(1)
+            expect(gizmoSceneObject["_forceUpdate"]).toBe(false)
+        })
+
+        test("should do nothing while dragging", () => {
+            mockParentObject.postGizmoCreation = vi.fn()
+            gizmoSceneObject.gizmo.dragging = true
+
+            const bakeSpy = vi.spyOn(
+                gizmoSceneObject as unknown as { bakeRelativeTransformations: () => void },
+                "bakeRelativeTransformations"
+            )
+
+            gizmoSceneObject.syncToParent()
+
+            expect(mockParentObject.postGizmoCreation).not.toHaveBeenCalled()
+            expect(bakeSpy).not.toHaveBeenCalled()
+        })
+
+        test("should do nothing without parent", () => {
+            const noParentGizmo = new GizmoSceneObject("translate", 1.0, mockMesh)
+
+            expect(() => noParentGizmo.syncToParent()).not.toThrow()
+
+            noParentGizmo.dispose()
+        })
+    })
+
     describe("updateNodeTransform()", () => {
         test("should handle missing parent gracefully", () => {
             const noParentGizmo = new GizmoSceneObject("translate", 1.0, mockMesh)

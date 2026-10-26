@@ -1,0 +1,44 @@
+/*
+ * SyntheSimFTC: clean-room shim of the FTC SDK's hardware/opmode surface,
+ * plus the OpModeRunner harness that compiles+runs team OpMode source and
+ * bridges it to Fission over a WebSocket.
+ */
+
+plugins {
+    id 'java-library'
+    id 'application'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.java-websocket:Java-WebSocket:1.5.7'
+    implementation 'com.google.code.gson:gson:2.11.0'
+}
+
+application {
+    mainClass = 'com.autodesk.synthesis.ftc.OpModeRunner'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+publishing() {
+    publications {
+        maven(MavenPublication) {
+            group = 'com.autodesk.synthesis'
+            artifactId = 'SyntheSimFTC'
+            version = '1.0.0'
+
+            from components.java
+        }
+    }
+}

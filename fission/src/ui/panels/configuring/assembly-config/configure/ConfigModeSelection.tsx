@@ -3,11 +3,12 @@ import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import type { ConfigMode } from "../ConfigTypes"
 
 export class ConfigModeSelectionOption extends SelectMenuOption {
-    configMode: ConfigMode
-
-    constructor(name: string, configMode: ConfigMode, tooltip?: string) {
-        super(name, name, tooltip)
-        this.configMode = configMode
+    constructor(
+        name: string,
+        public readonly configMode: ConfigMode,
+        tooltip?: string
+    ) {
+        super(configMode.toString(), name, tooltip)
     }
 }
 
@@ -24,7 +25,7 @@ const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ onModeSelecte
         <SelectMenu
             options={modes}
             onOptionSelected={val => {
-                onModeSelected((val as ConfigModeSelectionOption)?.configMode)
+                onModeSelected(val?.configMode)
             }}
             defaultHeaderText="Select a Configuration Mode"
             // TODO:

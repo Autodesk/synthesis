@@ -14,37 +14,35 @@ const TouchControls: React.FC = () => {
 
     const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getUserPreference("TouchControls"))
 
-    // Number of joysticks currently being held. Joysticks can't unmount mid-drag,
-    // so we ignore toggles while one is held to keep the visibility state in sync
-    // with what's shown (otherwise a held toggle desyncs the two and a later press
-    // appears to do nothing).
+    // joysticks that are currently being dragged to avoid desyncing by toggling while being dragged
     const heldJoystickCount = useRef(0)
+
+    const isVisibleRef = useRef(isJoystickVisible)
+
+    const applyVisibility = useCallback((visible: boolean) => {
+        if (isVisibleRef.current === visible) return
+        isVisibleRef.current = visible
+        setIsJoystickVisible(visible)
+        PreferencesSystem.setUserPreference("TouchControls", visible)
+        PreferencesSystem.savePreferences()
+        EventSystem.dispatch("TouchControlsVisibilityChangedEvent", { visible })
+    }, [])
 
     useEffect(() => {
         const visibilityUnsubscriber = EventSystem.listen("ToggleTouchControlsVisibilityEvent", () => {
             if (heldJoystickCount.current > 0) return
-            setIsJoystickVisible(prev => {
-                const next = !prev
-                PreferencesSystem.setUserPreference("TouchControls", next)
-                PreferencesSystem.savePreferences()
-                return next
-            })
+            applyVisibility(!isVisibleRef.current)
         })
 
-        const setVisibilityUnsubscriber = EventSystem.listen("SetTouchControlsVisibilityEvent", (visible: boolean) => {
-            setIsJoystickVisible(prev => {
-                if (prev === visible) return prev
-                PreferencesSystem.setUserPreference("TouchControls", visible)
-                PreferencesSystem.savePreferences()
-                return visible
-            })
-        })
+        const setVisibilityUnsubscriber = EventSystem.listen("SetTouchControlsVisibilityEvent", (visible: boolean) =>
+            applyVisibility(visible)
+        )
 
         return () => {
             visibilityUnsubscriber()
             setVisibilityUnsubscriber()
         }
-    }, [])
+    }, [applyVisibility])
 
     const handleStart = useCallback((_event: IJoystickUpdateEvent) => {
         heldJoystickCount.current += 1

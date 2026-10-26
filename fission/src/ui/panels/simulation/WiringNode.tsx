@@ -1,14 +1,10 @@
 import { Box } from "@mui/material"
 import { type Connection, type Edge, Handle, type NodeProps, Position } from "@xyflow/react"
 import { useCallback, useMemo } from "react"
-import {
-    type HandleInfo,
-    handleInfoDisplayCompare,
-    NORA_TYPES_COLORS,
-    SimConfig,
-    type SimConfigData,
-} from "@/systems/simulation/SimConfigShared"
+import { type HandleInfo, handleInfoDisplayCompare, type SimConfigData } from "@/systems/simulation/wiring/SimGraph"
+import { validateConnection as validateConfigConnection } from "@/systems/simulation/wiring/Typing"
 import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
+import { noraTypeToColorStr } from "@/systems/simulation/Nora"
 
 const WiringNode = ({ data, isConnectable }: NodeProps) => {
     const robotInput = data.input as HandleInfo[] | undefined
@@ -22,7 +18,7 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
 
     const validateConnection = useCallback(
         (edge: Edge | Connection) => {
-            return SimConfig.validateConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
+            return validateConfigConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
         },
         [simConfig]
     )
@@ -38,9 +34,9 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         justifyContent: "space-between",
                     }}
                 >
-                    {[...robotInput].sort(handleInfoDisplayCompare).map((x, i) => {
+                    {[...robotInput].sort(handleInfoDisplayCompare).map(x => {
                         return (
-                            <div key={i} className="relative">
+                            <div key={x.id} className="relative">
                                 <div className="px-3 text-lg">{x.displayName}</div>
                                 <Handle
                                     style={{
@@ -48,9 +44,8 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                                         left: 0,
                                         width: "1rem",
                                         height: "1rem",
-                                        backgroundColor: NORA_TYPES_COLORS[x.noraType],
+                                        backgroundColor: x.noraType ? noraTypeToColorStr(x.noraType) : undefined,
                                     }}
-                                    key={i}
                                     type="target"
                                     position={Position.Left}
                                     id={x.id}
@@ -76,9 +71,9 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                         justifyContent: "space-between",
                     }}
                 >
-                    {[...robotOutput].sort(handleInfoDisplayCompare).map((x, i) => {
+                    {[...robotOutput].sort(handleInfoDisplayCompare).map(x => {
                         return (
-                            <div key={i} className="relative">
+                            <div key={x.id} className="relative">
                                 <div className="px-3 text-lg text-right">{x.displayName}</div>
                                 <Handle
                                     style={{
@@ -86,9 +81,8 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                                         right: 0,
                                         width: "1rem",
                                         height: "1rem",
-                                        backgroundColor: NORA_TYPES_COLORS[x.noraType],
+                                        backgroundColor: x.noraType ? noraTypeToColorStr(x.noraType) : undefined,
                                     }}
-                                    key={i}
                                     type="source"
                                     position={Position.Right}
                                     id={x.id}

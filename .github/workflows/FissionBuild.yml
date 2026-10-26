@@ -12,26 +12,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v7
-      - name: Bun Runtime Setup
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
 
-      - name: Cache Node Dependencies
-        uses: actions/cache@v6
-        with:
-          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/bun.lock')}}"
-          path: "fission/node_modules"
-          restore-keys: |
-            ${{runner.os}}-npm-fission-
-            ${{runner.os}}-npm
-
-      - name: Install Dependencies
-        run: |
-          cd fission
-          bun install
+      - name: Setup Fission Bun
+        uses: ./.github/actions/FissionSetup
 
       - name: Build Fission
-        run: |
-          cd fission
-          bun run build && echo "Build Passed" || (echo "Build Failed" && exit 1)
+        working-directory: "fission"
+        run: bun run build && echo "Build Passed" || (echo "Build Failed" && exit 1)

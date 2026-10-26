@@ -17,3 +17,9 @@ This product bundles the following third-party sound assets:
    - fission/src/assets/sound-files/MatchResume.wav
 
    For more information, contact FIRST Robotics or refer to your licensing agreement.
+
+3. Files licensed from WPILib:
+   - simulation/SyntheSimJava/src/main/java/com/autodesk/synthesis/cscore/CameraServer.java
+   - simulation/SyntheSimJava/src/main/java/com/autodesk/synthesis/cscore/CvSink.java
+
+This product also includes Autodesk brand marks. See MARKS-LICENSE.md for more information.

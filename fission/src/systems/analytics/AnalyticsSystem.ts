@@ -1,14 +1,24 @@
 import { consent, event, exception, init, setUserId, setUserProperty } from "@haensl/google-analytics"
 import APS from "@/aps/APS"
+import type { DriveType } from "@/systems/simulation/behavior/Behavior"
 import PreferencesSystem from "../preferences/PreferencesSystem"
-import World from "../World"
-import WorldSystem from "../WorldSystem"
+import World from "@/systems/World"
+import WorldSystem from "@/systems/WorldSystem"
+import type { TourStepId } from "@/ui/tour/TourSteps"
+import { consolePrefixer } from "console-prefixer"
 
 const SAMPLE_INTERVAL = 60000 // 1 minute
 const BETA_CODE_COOKIE_REGEX = /access_code=.*(;|$)/
 const MOBILE_USER_AGENT_REGEX = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
 
 declare const GIT_COMMIT: string
+
+const console = consolePrefixer({
+    defaultPrefix: {
+        text: "[Analytics]",
+        style: "background: linear-gradient(90deg,rgba(149, 121, 171, 1) 0%, rgba(179, 55, 94, 1) 100%); color: white;font-weight:bold; padding:2px; border-radius:2px;",
+    },
+})
 
 export interface AccumTimes {
     frames: number
@@ -27,6 +37,27 @@ type MiraEvent = {
      */
     fileSize?: number
 }
+
+export type UploadFileFormat = "mira" | "urdf-zip"
+
+type UploadEvent = MiraEvent & {
+    fileFormat: UploadFileFormat
+    meshFormats?: string
+}
+
+export type UIInteractionType =
+    | "Top Bar Button"
+    | "HUD Menu Button"
+    | "Mode Dropdown"
+    | "Configure Dropdown"
+    | "Command Palette Command"
+
+/** How the user left a tour step. Shared with TourProvider, which reports it */
+export type TourStepExit = "Continue" | "Back" | "Skipped"
+
+/** How a multiplayer session ended. Shared with MultiplayerSystem, which reports it */
+export type MultiplayerSessionEndOutcome = "User Exit" | "Disconnected"
+
 export type MatchEvent = {
     matchName: string
     isDefault?: boolean
@@ -55,8 +86,8 @@ export interface AnalyticsEvents {
     }
 
     // APS Events
-    "APS Calls per Minute": unknown
-    "APS Login": unknown
+    "APS Calls per Minute": Record<string, number>
+    "APS Login": undefined
     "APS Download": MiraEvent
 
     // Cache Events
@@ -66,7 +97,7 @@ export interface AnalyticsEvents {
 
     // Remote Download Events
     "Remote Download": MiraEvent
-    "Local Upload": MiraEvent
+    "Local Upload": UploadEvent
 
     // Devtool Cache Events
     "Devtool Cache Persist": MiraEvent
@@ -94,19 +125,60 @@ export interface AnalyticsEvents {
     }
 
     // Scene Interaction Events
-    "Drag Mode Enabled": unknown
+    "Drag Mode Enabled": undefined
     "Drag Mode Disabled": {
         durationSeconds: number
     }
 
-    // Main Menu Events
-    "Mode Selected": {
-        mode: string
+    // UI Events
+    "UI Interaction": {
+        interactionType: UIInteractionType
+        interactionName: string
     }
 
-    "Command Executed": {
-        command: string
+    // Onboarding Tour Events
+    "Tour Step Duration": {
+        stepId: TourStepId
+        exit: TourStepExit
+        durationSeconds: number
     }
+
+    // Robot Configuration Events
+    "Drivetrain Configured": {
+        driveType: DriveType
+        robotCentric: boolean
+        source: "Assembly Setup" | "Drivetrain Config"
+    }
+
+    // Multiplayer Events
+    "Multiplayer Session Start": {
+        /** Whether the client created the room or joined an existing one */
+        role: "Host" | "Client"
+        outcome: "Success" | "Failure"
+    }
+    // Doesn't get called when the user closes the tab
+    "Multiplayer Session End": {
+        outcome: MultiplayerSessionEndOutcome
+        durationSeconds: number
+        /** Most people in the room at once, including this client */
+        peakPlayers: number
+        /** Mean one way latency across the session's pings, -1 when no ping ever completed */
+        avgLatencyMS: number
+    }
+
+    // Code Simulation Events
+    "Code Sim Connected": undefined
+    "Code Sim Connection Failed": undefined
+    "Code Sim Disconnected": {
+        durationSeconds: number
+    }
+}
+
+export function reportUIInteraction(interactionType: UIInteractionType, interactionName: string) {
+    World.analyticsSystem?.event("UI Interaction", {
+        interactionType: interactionType,
+        interactionName: interactionName,
+    })
 }
 
 class AnalyticsSystem extends WorldSystem {

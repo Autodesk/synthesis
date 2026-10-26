@@ -3,8 +3,8 @@ import { Box } from "@mui/system"
 import type React from "react"
 import { useEffect, useReducer, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
-import { easeOutQuad } from "@/util/EasingFunctions"
-import { type ProgressHandle, ProgressHandleStatus } from "./ProgressNotificationData"
+import { easeOutQuad } from "@/util/EasingFunctions.ts"
+import { type ProgressHandle, ProgressHandleStatus } from "./ProgressNotificationData.ts"
 
 interface ProgressData {
     lastValue: number
@@ -49,21 +49,23 @@ function useInterp(elapse: number, progressData: ProgressData): number {
 }
 
 const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
-    const [progressData, setProgressData] = useState<ProgressData>({
-        lastValue: 0,
-        currentValue: 0,
-        lastUpdate: Date.now(),
-    })
+    const [progressData, updateProgressData] = useReducer(
+        (state: ProgressData, newValue: number) => ({
+            currentValue: newValue,
+            lastValue: state.currentValue,
+            lastUpdate: Date.now(),
+        }),
+        {
+            currentValue: 0,
+            lastValue: 0,
+            lastUpdate: Date.now(),
+        }
+    )
 
     const interpProgress = useInterp(500, progressData)
 
     useEffect(() => {
-        setProgressData({
-            lastValue: progressData.currentValue,
-            currentValue: handle.progress,
-            lastUpdate: Date.now(),
-        })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        updateProgressData(handle.progress)
     }, [handle.progress])
 
     return (
@@ -146,7 +148,7 @@ const ProgressNotifications: React.FC = () => {
                 gap: "0.5rem",
             }}
         >
-            {progressElements ?? <></>}
+            {progressElements}
         </Box>
     )
 }

@@ -1,34 +1,40 @@
-import type { NoraNumber } from "../../Nora"
+import { bool, noraType, type NoraValueOf, type NoraBaseValueOf, type BaseType } from "../../Nora"
 import type { SimReceiver, SimSupplier } from "../SimDataFlow"
 import { SimInput } from "../SimInput"
-import { receiverTypeMap } from "../WPILibState"
 import { SimType } from "../WPILibTypes"
 import SimGeneric from "./SimGeneric"
+
+export const DIO_TYPE = noraType([bool()])
 
 export default class SimDIO {
     private constructor() {}
 
-    public static setValue(device: string, value: boolean): boolean {
-        return SimGeneric.set(SimType.DIO, device, "<>value", value)
+    public static setValue(
+        device: string,
+        value: NoraBaseValueOf<{
+            type: BaseType.BOOLEAN
+        }>
+    ): boolean {
+        return SimGeneric.set(SimType.DIO, device, "<>value", value.value)
     }
 
-    public static getValue(device: string): boolean {
-        return SimGeneric.get(SimType.DIO, device, "<>value", false)
+    public static getValue(device: string): NoraBaseValueOf<{ type: BaseType.BOOLEAN }> {
+        return { value: SimGeneric.get(SimType.DIO, device, "<>value", false), baseType: DIO_TYPE[0] }
     }
 
-    public static genReceiver(device: string): SimReceiver {
+    public static genReceiver(device: string): SimReceiver<typeof DIO_TYPE> {
         return {
-            getReceiverType: () => receiverTypeMap[SimType.DIO]!,
-            setReceiverValue: (a: NoraNumber) => {
-                SimDIO.setValue(device, a > 0.5)
+            receiverType: DIO_TYPE,
+            setReceiverValue: ([a]: NoraValueOf<typeof DIO_TYPE>) => {
+                SimDIO.setValue(device, a)
             },
         }
     }
 
-    public static genSupplier(device: string): SimSupplier {
+    public static genSupplier(device: string): SimSupplier<typeof DIO_TYPE> {
         return {
-            getSupplierType: () => receiverTypeMap[SimType.DIO]!,
-            getSupplierValue: () => (SimDIO.getValue(device) ? 1 : 0),
+            supplierType: DIO_TYPE,
+            getSupplierValue: () => [SimDIO.getValue(device)],
         }
     }
 }
@@ -48,11 +54,11 @@ export class SimDigitalInput extends SimInput {
     }
 
     private setValue(value: boolean) {
-        SimDIO.setValue(this._device, value)
+        SimDIO.setValue(this._device, { value, baseType: DIO_TYPE[0] })
     }
 
     public getValue(): boolean {
-        return SimDIO.getValue(this._device)
+        return SimDIO.getValue(this._device).value
     }
 
     public update(_deltaT: number) {
