@@ -1,20 +1,18 @@
 import { Mutex } from "async-mutex"
+import { AUTHENTICATION_BASE_URL, CALLBACK_URL, CLIENT_ID, USERINFO_BASE_URL } from "@/aps/APSConfig"
 import EventSystem from "@/systems/EventSystem.ts"
 import World from "@/systems/World"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 
+// openid and the profapi scopes are required by the userinfo endpoint for the name, email and picture
+const APS_SCOPES = "data:read openid profapi:core-std-profile:read profapi:img-profile:read"
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
-const APS_SCOPES = "data:read"
-const CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 
-const ENDPOINT_SYNTHESIS_CODE = `/api/aps/code`
-export const ENDPOINT_SYNTHESIS_CHALLENGE = `/api/aps/challenge`
-
-const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
-const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
-const ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE = "https://developer.api.autodesk.com/authentication/v2/revoke"
-const ENDPOINT_AUTODESK_USERINFO = "https://api.aps.autodesk.com/userinfo"
+const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = `${AUTHENTICATION_BASE_URL}/authentication/v2/authorize`
+const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = `${AUTHENTICATION_BASE_URL}/authentication/v2/token`
+const ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE = `${AUTHENTICATION_BASE_URL}/authentication/v2/revoke`
+const ENDPOINT_AUTODESK_USERINFO = `${USERINFO_BASE_URL}/userinfo`
 
 // biome-ignore-start lint/style/useNamingConvention: returned from api
 export interface APSAuth {
@@ -33,10 +31,29 @@ export interface APSUserInfo {
     email: string
 }
 
+const randomBase64Url = (numBytes: number): string => {
+    const bytes = crypto.getRandomValues(new Uint8Array(numBytes))
+    return base64UrlEncode(bytes)
+}
+
+const base64UrlEncode = (bytes: Uint8Array): string =>
+    btoa(String.fromCharCode(...bytes))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "")
+
+const challengeFor = async (verifier: string): Promise<string> => {
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier))
+    return base64UrlEncode(new Uint8Array(digest))
+}
+
 // biome-ignore lint/style/useNamingConvention: this is pascal case
 class APS {
     static authCode: string | undefined = undefined
     static requestMutex: Mutex = new Mutex()
+
+    // PKCE verifier and state for the login in progress. Only ever held in memory, so only this window can redeem the code.
+    private static _pendingLogin: { verifier: string; state: string } | undefined = undefined
 
     private static _numApsCalls = new Map<string, number>()
     public static get numApsCalls() {
@@ -179,22 +196,23 @@ class APS {
      */
     static async requestAuthCode() {
         await this.requestMutex.runExclusive(async () => {
-            const callbackUrl = import.meta.env.DEV
-                ? `http://localhost:3000${import.meta.env.BASE_URL}`
-                : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
-
             try {
-                const challenge = await this.codeChallenge()
+                const verifier = randomBase64Url(32)
+                const state = randomBase64Url(16)
+                const challenge = await challengeFor(verifier)
+                // Starting a new login replaces any old one, so an older popup will fail the state check
+                this._pendingLogin = { verifier, state }
 
                 const params = new URLSearchParams({
                     response_type: "code",
                     client_id: CLIENT_ID,
-                    redirect_uri: callbackUrl,
+                    redirect_uri: CALLBACK_URL,
                     scope: APS_SCOPES,
                     nonce: Date.now().toString(),
                     prompt: "login",
                     code_challenge: challenge,
                     code_challenge_method: "S256",
+                    state: state,
                 })
 
                 if (APS.userInfo) {
@@ -268,26 +286,44 @@ class APS {
     /**
      * Fetches the auth data from Autodesk using the auth code.
      * @param {string} code - The auth code
+     * @param {string | null} state - The state returned by the authorize redirect, which must match our pending login
      */
-    static async convertAuthToken(code: string) {
+    static async convertAuthToken(code: string, state: string | null) {
         let retryLogin = false
 
-        const callbackUrl = import.meta.env.DEV
-            ? `http://localhost:3000${import.meta.env.BASE_URL}`
-            : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
+        const pending = this._pendingLogin
+        // Each verifier is only good for one redemption
+        this._pendingLogin = undefined
+        if (!pending || !state || state !== pending.state) {
+            console.error("APS login state mismatch")
+            World.analyticsSystem?.exception("APS Login Failure: State Mismatch")
+            globalAddToast("error", "Error signing in.", "Please try again.")
+            return
+        }
 
         try {
-            const res = await fetch(
-                `${ENDPOINT_SYNTHESIS_CODE}?code=${code}&redirect_uri=${encodeURIComponent(callbackUrl)}`
-            )
+            APS.incApsCalls("authentication-v2-token")
+            const res = await fetch(ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                    client_id: CLIENT_ID,
+                    grant_type: "authorization_code",
+                    code: code,
+                    code_verifier: pending.verifier,
+                    redirect_uri: CALLBACK_URL,
+                }),
+            })
             const json = await res.json()
             if (!res.ok) {
                 World.analyticsSystem?.exception("APS Login Failure")
-                globalAddToast("error", "Error signing in.", `${json.userMessage}`)
+                globalAddToast("error", "Error signing in.", `${json.userMessage ?? json.error_description ?? ""}`)
                 this._auth = undefined
                 return
             }
-            const authRes = json.response as APSAuth
+            const authRes = json as APSAuth
             authRes.expires_at = authRes.expires_in * 1000 + Date.now()
             this._auth = authRes
             console.log("Preloading user info")
@@ -346,21 +382,6 @@ class APS {
             World.analyticsSystem?.exception("APS Login Failure: User Info")
             globalAddToast("error", "Error signing in.", "Please try again.")
             this._auth = undefined
-        }
-    }
-
-    /**
-     * Fetches the code challenge from our server for requesting the auth code.
-     */
-    static async codeChallenge() {
-        try {
-            const res = await fetch(ENDPOINT_SYNTHESIS_CHALLENGE)
-            const json = await res.json()
-            return json["challenge"]
-        } catch (e) {
-            console.error(e)
-            World.analyticsSystem?.exception("APS Login Failure: Code Challenge")
-            globalAddToast("error", "Error signing in.", "Please try again.")
         }
     }
 }
