@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, prod]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: CI
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Cache Bun downloads
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.bun/install/cache
+            ~/.cache/bun
+          key: ${{ runner.os }}-synthesis-bun-${{ hashFiles('flake.lock', 'fission/bun.lock', 'exporter/SynthesisFusionAddin/web/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-synthesis-bun-
+
+      - name: Cache extracted assetpack
+        uses: actions/cache@v6
+        with:
+          path: fission/public/Downloadables
+          key: ${{ runner.os }}-synthesis-assetpack-${{ hashFiles('fission/public/assetpack.zip') }}
+
+      - name: Run canonical CI script
+        run: nix develop .#ci --command bash ./scripts/ci.sh
+
+      - name: Upload CI logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: synthesis-ci-logs
+          path: .ci/logs
+          if-no-files-found: ignore
