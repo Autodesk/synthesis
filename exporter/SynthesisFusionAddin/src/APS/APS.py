@@ -7,6 +7,7 @@ import pathlib
 import pickle
 import secrets
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
@@ -27,8 +28,11 @@ from src.Logging import getLogger
 
 logger = getLogger()
 
-# Seconds to wait on APS requests before giving up, so a stalled response can't hang the add-in
+# Seconds to wait on APS requests before giving up, so a stalled response can't hang the add-in.
+# Every outbound call in this file should pass a timeout.
 REQUEST_TIMEOUT_SECONDS = 30
+# Uploads of the exported file can be large, so they get a longer window than the metadata calls
+UPLOAD_TIMEOUT_SECONDS = 300
 
 auth_path = os.path.abspath(os.path.join(ADDIN_PATH, "..", ".aps_auth"))
 
@@ -120,6 +124,8 @@ def convertAuthToken(code: str, state: str | None) -> None:
         res = urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS)
     except urllib.request.HTTPError as e:
         raise Exception(f"APS token exchange failed: {e.code} - {e.reason}") from e
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        raise Exception(f"APS token exchange failed: {e}") from e
     data = _res_json(res)
     curr_time = time.time()
     APS_AUTH = APSAuth(
@@ -175,6 +181,10 @@ def refreshAuthToken() -> None:
         removeAuth()
         logger.error(f"Refresh Error:\n{e.code} - {e.reason}")
         gm.ui.messageBox("Please sign in again.")
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        # A network failure says nothing about the credentials, so keep them and let the caller retry later
+        logger.error(f"Refresh Error (network):\n{e}")
+        gm.ui.messageBox("Could not reach Autodesk to refresh your sign in. Check your connection and try again.")
 
 
 def loadUserInfo() -> Result[APSUserInfo]:
@@ -197,6 +207,8 @@ def loadUserInfo() -> Result[APSUserInfo]:
     except urllib.request.HTTPError as e:
         removeAuth()
         return Err(f"User Info Error:\n{e.code} - {e.reason}\nPlease sign in again", ErrorSeverity.Fatal)
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        return Err(f"User Info Error:\nCould not reach Autodesk: {e}", ErrorSeverity.Fatal)
 
 
 def getUserInfo() -> Result[APSUserInfo]:
@@ -411,6 +423,7 @@ def get_item_id(auth: str, project_id: str, parent_folder_id: str, folder_name: 
     res = requests.get(
         f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders/{parent_folder_id}/contents",
         headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not res.ok:
         gm.ui.messageBox(f"Failed to get item: {res.text}")
@@ -481,7 +494,10 @@ def update_file_version(
         "data": {"type": "versions", "attributes": attributes, "relationships": relationships},
     }
     update_res = requests.post(
-        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/versions", headers=headers, json=data
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/versions",
+        headers=headers,
+        json=data,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not update_res.ok:
         return Err(f"Updating file to new version failed\nUPLOAD ERROR:\n{update_res.text}", ErrorSeverity.Fatal)
@@ -521,6 +537,7 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> R
         f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders/{folder_id}/search",
         headers=headers,
         params=params,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if file_res.status_code == 404:
         return Ok(("", "", ""))
@@ -570,7 +587,10 @@ def create_storage_location(auth: str, project_id: str, folder_id: str, file_nam
         "Content-Type": "application/vnd.api+json",
     }
     storage_location_res = requests.post(
-        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/storage", json=data, headers=headers
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/storage",
+        json=data,
+        headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not storage_location_res.ok:
         return Err(
@@ -605,6 +625,7 @@ def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> Result[t
     signed_url_res = requests.get(
         f"{DATA_MANAGEMENT_BASE_URL}/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
         headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not signed_url_res.ok:
         return Err(f"Failed to get signed URL:\nUPLOAD ERROR: {signed_url_res.text}", ErrorSeverity.Fatal)
@@ -627,7 +648,7 @@ def upload_file(signed_url: str, file_contents: str) -> Result[str]:
     notes:
     - fails if the auth or the signed URL are invalid
     """
-    upload_response = requests.put(url=signed_url, data=file_contents)
+    upload_response = requests.put(url=signed_url, data=file_contents, timeout=UPLOAD_TIMEOUT_SECONDS)
     if not upload_response.ok:
         return Err(f"Failed to upload to signed url\nUPLOAD ERROR: {upload_response.text}", ErrorSeverity.Fatal)
     return Ok("")
@@ -657,6 +678,7 @@ def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str
         f"{DATA_MANAGEMENT_BASE_URL}/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
         json=data,
         headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not completed_res.ok:
         return Err(
@@ -729,7 +751,10 @@ def create_first_file_version(
     }
 
     first_version_res = requests.post(
-        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/items", json=data, headers=headers
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/items",
+        json=data,
+        headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not first_version_res.ok:
         return Err(f"Failed to create first file version:\nUPLOAD ERROR: {first_version_res.text}", ErrorSeverity.Fatal)

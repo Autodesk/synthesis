@@ -215,39 +215,45 @@ class APS {
      * Prompts the user to sign in, which will retrieve the auth code.
      */
     static async requestAuthCode() {
-        await this.requestMutex.runExclusive(async () => {
-            try {
-                const verifier = randomBase64Url(32)
-                const state = randomBase64Url(16)
-                const challenge = await challengeFor(verifier)
-                // Starting a new login replaces any old one, so an older popup will fail the state check
-                this._pendingLogin = { verifier, state }
+        await this.requestMutex.runExclusive(() => this.openAuthPopup())
+    }
 
-                const params = new URLSearchParams({
-                    response_type: "code",
-                    client_id: CLIENT_ID,
-                    redirect_uri: CALLBACK_URL,
-                    scope: APS_SCOPES,
-                    nonce: Date.now().toString(),
-                    prompt: "login",
-                    code_challenge: challenge,
-                    code_challenge_method: "S256",
-                    state: state,
-                })
+    /**
+     * Opens the sign in popup. Does not take {@link requestMutex}, so it is safe to call from code that already
+     * holds it (the mutex is not reentrant).
+     */
+    private static async openAuthPopup() {
+        try {
+            const verifier = randomBase64Url(32)
+            const state = randomBase64Url(16)
+            const challenge = await challengeFor(verifier)
+            // Starting a new login replaces any old one, so an older popup will fail the state check
+            this._pendingLogin = { verifier, state }
 
-                if (APS.userInfo) {
-                    params.append("authoptions", encodeURIComponent(JSON.stringify({ id: APS.userInfo.email })))
-                }
+            const params = new URLSearchParams({
+                response_type: "code",
+                client_id: CLIENT_ID,
+                redirect_uri: CALLBACK_URL,
+                scope: APS_SCOPES,
+                nonce: Date.now().toString(),
+                prompt: "login",
+                code_challenge: challenge,
+                code_challenge_method: "S256",
+                state: state,
+            })
 
-                const url = `${ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE}?${params.toString()}`
-
-                window.open(url)
-            } catch (e) {
-                console.error(e)
-                World.analyticsSystem?.exception("APS Login Failure")
-                globalAddToast("error", "Error signing in.", "Please try again.")
+            if (APS.userInfo) {
+                params.append("authoptions", encodeURIComponent(JSON.stringify({ id: APS.userInfo.email })))
             }
-        })
+
+            const url = `${ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE}?${params.toString()}`
+
+            window.open(url)
+        } catch (e) {
+            console.error(e)
+            World.analyticsSystem?.exception("APS Login Failure")
+            globalAddToast("error", "Error signing in.", "Please try again.")
+        }
     }
 
     /**
@@ -258,7 +264,9 @@ class APS {
      *           is not readily available, although one may be in the works
      */
     static async refreshAuthToken(refreshToken: string, shouldRelog: boolean): Promise<boolean> {
-        return this.requestMutex.runExclusive(async () => {
+        // The mutex is not reentrant, so anything in here that may need to sign in again must use openAuthPopup
+        // directly, and loadUserInfo (which calls requestAuthCode) must run after the lock is released.
+        const refreshed = await this.requestMutex.runExclusive(async () => {
             try {
                 APS.incApsCalls("authentication-v2-token")
                 const res = await fetch(ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN, {
@@ -277,28 +285,29 @@ class APS {
                     if (shouldRelog) {
                         globalAddToast("warning", "Must Re-signin.", apsErrorMessage(json))
                         this._auth = undefined
-                        await this.requestAuthCode()
-                        return false
-                    } else {
-                        return false
+                        await this.openAuthPopup()
                     }
+                    return false
                 }
                 this._auth = toStoredAuth(json)
-                if (this._auth) {
-                    await this.loadUserInfo(this._auth)
-                    if (APS.userInfo) {
-                        globalAddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
-                    }
-                }
                 return true
             } catch (_e) {
                 World.analyticsSystem?.exception("APS Login Failure")
                 globalAddToast("error", "Error signing in.", "Please try again.")
                 this._auth = undefined
-                await this.requestAuthCode()
+                await this.openAuthPopup()
                 return false
             }
         })
+        if (!refreshed) return false
+
+        if (this._auth) {
+            await this.loadUserInfo(this._auth)
+            if (APS.userInfo) {
+                globalAddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+            }
+        }
+        return true
     }
 
     /**
