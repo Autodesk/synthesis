@@ -1,19 +1,19 @@
-import { beforeAll, describe, expect, test, vi } from "vitest"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import { beforeAll, afterAll, describe, expect, test, vi } from "vitest"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import PhysicsSystem, { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { getMiraAssembly } from "@/test/GetAssets.ts"
+import { mockConsole } from "@/test/mocks/Common.ts"
 
 describe("Mirabuf Physics Loading", () => {
     beforeAll(async () => {
-        vi.spyOn(console, "warn").mockReturnValue()
-        vi.spyOn(console, "log").mockReturnValue()
+        mockConsole()
+    })
+    afterAll(async () => {
+        vi.restoreAllMocks()
     })
 
     test("Body Loading (Dozer)", async () => {
-        const assembly = await MirabufCachingService.cacheRemote(
-            "/api/mira/robots/Dozer v11.mira",
-            MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
+        const assembly = await getMiraAssembly("DOZER")
         const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
         const mapping = physSystem.createBodiesFromParser(parser, new LayerReserve())
@@ -29,10 +29,7 @@ describe("Mirabuf Physics Loading", () => {
      * Mira File: https://synthesis.autodesk.com/api/mira/private/Multi-Joint Wheels v0.mira
      */
     test("Body Loading (Multi-Joint Wheels)", async () => {
-        const assembly = await MirabufCachingService.cacheRemote(
-            "/api/mira/private/Multi-Joint Wheels v0.mira",
-            MiraType.ROBOT
-        ).then(x => MirabufCachingService.get(x!.hash))
+        const assembly = await getMiraAssembly("MULTI_JOINT")
         const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
         const mapping = physSystem.createBodiesFromParser(parser, new LayerReserve())

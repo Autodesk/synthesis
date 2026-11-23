@@ -12,12 +12,12 @@ const OPFS_PROBE_NAME = "__opfs_probe__"
 
 class OPFSBackend implements MirabufStorageBackend {
     constructor(
-        private root: FileSystemDirectoryHandle,
-        private dir: FileSystemDirectoryHandle
+        private _root: FileSystemDirectoryHandle,
+        private _dir: FileSystemDirectoryHandle
     ) {}
 
     async hasFile(hash: string): Promise<boolean> {
-        return this.dir
+        return this._dir
             .getFileHandle(hash)
             .then(() => true)
             .catch(() => false)
@@ -25,7 +25,7 @@ class OPFSBackend implements MirabufStorageBackend {
 
     async readFile(hash: string): Promise<ArrayBuffer | undefined> {
         try {
-            const fileHandle = await this.dir.getFileHandle(hash, { create: false })
+            const fileHandle = await this._dir.getFileHandle(hash, { create: false })
             const file = await fileHandle.getFile()
             return await file.arrayBuffer()
         } catch (e) {
@@ -38,19 +38,19 @@ class OPFSBackend implements MirabufStorageBackend {
     }
 
     async writeFile(hash: string, buffer: ArrayBuffer): Promise<void> {
-        const fileHandle = await this.dir.getFileHandle(hash, { create: true })
+        const fileHandle = await this._dir.getFileHandle(hash, { create: true })
         const writable = await fileHandle.createWritable()
         await writable.write(buffer)
         await writable.close()
     }
 
     async removeFile(hash: string): Promise<void> {
-        await this.dir.removeEntry(hash).catch(() => {})
+        await this._dir.removeEntry(hash).catch(() => {})
     }
 
     async listFiles(): Promise<string[]> {
         const keys: string[] = []
-        for await (const name of this.dir.keys()) {
+        for await (const name of this._dir.keys()) {
             keys.push(name)
         }
         return keys
@@ -58,12 +58,12 @@ class OPFSBackend implements MirabufStorageBackend {
 
     async removeAll(): Promise<void> {
         // Remove legacy separated directories
-        this.root.removeEntry("Robots", { recursive: true }).catch(() => {})
-        this.root.removeEntry("Fields", { recursive: true }).catch(() => {})
-        this.root.removeEntry("Pieces", { recursive: true }).catch(() => {})
+        this._root.removeEntry("Robots", { recursive: true }).catch(() => {})
+        this._root.removeEntry("Fields", { recursive: true }).catch(() => {})
+        this._root.removeEntry("Pieces", { recursive: true }).catch(() => {})
 
-        for await (const key of this.dir.keys()) {
-            await this.dir.removeEntry(key).catch(e => console.warn("could not remove file", key, e))
+        for await (const key of this._dir.keys()) {
+            await this._dir.removeEntry(key).catch(e => console.warn("could not remove file", key, e))
         }
     }
 }
@@ -73,11 +73,11 @@ const IDB_STORE_NAME = "assemblies"
 const IDB_VERSION = 1
 
 class IndexedDBBackend implements MirabufStorageBackend {
-    constructor(private db: IDBDatabase) {}
+    constructor(private _db: IDBDatabase) {}
 
     async hasFile(hash: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            const tx = this.db.transaction(IDB_STORE_NAME, "readonly")
+            const tx = this._db.transaction(IDB_STORE_NAME, "readonly")
             const store = tx.objectStore(IDB_STORE_NAME)
             // Use getKey instead of get to avoid loading the full blob into memory
             const req = store.getKey(hash)
@@ -88,7 +88,7 @@ class IndexedDBBackend implements MirabufStorageBackend {
 
     async readFile(hash: string): Promise<ArrayBuffer | undefined> {
         return new Promise((resolve, reject) => {
-            const tx = this.db.transaction(IDB_STORE_NAME, "readonly")
+            const tx = this._db.transaction(IDB_STORE_NAME, "readonly")
             const store = tx.objectStore(IDB_STORE_NAME)
             const req = store.get(hash)
             req.onsuccess = () => {
@@ -101,7 +101,7 @@ class IndexedDBBackend implements MirabufStorageBackend {
 
     async writeFile(hash: string, buffer: ArrayBuffer): Promise<void> {
         return new Promise((resolve, reject) => {
-            const tx = this.db.transaction(IDB_STORE_NAME, "readwrite")
+            const tx = this._db.transaction(IDB_STORE_NAME, "readwrite")
             const store = tx.objectStore(IDB_STORE_NAME)
             const req = store.put({ hash, data: buffer })
             req.onsuccess = () => resolve()
@@ -111,7 +111,7 @@ class IndexedDBBackend implements MirabufStorageBackend {
 
     async removeFile(hash: string): Promise<void> {
         return new Promise((resolve, reject) => {
-            const tx = this.db.transaction(IDB_STORE_NAME, "readwrite")
+            const tx = this._db.transaction(IDB_STORE_NAME, "readwrite")
             const store = tx.objectStore(IDB_STORE_NAME)
             const req = store.delete(hash)
             req.onsuccess = () => resolve()
@@ -121,7 +121,7 @@ class IndexedDBBackend implements MirabufStorageBackend {
 
     async listFiles(): Promise<string[]> {
         return new Promise((resolve, reject) => {
-            const tx = this.db.transaction(IDB_STORE_NAME, "readonly")
+            const tx = this._db.transaction(IDB_STORE_NAME, "readonly")
             const store = tx.objectStore(IDB_STORE_NAME)
             const req = store.getAllKeys()
             req.onsuccess = () => resolve(req.result as string[])
@@ -131,7 +131,7 @@ class IndexedDBBackend implements MirabufStorageBackend {
 
     async removeAll(): Promise<void> {
         return new Promise((resolve, reject) => {
-            const tx = this.db.transaction(IDB_STORE_NAME, "readwrite")
+            const tx = this._db.transaction(IDB_STORE_NAME, "readwrite")
             const store = tx.objectStore(IDB_STORE_NAME)
             const req = store.clear()
             req.onsuccess = () => resolve()

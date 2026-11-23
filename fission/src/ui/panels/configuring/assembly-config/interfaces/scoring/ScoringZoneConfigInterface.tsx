@@ -19,13 +19,15 @@ interface ZoneConfigProps {
 const ScoringZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
     const [points, setPoints] = useState<number>(selectedZone.points)
     const [accumulating, setAccumulating] = useState<boolean>(selectedZone.shouldPointsAccumulate)
+    const [destroyGamepiece, setDestroyGamepiece] = useState<boolean>(selectedZone.destroyGamepiece ?? false)
 
     const applyExtrasOnSave = useCallback(
         (zone: ScoringZonePreferences) => {
             zone.points = points
             zone.shouldPointsAccumulate = accumulating
+            zone.destroyGamepiece = destroyGamepiece
         },
-        [points, accumulating]
+        [points, accumulating, destroyGamepiece]
     )
 
     const removeZoneObject = useCallback((field: MirabufSceneObject, zone: ScoringZonePreferences) => {
@@ -53,6 +55,12 @@ const ScoringZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, 
                 tooltip="If disabled, gamepieces that exit the scoring zone will be subtracted from the score (for pick and place games)"
                 checked={accumulating}
                 onClick={checked => setAccumulating(checked)}
+            />
+            <Checkbox
+                label="Destroy Gamepiece"
+                tooltip="Remove gamepieces from the simulation after they enter this scoring zone"
+                checked={destroyGamepiece}
+                onClick={checked => setDestroyGamepiece(checked)}
             />
         </ZoneConfigBase>
     )

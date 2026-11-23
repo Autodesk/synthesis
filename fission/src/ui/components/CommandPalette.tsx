@@ -2,14 +2,15 @@ import { Box, List, ListItemButton, ListItemText, Paper, Stack, TextField } from
 import Fuse from "fuse.js"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import EventSystem from "@/systems/EventSystem"
 import World from "@/systems/World"
-import InputSystem from "@/systems/input/InputSystem"
-import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { reportUIInteraction } from "@/systems/analytics/AnalyticsSystem"
+import InputSystem, { ESCAPE_PRIORITY } from "@/systems/input/InputSystem"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import CommandRegistry, { type CommandDefinition } from "@/ui/components/CommandRegistry"
 import "@/ui/panels/DebugPanel"
 import "@/ui/modals/configuring/SettingsModal"
-import "@/ui/panels/mirabuf/ImportMirabufPanel"
+import "@/ui/modals/mirabuf/LibraryModal"
 import "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import "@/ui/panels/configuring/MatchModeConfigPanel"
 
@@ -21,8 +22,7 @@ function isTextInputTarget(target: EventTarget | null): boolean {
 }
 
 const CommandPalette: React.FC = () => {
-    const { addToast, modal } = useUIContext()
-    const { isMainMenuOpen } = useStateContext()
+    const { addToast, modal, blockState } = useUIContext()
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [query, setQuery] = useState<string>("")
@@ -39,10 +39,11 @@ const CommandPalette: React.FC = () => {
     }, [])
 
     const openPalette = useCallback(() => {
+        if (blockState.blocked) return
         setIsOpen(true)
         InputSystem.setCommandPaletteOpen(true)
         setTimeout(() => inputRef.current?.focus(), 0)
-    }, [])
+    }, [blockState])
 
     // Register command(s) not owned elsewhere
     useEffect(() => {
@@ -55,9 +56,9 @@ const CommandPalette: React.FC = () => {
                 perform: () => {
                     const dragSystem = World.dragModeSystem
                     if (!dragSystem) return
-                    dragSystem.enabled = !dragSystem.enabled
-                    const status = dragSystem.enabled ? "enabled" : "disabled"
-                    addToast("info", "Drag Mode", `Drag mode has been ${status}`)
+                    const enabled = !dragSystem.enabled
+                    EventSystem.dispatch("SetDragModeEvent", { enabled })
+                    addToast("info", "Drag Mode", `Drag mode has been ${enabled ? "enabled" : "disabled"}`)
                 },
             },
         ]
@@ -68,6 +69,7 @@ const CommandPalette: React.FC = () => {
     }, [addToast])
 
     // Subscribe to registry updates to refresh palette command list
+    // TODO: refactor such that registryTick isn't needed, as it's a hack
     const [registryTick, setRegistryTick] = useState(0)
     useEffect(() => {
         const registry = CommandRegistry.get()
@@ -81,6 +83,7 @@ const CommandPalette: React.FC = () => {
         }
     }, [isOpen])
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: removing registryTick here would break this component
     const commands = useMemo<CommandDefinition[]>(() => {
         return CommandRegistry.get().getCommands()
     }, [registryTick])
@@ -96,13 +99,15 @@ const CommandPalette: React.FC = () => {
         })
     }, [commands])
 
-    InputSystem.escapeKeyListeners[0] = () => {
-        if (isOpen) {
-            closePalette()
-            return true
-        }
-        return false
-    }
+    useEffect(
+        () =>
+            InputSystem.addEscapeHandler(() => {
+                if (!isOpen) return false
+                closePalette()
+                return true
+            }, ESCAPE_PRIORITY.COMMAND_PALETTE),
+        [isOpen, closePalette]
+    )
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase()
@@ -117,7 +122,7 @@ const CommandPalette: React.FC = () => {
     const execute = useCallback(
         (index: number) => {
             const cmd = visible[index]
-            World.analyticsSystem?.event("Command Executed", { command: cmd?.label ?? "Unknown" })
+            reportUIInteraction("Command Palette Command", cmd?.label ?? "Unknown")
             if (cmd) {
                 cmd.perform()
             } else {
@@ -135,20 +140,19 @@ const CommandPalette: React.FC = () => {
                 if (isTextInputTarget(e.target)) return
                 e.preventDefault()
                 if (!World.isAlive) return
-                if (isMainMenuOpen) return
                 if (modal) return
                 openPalette()
             }
         }
         window.addEventListener("keydown", onKeyDown)
         return () => window.removeEventListener("keydown", onKeyDown)
-    }, [isOpen, isMainMenuOpen, modal, openPalette, closePalette])
+    }, [modal, openPalette])
 
     useEffect(() => {
-        if ((isMainMenuOpen || modal) && isOpen) {
+        if (modal && isOpen) {
             closePalette()
         }
-    }, [isMainMenuOpen, modal, isOpen, closePalette])
+    }, [modal, isOpen, closePalette])
 
     useEffect(() => {
         if (!isOpen) return
@@ -234,8 +238,8 @@ const CommandPalette: React.FC = () => {
                                     selected={i === activeIndex}
                                     onMouseEnter={() => setActiveIndex(i)}
                                     onClick={() => execute(i)}
-                                    ref={_element => {
-                                        listItemRefs.current[i] = _element
+                                    ref={element => {
+                                        listItemRefs.current[i] = element
                                     }}
                                 >
                                     <ListItemText primary={c.label} secondary={c.description} />

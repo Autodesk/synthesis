@@ -1,12 +1,17 @@
+import type { SceneObjectId } from "@/systems/scene/SceneRenderer.ts"
+
 abstract class SceneObject {
-    private _id: number | null = null
+    private _id: SceneObjectId | null = null
 
     public get id() {
         return this._id!
     }
 
-    public set id(sceneId: number) {
-        if (this._id) return
+    public set id(sceneId: SceneObjectId) {
+        if (this._id) {
+            console.warn("Tried to set an existing ID")
+            return
+        }
         this._id = sceneId
     }
 

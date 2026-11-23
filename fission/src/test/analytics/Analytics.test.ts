@@ -43,7 +43,7 @@ describe("Analytics", () => {
         })
     }
 
-    describe("With gtag Script", () => {
+    describe.skipIf(server.browser === "firefox")("With gtag Script", () => {
         beforeAll(async () => {
             vi.useFakeTimers()
             const script = document.createElement("script")
@@ -60,8 +60,7 @@ describe("Analytics", () => {
             expectTypeOf(window.dataLayer!).toBeArray()
         })
 
-        test("gtag calls fetch with appropriate values", async ({ skip }) => {
-            skip(server.browser == "firefox", "Firefox blocks Google Analytics")
+        test("gtag calls fetch with appropriate values", async () => {
             PreferencesSystem.setUserPreference("ReportAnalytics", true)
 
             const initialParams = mockRequestParametersHandle()

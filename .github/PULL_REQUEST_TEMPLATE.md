@@ -42,6 +42,4 @@ Before merging, ensure the following criteria are met:
 - [ ] A feature toggle or safe disable path has been added (if applicable).
 - [ ] User-facing polish:
   - Ask: *"Is this ready-looking?"*
-- [ ] Cross-linking between Jira and GitHub:
-  - PR links to the relevant Jira issue.
-  - Jira ticket has a comment referencing this PR.
+- [ ] PR links to the relevant Jira issue.

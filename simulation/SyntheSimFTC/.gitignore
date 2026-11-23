@@ -1,0 +1,11 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+.vscode
+
+# Ignore Gradle build output directory
+build/
+ctre-sil/
+bin/
+
+.settings/
+.classpath

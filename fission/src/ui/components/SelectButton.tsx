@@ -32,7 +32,7 @@ type SelectButtonProps = {
 
 const SelectButton: React.FC<SelectButtonProps> = ({ value, color, placeholder, onSelect, className }) => {
     const [selecting, setSelecting] = useState<boolean>(false)
-    const timeoutRef = useRef<NodeJS.Timeout>()
+    const timeoutRef = useRef<NodeJS.Timeout>(undefined)
 
     const onReceiveSelection = useCallback(
         (value: Jolt.Body) => {

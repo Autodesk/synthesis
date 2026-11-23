@@ -1,70 +1,67 @@
-import { type NoraNumber, type NoraType, NoraTypes } from "../Nora"
+import {
+    areTypesCompatible,
+    BaseType,
+    type NoraBaseValue,
+    valueMatchesType,
+    type NoraType,
+    type NoraValueOf,
+} from "../Nora"
 
-export type SimSupplier = {
-    getSupplierType(): NoraTypes
-    getSupplierValue(): NoraType
+export type SimSupplier<T extends NoraType> = {
+    get supplierType(): T
+    getSupplierValue(): NoraValueOf<T>
 }
 
-export type SimReceiver = {
-    getReceiverType(): NoraTypes
-    setReceiverValue(val: NoraType): void
+export type SimReceiver<T extends NoraType> = {
+    get receiverType(): T
+    setReceiverValue(val: NoraValueOf<T>): void
 }
 
-export type SimFlow = {
-    supplier: SimSupplier
-    receiver: SimReceiver
+export type SimFlow<T extends NoraType = NoraType> = {
+    supplier: SimSupplier<T>
+    receiver: SimReceiver<T>
 }
 
-export function validate(s: SimSupplier, r: SimReceiver): boolean {
-    return s.getSupplierType() === r.getReceiverType()
+export function validate<T extends NoraType, U extends NoraType>(s: SimSupplier<T>, r: SimReceiver<U>): boolean {
+    return areTypesCompatible(s.supplierType, r.receiverType)
 }
 
-export class SimSupplierAverage implements SimSupplier {
-    private _suppliers: SimSupplier[]
+export enum AggregateStrategy {
+    AVERAGE,
+}
 
-    public constructor(suppliers?: SimSupplier[]) {
-        if (!suppliers || suppliers.some(x => x.getSupplierType() != NoraTypes.NUMBER)) {
-            this._suppliers = []
-        } else {
-            this._suppliers = suppliers
+type AggregateValuesFunc = (type: NoraType, vals: NoraValueOf<NoraType>[]) => NoraValueOf<NoraType>
+
+const aggregateAverage: AggregateValuesFunc = <T extends NoraType>(type: T, vals: NoraValueOf<T>[]): NoraValueOf<T> => {
+    if (vals.length === 0) throw new Error("Tried to aggregate empty NoraValue array")
+
+    if (vals.some(v => v.length !== type.length)) throw new Error("Tried to aggregate array of differing NoraValues")
+
+    if (vals.some(v => !valueMatchesType(v, type)))
+        throw new Error("Tried to aggregate NoraValues with mismatching types")
+
+    let ret: NoraBaseValue[] = type.map(
+        t => ({ value: t.type === BaseType.BOOLEAN ? false : 0.0, baseType: t }) as NoraBaseValue
+    )
+
+    for (let i = 0; i < type.length; i++) {
+        const t = type[i]
+        const avg = vals.map(v => Number(v[i].value)).reduce((acc, v) => acc + v, 0) / vals.length
+        if (t.type === BaseType.BOOLEAN) {
+            // majority vote
+            ret[i].value = avg > 0.5
+        } else if (t.type === BaseType.NUMBER) {
+            ret[i].value = avg
         }
     }
 
-    public addSupplier(supplier: SimSupplier) {
-        if (supplier.getSupplierType() == NoraTypes.NUMBER) {
-            this._suppliers.push(supplier)
-        }
-    }
-
-    getSupplierType(): NoraTypes {
-        return NoraTypes.NUMBER
-    }
-    getSupplierValue(): NoraNumber {
-        return this._suppliers.reduce((prev, next) => prev + (next.getSupplierValue() as NoraNumber), 0)
-    }
+    return ret as NoraValueOf<T>
 }
 
-export class SimReceiverDistribution implements SimReceiver {
-    private _receivers: SimReceiver[]
+const AGGREGATE_FUNCTIONS: { [key in AggregateStrategy]: AggregateValuesFunc } = {
+    [AggregateStrategy.AVERAGE]: aggregateAverage,
+}
 
-    public constructor(receivers?: SimReceiver[]) {
-        if (!receivers || receivers.some(x => x.getReceiverType() != NoraTypes.NUMBER)) {
-            this._receivers = []
-        } else {
-            this._receivers = receivers
-        }
-    }
-
-    public addReceiver(receiver: SimReceiver) {
-        if (receiver.getReceiverType() == NoraTypes.NUMBER) {
-            this._receivers.push(receiver)
-        }
-    }
-
-    getReceiverType(): NoraTypes {
-        return NoraTypes.NUMBER
-    }
-    setReceiverValue(value: NoraNumber) {
-        this._receivers.forEach(x => x.setReceiverValue(value))
-    }
+export function aggregateValues<T extends NoraType>(strategy: AggregateStrategy, type: T, vals: NoraValueOf<T>[]) {
+    return AGGREGATE_FUNCTIONS[strategy](type, vals)
 }

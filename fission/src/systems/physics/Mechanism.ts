@@ -1,8 +1,8 @@
 import type Jolt from "@synthesis.adsk/jolt-physics"
 import type { RigidNodeId } from "@/mirabuf/MirabufParser"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type { mirabuf } from "@/proto/mirabuf"
 import type { LayerReserve } from "./PhysicsSystem"
+import type { SceneObjectId } from "../scene/SceneRenderer"
 
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID
@@ -20,10 +20,11 @@ class Mechanism {
     public nodeToBody: Map<RigidNodeId, Jolt.BodyID>
     public constraints: MechanismConstraint[] = []
     public stepListeners: Jolt.PhysicsStepListener[] = []
+    public vehicleTesters: Jolt.VehicleCollisionTester[] = []
     public layerReserve?: LayerReserve
     public controllable: boolean
     public ghostBodies: Jolt.BodyID[] = []
-    public touchedObjects: MirabufSceneObject[] = [] // [SceneObjectKey, rootBodyId]
+    public touchedBodies: [SceneObjectId, RigidNodeId][] = []
 
     public constructor(
         rootBody: string,
@@ -43,6 +44,10 @@ class Mechanism {
 
     public addStepListener(listener: Jolt.PhysicsStepListener) {
         this.stepListeners.push(listener)
+    }
+
+    public addVehicleTester(tester: Jolt.VehicleCollisionTester) {
+        this.vehicleTesters.push(tester)
     }
 
     public getBodyByNodeId(nodeId: string) {

@@ -5,9 +5,13 @@ This document lists every Jolt Physics function used in `fission/src/` (producti
 Jolt memory management possible without reading the Jolt source for every call.
 
 Fission uses the WebAssembly port [`@synthesis.adsk/jolt-physics`](https://www.npmjs.com/package/@synthesis.adsk/jolt-physics)
-(a fork of JoltPhysics.js). Ownership semantics are therefore governed by the Emscripten WebIDL
-binding, defined in `jolt/JoltJS.idl` and `jolt/JoltJS.h`, layered on top of Jolt's C++ memory model.
-All invariants below were derived from those two files.
+(a fork of JoltPhysics.js). Ownership semantics are governed by the Emscripten WebIDL binding,
+defined in `jolt/JoltJS.idl` and `jolt/JoltJS.h`, layered on top of Jolt's C++ memory model. The IDL
+is compiled by `webidl_binder.py` (at build time) into `glue.cpp` (one file per build config, under
+`jolt/Build/<Config>/<ST|MT>/`), which implements each binding's argument- and return-passing as
+concrete C++: heap allocation (`new T(...)`), a function-local `static T` scratch, an in-place
+mutation of the receiver, or a plain reference into existing state. The categories and per-function
+invariants below describe what each generated binding actually does.
 
 ---
 
@@ -63,24 +67,57 @@ Plain (non-`RefTarget`) value types (`Vec3`, `RVec3`, `Quat`, `Mat44`, `Float3`,
 - **`INTERNAL_REF`** — the return value is a reference/handle into state owned by another Jolt
   object (the parent body, the physics system, a result struct, …). It is valid only while that
   owner lives, and the caller **must not** `destroy()` it. In `JoltJS.idl` these are bare interface
-  pointers or `[Ref]` / `[Const, Ref]` returns.
-- **`COPY`** — the return value is a freshly allocated heap object the caller **owns and must
-  `destroy()`** when done. In `JoltJS.idl` these are `[Value]` returns. Constructors (`new JOLT.X`)
-  and `*Settings.Create()` also produce caller-owned objects and are treated as `COPY` here.
+  pointers or `[Ref]` / `[Const, Ref]` returns, implemented in `glue.cpp` as `return self->Getter();`
+  or `return &self->member;` — the address of something that already exists independent of the call.
+- **`COPY`** — the return value is a freshly allocated heap object (`glue.cpp` does `return new
+  T(...)`) that the caller **owns and must `destroy()`** exactly once. This is **only** true for
+  constructors (`new JOLT.X(...)`) and for `<TwoBody>ConstraintSettings.Create(body1, body2)` (which
+  allocates a fresh refcounted `Constraint`).
+- **`STATIC_ALIAS`** — the return value is the address of a **function-local `static` C++ variable**
+  (`glue.cpp`: `static T temp; return (temp = self->Method(), &temp);`), not a heap allocation. The
+  caller **must never `destroy()` it** — it was never `malloc`/`new`'d, so `JOLT.destroy()` on it is a
+  bad-free. It is also **invalidated by the next call to that exact same bound function**, anywhere in
+  the program — that specific `static` is overwritten in place, not reallocated, so holding a
+  reference to it across another call to the same accessor silently returns stale/wrong data instead
+  of crashing. This applies to essentially every non-constructor `[Value]`-returning getter, math
+  operator, and static factory function in the binding: every vector/quaternion/matrix getter
+  (`GetPosition`, `GetLinearVelocity`, `GetWorldTransform`, `GetCenterOfMass`, `GetTranslation`,
+  `GetQuaternion`, …), every value-producing math operator (`Normalized`,
+  `AddVec3`/`SubVec3`/`MulVec3`/`DivVec3`, `MulFloat`/`DivFloat`, …), static factories (`Vec3.sZero`,
+  `Quat.sIdentity`, `Quat.sRotation`, `AABox.sBiggest`, …), and `ShapeSettings.Create()`. Snapshot the
+  data you need (read components via `GetX()`/`GetY()`/`GetZ()`, or copy into a `THREE.js` object)
+  before making any other call that returns the same C++ type from the same function.
+- **`ALIASES_THIS`** — the return value is the **same object as the receiver** (`glue.cpp`:
+  `return &(*self += *inV);` — an in-place compound-assignment operator that mutates `self` and
+  returns a reference to it). The caller **must never `destroy()` it** — doing so double-frees the
+  receiver, since the "returned" pointer and the receiver's pointer are identical. Applies to
+  `Vec3`/`RVec3`'s in-place `Add`/`Sub`/`Mul`/`Div` (**not** the `*Vec3`/`*Float`-suffixed siblings,
+  which are `STATIC_ALIAS` — see the rule of thumb below).
 - **`NONE`** — the function returns `void` or a primitive (`number` / `boolean` / enum). Nothing to
   free.
 
 ### Rules of thumb (from the binding)
 
-1. `[Value] T SomeGetter()` → returns a **COPY**; you must `destroy()` it. This includes every
-   vector/quaternion/matrix getter (`GetPosition`, `GetLinearVelocity`, `GetCenterOfMass`,
-   `GetWorldTransform`, …) and every math operator (`Add`, `Sub`, `Mul`, `Div`, `Normalized`, …).
+1. Value-returning getters, math operators, and static factory functions are implemented in
+   `glue.cpp` as a function-local `static T temp; return (temp = ..., &temp);` — i.e.
+   **`STATIC_ALIAS`**, not a heap copy. Never `destroy()` these, and never hold one across another
+   call to that same bound function. This includes every vector/quaternion/matrix getter
+   (`GetPosition`, `GetLinearVelocity`, `GetCenterOfMass`, `GetWorldTransform`, …) and every
+   *value-producing* math operator (`Normalized`, `AddVec3`, `MulFloat`, …). The **only** genuine
+   `COPY` returns are constructors (`new JOLT.X(...)`, which `glue.cpp` implements as a real
+   `return new T(...)`) and `<TwoBody>ConstraintSettings.Create()`.
 2. A bare interface-pointer return (`Body`, `Shape`, `BodyInterface`, `MotorSettings`, …) is an
    **INTERNAL_REF**; never `destroy()` it.
 3. A Jolt heap object passed as an argument that Jolt merely reads (`[Const, Ref]` / `[Ref]`) is
    **CLONED** — you keep ownership. A primitive/enum argument is **COPIED**.
-4. Contrary to what one might think, arithmetic methods (e.g. `Div`, `Add`, etc.) on `Jolt.Vec3` and `Jolt.RVec3` do not consume the vector nor do they produce a new one. They modify the `this` vector in place and return a reference to it.
-5. Annoyingly, the corresponding float arithmetic functions (e.g. `DivFloat`, `AddFloat`, etc.) on the same classes do not consume the vector, but do produce a newly allocated vector.
+4. Arithmetic methods `Add`, `Sub`, `Mul`, `Div` on `Jolt.Vec3` and `Jolt.RVec3` do not consume the
+   vector nor produce a new one — they modify the `this` vector in place
+   (`glue.cpp`: `return &(*self += *inV);`) and return a reference to `this`. This is `ALIASES_THIS`:
+   never `destroy()` the return, since it's the same object as the receiver.
+5. The corresponding `*Vec3`/`*Float`-suffixed arithmetic methods (`AddVec3`, `DivFloat`, `MulFloat`,
+   etc.) do **not** consume the operand and do **not** produce a newly allocated vector — `glue.cpp`
+   implements these the same way as every other math-op getter: a function-local `static T temp`.
+   They are `STATIC_ALIAS`, not `COPY`. Never `destroy()` their return value.
 
 ---
 
@@ -88,7 +125,8 @@ Plain (non-`RefTarget`) value types (`Vec3`, `RVec3`, `Quat`, `Mat44`, `Float3`,
 
 - `AABox.sBiggest()` (static)
   - Arguments: None
-  - Returns: `COPY` — `[Value] AABox`; caller must `destroy()`.
+  - Returns: `STATIC_ALIAS` — `glue.cpp`: `static AABox temp; return (temp = AABox::sBiggest(), &temp);`.
+    Do **not** `destroy()`; invalidated by the next call to `sBiggest()` anywhere in the program.
 - `AABox.mMin` / `AABox.mMax` (field read → `Vec3`)
   - Reading these fields yields references into the box; treat values pulled out via further
     `[Value]` getters (`GetY()`, etc.) per their own rules. The fields themselves: No Ownership Concerns.
@@ -109,16 +147,19 @@ through `BodyInterface`. Never `destroy()` a `Body`.
   - Returns: `INTERNAL_REF` — pointer to the body's motion properties. Do not `destroy()`.
 - `Body.GetPosition()` / `GetRotation()` / `GetCenterOfMassPosition()`
   - Arguments: None
-  - Returns: `COPY` — `[Value] RVec3` / `Quat`. Caller must `destroy()`.
+  - Returns: `STATIC_ALIAS` — each is its own function-local `static RVec3`/`Quat temp` in `glue.cpp`.
+    Do **not** `destroy()`. Calling `GetPosition()` again (on any body) overwrites the data the
+    previous `GetPosition()` result pointed to; `GetRotation()` has its own separate static and does
+    not alias `GetPosition()`'s.
 - `Body.GetWorldTransform()` / `GetCenterOfMassTransform()`
   - Arguments: None
-  - Returns: `COPY` — `[Value] RMat44`. Caller must `destroy()`.
+  - Returns: `STATIC_ALIAS` — `static RMat44 temp` per function. Do **not** `destroy()`.
 - `Body.GetWorldSpaceBounds()`
   - Arguments: None
-  - Returns: `COPY` — `[Value] AABox`. Caller must `destroy()`.
+  - Returns: `STATIC_ALIAS` — `static AABox temp`. Do **not** `destroy()`.
 - `Body.GetLinearVelocity()` / `GetAngularVelocity()` / `GetAccumulatedForce()`
   - Arguments: None
-  - Returns: `COPY` — `[Value] Vec3`. Caller must `destroy()`.
+  - Returns: `STATIC_ALIAS` — `static Vec3 temp` per function. Do **not** `destroy()`.
 - `Body.SetLinearVelocity(velocity: Vec3)` / `SetAngularVelocity(velocity: Vec3)`
   - Arguments
     - `velocity`: CLONED (`[Const, Ref] Vec3`; value copied in, caller frees)
@@ -225,7 +266,7 @@ pattern).
   - Returns: `COPY` — reference counted `Shape`; caller owns the handle.
 - `BoxShape.GetHalfExtent()`
   - Arguments: None
-  - Returns: `COPY` — `[Value] Vec3`. Caller must `destroy()`.
+  - Returns: `STATIC_ALIAS` (`static Vec3 temp`). Do **not** `destroy()`.
 
 ## BoxShapeSettings
 
@@ -409,8 +450,12 @@ Obtained by `JOLT.castObject(constraint, JOLT.HingeConstraint)`; the cast does n
     - `columnIndex`: COPIED (number)
     - `column`: CLONED (`[Const, Ref] Vec4`; copied in, caller frees — fission destroys it)
   - Returns: `NONE`
-- `Mat44.GetTranslation()` → `COPY` (`[Value] Vec3`); `GetQuaternion()` → `COPY` (`[Value] Quat`);
-  `Multiply3x3(v: Vec3)` → `COPY` (`[Value] Vec3`, arg `v` CLONED). Caller must `destroy()` returns.
+- `Mat44.GetTranslation()` / `GetQuaternion()` / `Multiply3x3(v: Vec3)`
+  - Arguments (for `Multiply3x3`): `v`: CLONED (`[Const, Ref] Vec3`; caller frees).
+  - Returns: `STATIC_ALIAS` — each has its own `static Vec3`/`Quat temp` in `glue.cpp`
+    (`Multiply3x3`: `static Vec3 temp; return (temp = self->Multiply3x3(*inV), &temp);`). Do **not**
+    `destroy()` the return; `JOLT.destroy()` on it is a bad-free, since the address was never
+    `malloc`/`new`'d.
 
 ## MeshShapeSettings
 
@@ -432,7 +477,8 @@ Obtained by `JOLT.castObject(constraint, JOLT.HingeConstraint)`; the cast does n
 Obtained from `Body.GetMotionProperties()` (an `INTERNAL_REF`).
 
 - `MotionProperties.GetInverseMass()` — Returns `NONE` (number).
-- `MotionProperties.GetInverseInertiaDiagonal()` — Returns `COPY` (`[Value] Vec3`); caller `destroy()`s.
+- `MotionProperties.GetInverseInertiaDiagonal()` — Returns `STATIC_ALIAS` (`static Vec3 temp`); do
+  **not** `destroy()`.
 
 ## MotorSettings
 
@@ -549,24 +595,24 @@ Obtained from `JoltInterface.GetPhysicsSystem()` (an `INTERNAL_REF`). Never `des
 - `new Quat(x: number, y: number, z: number, w: number)`
   - Arguments: all COPIED (number)
   - Returns: `COPY` — caller owns it, must `destroy()`.
-- `Quat.sIdentity()` (static) — Returns `COPY` (`[Value] Quat`); caller `destroy()`s.
+- `Quat.sIdentity()` (static) — Returns `STATIC_ALIAS` (`static Quat temp`); do **not** `destroy()`.
 - `Quat.sRotation(axis: Vec3, angle: number)` (static)
   - Arguments
     - `axis`: CLONED (`[Const, Ref] Vec3`; caller frees)
     - `angle`: COPIED (number)
-  - Returns: `COPY` (`[Value] Quat`); caller `destroy()`s.
-- `Quat.GetEulerAngles()` → `COPY` (`[Value] Vec3`); caller `destroy()`s.
+  - Returns: `STATIC_ALIAS` (`static Quat temp`); do **not** `destroy()`.
+- `Quat.GetEulerAngles()` → `STATIC_ALIAS` (`static Vec3 temp`); do **not** `destroy()`.
 - `Quat.GetRotationAngle(axis: Vec3)`
   - Arguments: `axis`: CLONED. Returns: `NONE` (number).
 - `Quat.GetX()` / `GetY()` / `GetZ()` / `GetW()` — Returns `NONE` (number). No Ownership Concerns.
 
 ## RMat44
 
-Returned (by `[Value]`) from `Body.GetWorldTransform()` etc. — those returns are `COPY`s the caller
-owns.
+Returned from `Body.GetWorldTransform()` etc. — those returns are themselves `STATIC_ALIAS`, not
+caller-owned (see `Body` above).
 
-- `RMat44.GetTranslation()` → `COPY` (`[Value] RVec3`); caller `destroy()`s.
-- `RMat44.GetQuaternion()` → `COPY` (`[Value] Quat`); caller `destroy()`s.
+- `RMat44.GetTranslation()` → `STATIC_ALIAS` (`static RVec3 temp`); do **not** `destroy()`.
+- `RMat44.GetQuaternion()` → `STATIC_ALIAS` (`static Quat temp`); do **not** `destroy()`.
 
 ## RRayCast
 
@@ -577,7 +623,7 @@ owns.
   - Returns: `COPY` — caller owns it, must `destroy()`.
 - `RRayCast.GetPointOnRay(fraction: number)`
   - Arguments: `fraction`: COPIED (number)
-  - Returns: `COPY` (`[Const, Value] RVec3`); caller `destroy()`s.
+  - Returns: `STATIC_ALIAS` (`static RVec3 temp`); do **not** `destroy()`.
 
 ## RayCastResult
 
@@ -598,10 +644,18 @@ Accessed as `collector.mHit` (an `INTERNAL_REF` inside the collector). Do not `d
 - `new RVec3(x: number, y: number, z: number)`
   - Arguments: all COPIED (number)
   - Returns: `COPY` — caller owns it, must `destroy()`.
-- Math methods — `AddRVec3(other: RVec3)`, `SubRVec3(other: RVec3)`, `Sub(other: Vec3|RVec3)`,
-  `Mul(scalar: number)`, `Div(scalar: number)`, `Normalized()`
-  - Arguments: an `RVec3`/`Vec3` operand is CLONED (`[Const, Ref]`, caller frees); a scalar is COPIED.
-  - Returns: `COPY` (`[Value] RVec3`); caller must `destroy()` the result.
+- In-place math methods — `Add(other: Vec3)`, `Sub(other: Vec3)`, `Mul(scalar: number)`,
+  `Div(scalar: number)`
+  - Arguments: the `Vec3` operand is CLONED (`[Const, Ref]`, caller frees); a scalar is COPIED.
+  - Returns: `ALIASES_THIS` — `glue.cpp`: `return &(*self += *inV);` etc. Mutates `self` in place and
+    returns a reference to `self`, not a new object. Do **not** `destroy()` the return — it's the
+    same object as the receiver.
+- Value-producing math methods — `AddRVec3(other: RVec3)`, `SubRVec3(other: RVec3)`,
+  `MulRVec3(other: RVec3)`, `DivRVec3(other: RVec3)`, `MulFloat(scalar: number)`,
+  `DivFloat(scalar: number)`, `Normalized()`
+  - Arguments: an `RVec3` operand is CLONED (`[Const, Ref]`, caller frees); a scalar is COPIED.
+  - Returns: `STATIC_ALIAS` — each has its own `static RVec3 temp` in `glue.cpp`. Do **not**
+    `destroy()`; invalidated by the next call to that same method (on any `RVec3`).
 - `RVec3.Dot(other: RVec3)` — arg CLONED; Returns `NONE` (number).
 - `RVec3.GetX()` / `GetY()` / `GetZ()` — Returns `NONE` (number). No Ownership Concerns.
 
@@ -610,9 +664,9 @@ Accessed as `collector.mHit` (an `INTERNAL_REF` inside the collector). Do not `d
 Obtained from `Body.GetShape()` / `ShapeResult.Get()` (`INTERNAL_REF`s). Refcounted — do not
 `destroy()` an internal reference.
 
-- `Shape.GetCenterOfMass()` → `COPY` (`[Value] Vec3`); caller `destroy()`s.
-- `Shape.GetLocalBounds()` → `COPY` (`[Value] AABox`); caller `destroy()`s.
-- `Shape.GetMassProperties()` → `COPY` (`[Value] MassProperties`); caller `destroy()`s.
+- `Shape.GetCenterOfMass()` → `STATIC_ALIAS` (`static Vec3 temp`); do **not** `destroy()`.
+- `Shape.GetLocalBounds()` → `STATIC_ALIAS` (`static AABox temp`); do **not** `destroy()`.
+- `Shape.GetMassProperties()` → `STATIC_ALIAS` (`static MassProperties temp`); do **not** `destroy()`.
 - `Shape.GetSubType()` → `NONE` (enum). No Ownership Concerns.
 
 ## ShapeFilter
@@ -629,7 +683,8 @@ Obtained from `Body.GetShape()` / `ShapeResult.Get()` (`INTERNAL_REF`s). Refcoun
     - `box`: CLONED (`[Const, Ref] AABox`); `centerOfMass`: CLONED (`[Const, Ref] Vec3`);
       `rotation`: CLONED (`[Const, Ref] Quat`); `scale`: CLONED (`[Const, Ref] Vec3`)
     - (fission passes throwaway `sBiggest()` / `GetCenterOfMass()` / `sIdentity()` results here —
-      those are themselves `COPY`s that should be `destroy()`ed.)
+      those are themselves `STATIC_ALIAS`, not `COPY`; they must **not** be `destroy()`ed, only read
+      from before the next call to that same static factory/getter.)
   - Returns: `COPY` — caller owns the helper and must `destroy()` it (fission does).
 - `ShapeGetTriangles.GetVerticesData()`
   - Arguments: None
@@ -639,7 +694,8 @@ Obtained from `Body.GetShape()` / `ShapeResult.Get()` (`INTERNAL_REF`s). Refcoun
 
 ## ShapeResult
 
-Returned by `*Settings.Create()`. It is itself a `COPY` (caller owns it, must `destroy()`).
+Returned by `*Settings.Create()`. It is itself `STATIC_ALIAS`, **not** `COPY` — do not `destroy()` it
+(see `ShapeSettings.Create()` below).
 
 - `ShapeResult.HasError()` / `.IsValid` — boolean → `NONE`. No Ownership Concerns.
 - `ShapeResult.Get()`
@@ -655,9 +711,16 @@ Returned by `*Settings.Create()`. It is itself a `COPY` (caller owns it, must `d
 
 - `ShapeSettings.Create()`
   - Arguments: None
-  - Returns: `COPY` — `[Value] ShapeResult`. The caller owns the returned `ShapeResult` and must
-    `destroy()` it; the `Shape` it wraps is refcounted (see `ShapeResult.Get()`). The settings object
-    itself is unaffected and must be `destroy()`ed separately.
+  - Returns: `STATIC_ALIAS`, **not** `COPY` — `glue.cpp`: `static Shape::ShapeResult temp; return
+    (temp = self->Create(), &temp);`. Do **not** `destroy()` the returned `ShapeResult`. Because the
+    IDL binder generates one function per *base* interface, this single `static` is shared by
+    **every** `*ShapeSettings` subtype used here (`BoxShapeSettings`, `MeshShapeSettings`,
+    `ConvexHullShapeSettings`, `StaticCompoundShapeSettings`, …) — calling `.Create()` on any one of
+    them overwrites the same slot every other one's `.Create()` result pointed to. Read/consume the
+    result (`HasError()`, `.Get()`) before calling `.Create()` again on any `*ShapeSettings` object.
+    The `Shape` it wraps (via `ShapeResult.Get()`) is refcounted and unaffected by this. The settings
+    object itself (`BoxShapeSettings`, etc.) is a separate, genuinely heap-allocated `COPY` and must
+    still be `destroy()`ed.
 
 ## Constraint creation — `FixedConstraintSettings` / `HingeConstraintSettings` / `SliderConstraintSettings`.`Create`
 
@@ -726,17 +789,25 @@ Obtained via `JOLT.castObject(...)`.
 
 - `TwoBodyConstraint.GetConstraintToBody1Matrix()`
   - Arguments: None
-  - Returns: `COPY` — `[Value] Mat44`. Caller must `destroy()`.
+  - Returns: `STATIC_ALIAS` (`static Mat44 temp`). Do **not** `destroy()`.
 
 ## Vec3
 
 - `new Vec3(x?: number, y?: number, z?: number)` (also `new Vec3(float3: Float3)`)
   - Arguments: numbers are COPIED; a `Float3` argument is CLONED (`[Const, Ref]`, caller frees).
   - Returns: `COPY` — caller owns it, must `destroy()`.
-- Math methods — `Add(other: Vec3)`, `Sub(other: Vec3)`, `Mul(scalar: number)`, `Div(scalar: number)`,
-  `Normalized()`
+- In-place math methods — `Add(other: Vec3)`, `Sub(other: Vec3)`, `Mul(scalar: number)`,
+  `Div(scalar: number)`
   - Arguments: a `Vec3` operand is CLONED; a scalar is COPIED.
-  - Returns: `COPY` (`[Value] Vec3`); caller must `destroy()` the result.
+  - Returns: `ALIASES_THIS` — `glue.cpp`: `return &(*self += *inV);` etc. Mutates `self` in place and
+    returns a reference to `self`. Do **not** `destroy()` the return — same object as the receiver.
+- Value-producing math methods — `AddVec3(other: Vec3)`, `SubVec3(other: Vec3)`,
+  `MulVec3(other: Vec3)`, `DivVec3(other: Vec3)`, `MulFloat(scalar: number)`,
+  `DivFloat(scalar: number)`, `Normalized()`, `NormalizedOr(zero: Vec3)`,
+  `GetNormalizedPerpendicular()`
+  - Arguments: a `Vec3` operand is CLONED; a scalar is COPIED.
+  - Returns: `STATIC_ALIAS` — each has its own `static Vec3 temp` in `glue.cpp`. Do **not**
+    `destroy()`; invalidated by the next call to that same method (on any `Vec3`).
 - `Vec3.Dot(other: Vec3)` — arg CLONED; Returns `NONE` (number).
 - `Vec3.Length()` — Returns `NONE` (number).
 - `Vec3.GetX()` / `GetY()` / `GetZ()` — Returns `NONE` (number). No Ownership Concerns.

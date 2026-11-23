@@ -17,6 +17,15 @@ export interface StoredTheme {
     redAlliance: {
         main: string
     }
+    topBar: {
+        main: string
+    }
+    surface: {
+        main: string
+    }
+    topBarText: {
+        main: string
+    }
 }
 
 export const ThemeContext = createContext({
@@ -28,6 +37,12 @@ export const ThemeContext = createContext({
     setBlueAllianceColor: (_color: string) => {},
     redAllianceColor: "",
     setRedAllianceColor: (_color: string) => {},
+    topBarColor: "",
+    setTopBarColor: (_color: string) => {},
+    surfaceColor: "",
+    setSurfaceColor: (_color: string) => {},
+    topBarTextColor: "",
+    setTopBarTextColor: (_color: string) => {},
 })
 
 export const useThemeContext = () => useContext(ThemeContext)

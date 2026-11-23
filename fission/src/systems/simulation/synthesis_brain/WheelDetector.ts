@@ -287,6 +287,9 @@ export function detectAndTagWheels(assembly: mirabuf.Assembly): void {
     const jointDefs = assembly.data?.joints?.jointDefinitions as Record<string, mirabuf.joint.IJoint> | undefined
     if (!jointDefs) return
 
+    const hasExistingWheels = Object.values(jointDefs).some(jDef => jDef.userData?.data?.["wheel"] === "true")
+    if (hasExistingWheels) return
+
     const candidates = extractCandidates(jointDefs)
     if (candidates.length < 2) return
 

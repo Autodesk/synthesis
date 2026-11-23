@@ -2,15 +2,15 @@ import { Slider, Stack, Tooltip, Typography } from "@mui/material"
 import Label from "./Label"
 import { useEffect, useState } from "react"
 
-const StatefulSlider: React.FC<
-    Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & {
-        label: string
-        defaultValue: number
-        onChange: (val: number) => void
-        tooltip?: string
-        showValue?: boolean
-    }
-> = props => {
+export type StatefulSliderProps = Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & {
+    label: string
+    defaultValue: number
+    onChange: (val: number) => void
+    tooltip?: string
+    showValue?: boolean
+}
+
+const StatefulSlider: React.FC<StatefulSliderProps> = props => {
     const [value, setValue] = useState(props.defaultValue)
 
     useEffect(() => {

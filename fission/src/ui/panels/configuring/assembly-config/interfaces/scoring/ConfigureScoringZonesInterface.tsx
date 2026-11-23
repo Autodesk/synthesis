@@ -1,36 +1,35 @@
 import { Divider } from "@mui/material"
-import type React from "react"
-import { useState } from "react"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { useEffect, useMemo, useState } from "react"
 import EventSystem from "@/systems/EventSystem.ts"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
 import ScoringZoneConfigInterface from "./ScoringZoneConfigInterface"
 import { SelectMenuHeader } from "@/components/SelectMenu.tsx"
+import type { ConfigurationSubpanelComponent } from "@/panels/configuring/assembly-config/ConfigTypes.ts"
 
-const saveScoringZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
-    if (!zones || !field) return
-
-    const fieldPrefs = field.fieldPreferences
-    if (fieldPrefs) fieldPrefs.scoringZones = zones
-
-    field.savePreferences()
-    field.updateScoringZones()
-}
-
-interface ConfigureZonesProps {
-    selectedField: MirabufSceneObject
-    initialZones: ScoringZonePreferences[]
-}
-
-const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selectedField, initialZones }) => {
+const ConfigureScoringZonesInterface: ConfigurationSubpanelComponent = ({
+    selectedAssembly,
+    registerCleanupFunction,
+}) => {
     const [selectedZone, setSelectedZone] = useState<ScoringZonePreferences | undefined>(undefined)
 
+    const initialZones = useMemo(() => selectedAssembly.fieldPreferences?.scoringZones ?? [], [selectedAssembly])
+
+    useEffect(() => {
+        const initial = structuredClone(initialZones)
+        registerCleanupFunction(undefined, () => {
+            const prefs = selectedAssembly.fieldPreferences
+            if (prefs == null) return
+
+            prefs.scoringZones = initial
+            selectedAssembly.updateScoringZones()
+        })
+    }, [registerCleanupFunction, initialZones, selectedAssembly])
     return (
         <>
             {selectedZone === undefined ? (
                 <ManageScoringZonesInterface
-                    selectedField={selectedField}
+                    selectedField={selectedAssembly}
                     initialZones={initialZones}
                     selectZone={setSelectedZone}
                 />
@@ -46,10 +45,10 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                     />
                     <Divider />
                     <ScoringZoneConfigInterface
-                        selectedField={selectedField}
+                        selectedField={selectedAssembly}
                         selectedZone={selectedZone}
                         saveAllZones={() => {
-                            saveScoringZones(selectedField.fieldPreferences?.scoringZones, selectedField)
+                            selectedAssembly.updateScoringZones()
                         }}
                     />
                 </>

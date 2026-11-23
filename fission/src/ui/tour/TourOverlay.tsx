@@ -1,0 +1,226 @@
+import { Box, Popper, type PopperPlacementType } from "@mui/material"
+import type React from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { TOP_BAR_HEIGHT } from "@/ui/components/topbar/TopBarConfig"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { clippingAncestors, visibleRect } from "./AnchorGeometry"
+import type { ScreenPosition } from "./TourSteps"
+import { TOUR_STEPS } from "./TourSteps"
+import TourCard from "./TourCard"
+import { useTourContext } from "./TourProviderHelpers"
+
+const ZIndex = 1400 // above panels/modals (1300) and the top bar (1200)
+const SCRIM_Z_INDEX = ZIndex - 10
+const SCRIM_COLOR = "rgba(0,0,0,0.5)"
+const SCRIM_TEST_ID = "tour-scrim"
+const SCREEN_EDGE_GAP = 12
+const SPOTLIGHT_PAD = 6
+
+// panels and the topbar move anchors around without resizing them, and nothing fires for that
+const SETTLE_DELAYS = [0, 100, 250, 450]
+
+function screenPositionStyle(position: ScreenPosition | undefined) {
+    if (position === "top-left") {
+        return { top: TOP_BAR_HEIGHT + SCREEN_EDGE_GAP, left: SCREEN_EDGE_GAP }
+    }
+    return { top: "50%", left: "50%", transform: "translate(-50%, -50%)" }
+}
+
+const ARROW_EDGE_BY_BASE = { top: "bottom", bottom: "top", left: "right", right: "left" } as const
+
+function arrowEdgeFor(placement: PopperPlacementType) {
+    return ARROW_EDGE_BY_BASE[placement.split("-")[0] as keyof typeof ARROW_EDGE_BY_BASE]
+}
+
+const sameRect = (a: DOMRect | null, b: DOMRect | null) =>
+    a === b ||
+    (a !== null && b !== null && a.top === b.top && a.left === b.left && a.width === b.width && a.height === b.height)
+
+function useVisibleRect(element: HTMLElement | null) {
+    const [rect, setRect] = useState<DOMRect | null>(null)
+
+    useEffect(() => {
+        if (!element) {
+            setRect(null)
+            return
+        }
+        let frame = 0
+        let clippers = clippingAncestors(element)
+        const observer = new ResizeObserver(() => schedule())
+
+        const measure = () =>
+            setRect(prev => {
+                const next = visibleRect(element, clippers)
+                return sameRect(prev, next) ? prev : next
+            })
+        const schedule = () => {
+            frame ||= requestAnimationFrame(() => {
+                frame = 0
+                measure()
+            })
+        }
+        const remeasure = () => {
+            observer.disconnect()
+            clippers = clippingAncestors(element)
+            observer.observe(element)
+            clippers.forEach(clipper => observer.observe(clipper))
+            measure()
+        }
+
+        remeasure()
+        const timers = SETTLE_DELAYS.map(delay => setTimeout(remeasure, delay))
+        window.addEventListener("resize", remeasure)
+        window.addEventListener("scroll", schedule, { capture: true, passive: true })
+        return () => {
+            timers.forEach(clearTimeout)
+            if (frame) cancelAnimationFrame(frame)
+            observer.disconnect()
+            window.removeEventListener("resize", remeasure)
+            window.removeEventListener("scroll", schedule, { capture: true })
+        }
+    }, [element])
+
+    return rect
+}
+
+const SpotlightScrim: React.FC<{ rect: DOMRect }> = ({ rect }) => {
+    const view = document.documentElement
+    const top = Math.max(0, rect.top - SPOTLIGHT_PAD)
+    const left = Math.max(0, rect.left - SPOTLIGHT_PAD)
+    const right = Math.min(view.clientWidth, rect.right + SPOTLIGHT_PAD)
+    const bottom = Math.min(view.clientHeight, rect.bottom + SPOTLIGHT_PAD)
+
+    const bands = {
+        above: { top: 0, left: 0, right: 0, height: top },
+        below: { top: bottom, left: 0, right: 0, bottom: 0 },
+        before: { top, left: 0, width: left, height: bottom - top },
+        after: { top, left: right, right: 0, height: bottom - top },
+    }
+
+    return (
+        <>
+            {Object.entries(bands).map(([edge, band]) => (
+                <Box
+                    key={edge}
+                    data-testid={SCRIM_TEST_ID}
+                    sx={{
+                        position: "fixed",
+                        bgcolor: SCRIM_COLOR,
+                        zIndex: SCRIM_Z_INDEX,
+                        pointerEvents: "auto",
+                        ...band,
+                    }}
+                />
+            ))}
+            <Box
+                sx={{
+                    position: "fixed",
+                    top,
+                    left,
+                    width: right - left,
+                    height: bottom - top,
+                    borderRadius: "6px",
+                    boxShadow: "0 0 0 2px rgba(255,255,255,0.35)",
+                    zIndex: SCRIM_Z_INDEX,
+                    pointerEvents: "none",
+                }}
+            />
+        </>
+    )
+}
+
+const TourOverlay: React.FC = () => {
+    const { active, stepIndex, canAdvance, next, prev, skip, getAnchor } = useTourContext()
+    const { blockState } = useUIContext()
+    const [arrowRef, setArrowRef] = useState<HTMLElement | null>(null)
+
+    const step = active ? TOUR_STEPS[stepIndex] : undefined
+
+    // a closing panel leaves its element detached for a tick, and popper throws on a detached anchor
+    const rawAnchor = step?.anchorId ? getAnchor(step.anchorId) : null
+    const anchorEl = rawAnchor?.isConnected ? rawAnchor : null
+
+    const anchorRect = useVisibleRect(anchorEl)
+
+    const rectRef = useRef<DOMRect | null>(null)
+    rectRef.current = anchorRect
+    const popperAnchor = useMemo(
+        () =>
+            anchorEl && {
+                getBoundingClientRect: () => rectRef.current ?? anchorEl.getBoundingClientRect(),
+                contextElement: anchorEl,
+            },
+        [anchorEl]
+    )
+
+    const modifiers = useMemo(
+        () => [
+            { name: "offset", options: { offset: [0, 12] } },
+            { name: "flip", enabled: false },
+            // without these the card runs off screen above the near-fullscreen library modal
+            { name: "preventOverflow", options: { padding: 8, altAxis: true, tether: false } },
+            { name: "arrow", enabled: true, options: { element: arrowRef, padding: 12 } },
+        ],
+        [arrowRef]
+    )
+
+    if (!step) return null
+
+    const scrim = blockState.blocked ? null : step.focus === "screen" ? (
+        <Box
+            data-testid={SCRIM_TEST_ID}
+            sx={{ position: "fixed", inset: 0, bgcolor: SCRIM_COLOR, zIndex: SCRIM_Z_INDEX, pointerEvents: "auto" }}
+        />
+    ) : step.focus === "anchor" && anchorRect ? (
+        <SpotlightScrim rect={anchorRect} />
+    ) : null
+
+    const card = (
+        <TourCard
+            step={step}
+            stepIndex={stepIndex}
+            total={TOUR_STEPS.length}
+            onNext={next}
+            onPrev={prev}
+            onSkip={skip}
+            nextDisabled={!canAdvance}
+            {...(anchorEl && { setArrowRef, arrowEdge: arrowEdgeFor(step.placement) })}
+        />
+    )
+
+    if (anchorEl) {
+        return (
+            <>
+                {scrim}
+                {/* MUI force-updates the popper every render, so nothing here has to poke it */}
+                <Popper
+                    open
+                    anchorEl={popperAnchor}
+                    placement={step.placement}
+                    sx={{ zIndex: ZIndex, pointerEvents: "none" }}
+                    modifiers={modifiers}
+                >
+                    {card}
+                </Popper>
+            </>
+        )
+    }
+
+    return (
+        <>
+            {scrim}
+            <Box
+                sx={{
+                    position: "fixed",
+                    ...screenPositionStyle(step.screenPosition),
+                    zIndex: ZIndex,
+                    pointerEvents: "none",
+                }}
+            >
+                {card}
+            </Box>
+        </>
+    )
+}
+
+export default TourOverlay

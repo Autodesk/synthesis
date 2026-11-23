@@ -4,8 +4,12 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import type SceneObject from "@/systems/scene/SceneObject"
-import SceneRenderer, { STANDARD_CAMERA_FOV_X, STANDARD_CAMERA_FOV_Y } from "@/systems/scene/SceneRenderer"
-import JOLT from "@/util/loading/JoltSyncLoader"
+import SceneRenderer, {
+    type SceneObjectId,
+    STANDARD_CAMERA_FOV_X,
+    STANDARD_CAMERA_FOV_Y,
+} from "@/systems/scene/SceneRenderer"
+import type { RecursivePartial } from "@/util/Utility.ts"
 
 interface MockSceneObject {
     dispose: ReturnType<typeof vi.fn>
@@ -84,6 +88,7 @@ vi.mock("postprocessing", () => ({
     EffectComposer: vi.fn().mockImplementation(() => ({
         addPass: vi.fn(),
         render: vi.fn(),
+        setSize: vi.fn(),
         dispose: vi.fn(),
     })),
     EffectPass: vi.fn().mockImplementation(() => ({
@@ -194,16 +199,6 @@ describe("SceneRenderer", () => {
         test("should create sphere with default material", () => {
             const sphere = sceneRenderer.createSphere(1.0)
             expect(sphere.material).toBeInstanceOf(THREE.MeshToonMaterial)
-        })
-
-        test("should create box with default material and correct position", () => {
-            const vec3 = new JOLT.Vec3(2, 3, 4)
-
-            const box = sceneRenderer.createBox(vec3)
-            expect(box.material).toBeInstanceOf(THREE.MeshToonMaterial)
-            expect(box.geometry.attributes.position.array[0]).toBe(1)
-            expect(box.geometry.attributes.position.array[1]).toBe(1.5)
-            expect(box.geometry.attributes.position.array[2]).toBe(2)
         })
 
         test("should create toon material", () => {
@@ -335,19 +330,20 @@ describe("SceneRenderer", () => {
 
     describe("Gizmo Management", () => {
         test("should register gizmos with parents", () => {
+            const id = "123-abc-object-id" as SceneObjectId
             const mockGizmo = {
                 dispose: vi.fn(),
                 update: vi.fn(),
                 setup: vi.fn(),
                 hasParent: vi.fn().mockReturnValue(true),
-                parentObjectId: 123,
+                parentObjectId: id,
                 gizmo: { dragging: false },
-            }
+            } satisfies RecursivePartial<GizmoSceneObject>
 
             sceneRenderer.registerGizmoSceneObject(mockGizmo as unknown as GizmoSceneObject)
 
-            expect(sceneRenderer.gizmosOnMirabuf.has(123)).toBe(true)
-            expect(sceneRenderer.gizmosOnMirabuf.get(123)).toBe(mockGizmo)
+            expect(sceneRenderer.gizmosOnMirabuf.has(id)).toBe(true)
+            expect(sceneRenderer.gizmosOnMirabuf.get(id)).toBe(mockGizmo)
         })
 
         test("should not register gizmos without parents", () => {

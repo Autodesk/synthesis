@@ -1,11 +1,9 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import { getSpotlightAssembly, getUnusedAlliance } from "@/mirabuf/MirabufSceneObject"
 import EventSystem from "@/systems/EventSystem.ts"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { InputSchemeUseType } from "@/systems/input/InputTypes"
-import ScoreTracker from "@/systems/match_mode/ScoreTracker"
-import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
@@ -15,33 +13,56 @@ import { Button } from "@/ui/components/StyledComponents"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { tourTarget } from "@/ui/tour/TourSteps"
+import { useTourAnchor } from "@/ui/tour/TourProviderHelpers"
 import { Box, Stack } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import InputSchemeSelection from "./InputSchemeSelection"
+import { useHoldPhysicsPause } from "@/util/ReactHooks.ts"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // TODO: can we pass these as custom props?
     const { setSelectedScheme } = useStateContext()
     const { configureScreen, closePanel } = useUIContext()
+    const assemblySetupRef = useTourAnchor("assembly-setup")
+
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
+    useEffect(() => {
+        const { alliance, station } = getUnusedAlliance()
+        setAlliance(alliance)
+        setStation(station)
+    }, [])
+
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
-    useEffect(() => {
-        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
+    // Accepting through the gizmo also closes the panel, which finishes it a second time
+    const drivetrainReported = useRef(false)
 
-        return () => {
-            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
-        }
+    useHoldPhysicsPause()
+
+    // The Add Assembly button keeps DOM focus after spawning, so Enter would reopen the Library.
+    useEffect(() => {
+        if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
     }, [])
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             targetAssembly.alliance = alliance
             targetAssembly.station = station
-            ScoreTracker.addPerRobotScore(targetAssembly, 0)
+            World.scoreTracker.addPerRobotScore(targetAssembly, 0)
+
+            const brain = targetAssembly.brain
+            if (brain?.isSynthesis() && !drivetrainReported.current) {
+                drivetrainReported.current = true
+                World.analyticsSystem?.event("Drivetrain Configured", {
+                    driveType: brain.driveType,
+                    robotCentric: brain.mecanumRobotCentric,
+                    source: "Assembly Setup",
+                })
+            }
 
             const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
@@ -78,6 +99,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                 cancelText: "Remove",
                 blocking: true,
                 blockingMessage: "Finish Assembly Setup first!",
+                exclusiveGroup: "assembly-init",
             },
             {
                 onBeforeAccept: () => {
@@ -145,16 +167,23 @@ const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => 
                     parent={targetAssembly}
                     onAccept={() => {
                         closeFinish()
-                        closePanel(panel!.id, CloseType.Accept)
+                        closePanel(panel!.id, CloseType.ACCEPT)
                     }}
                     onCancel={closeDelete}
                 />
             )}
             {brainIndex !== undefined && (
-                <InputSchemeSelection brainIndex={brainIndex} onSelect={() => {}} panelId={panel?.id} />
+                // Tour anchor for the "Set Up Your Assembly" step. Scoped to just the input-scheme
+                // list (the card's subject) rather than the panel root, whose bounding box is
+                // widened by the transform gizmo control and would push the callout off-screen.
+                <Box ref={assemblySetupRef}>
+                    <InputSchemeSelection brainIndex={brainIndex} onSelect={() => {}} panelId={panel?.id} />
+                </Box>
             )}
         </Stack>
     )
 }
+
+tourTarget(InitialConfigPanel, "InitialConfigPanel")
 
 export default InitialConfigPanel

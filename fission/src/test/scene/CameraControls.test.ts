@@ -191,24 +191,24 @@ describe("CustomTargetControls", () => {
         test("face mode is only available when focused on a robot, not a field", () => {
             const field = createMockFocusProvider(MiraType.FIELD)
             controls.focusProvider = field
-            controls.mode = CameraMode.Face
-            expect(controls.mode).toBe(CameraMode.Follow)
+            controls.mode = CameraMode.FACE
+            expect(controls.mode).toBe(CameraMode.FOLLOW)
 
             const robot = createMockFocusProvider(MiraType.ROBOT)
             controls.focusProvider = robot
-            controls.mode = CameraMode.Face
-            expect(controls.mode).toBe(CameraMode.Face)
+            controls.mode = CameraMode.FACE
+            expect(controls.mode).toBe(CameraMode.FACE)
         })
 
         test("falls back to Follow mode if the focus changes to a field while in Face mode", () => {
             const robot = createMockFocusProvider(MiraType.ROBOT)
             controls.focusProvider = robot
-            controls.mode = CameraMode.Face
+            controls.mode = CameraMode.FACE
 
             const field = createMockFocusProvider(MiraType.FIELD)
             controls.focusProvider = field
 
-            expect(controls.mode).toBe(CameraMode.Follow)
+            expect(controls.mode).toBe(CameraMode.FOLLOW)
         })
     })
 
@@ -218,7 +218,7 @@ describe("CustomTargetControls", () => {
             controls.focusProvider = robot
 
             const positionBeforeFaceMode = camera.position.clone()
-            controls.mode = CameraMode.Face
+            controls.mode = CameraMode.FACE
             controls.update(1 / 60)
 
             // Entering Face mode should not itself relocate the camera.
@@ -233,7 +233,7 @@ describe("CustomTargetControls", () => {
         test("zooming moves the camera along the view axis toward the robot, clamped to zoom bounds", () => {
             const robot = createMockFocusProvider(MiraType.ROBOT, new THREE.Vector3(0, 0, 0))
             controls.focusProvider = robot
-            controls.mode = CameraMode.Face
+            controls.mode = CameraMode.FACE
             controls.update(1 / 60)
 
             const initialDistance = camera.position.distanceTo(new THREE.Vector3(0, 0, 0))
@@ -254,12 +254,12 @@ describe("CustomTargetControls", () => {
         test("drops focus and returns to Follow mode, even while Locked onto a robot", () => {
             const robot = createMockFocusProvider(MiraType.ROBOT, new THREE.Vector3(1, 2, 3))
             controls.focusProvider = robot
-            controls.mode = CameraMode.Locked
+            controls.mode = CameraMode.LOCKED
 
             controls.interactionStart({ interactionType: SECONDARY_MOUSE_INTERACTION, position: [0, 0] })
             controls.interactionMove({ interactionType: SECONDARY_MOUSE_INTERACTION, movement: [0.1, 0.1] })
 
-            expect(controls.mode).toBe(CameraMode.Follow)
+            expect(controls.mode).toBe(CameraMode.FOLLOW)
             expect(controls.focusProvider).toBeUndefined()
 
             controls.interactionEnd({ interactionType: SECONDARY_MOUSE_INTERACTION, position: [10, 10] })
