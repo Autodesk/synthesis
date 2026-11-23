@@ -27,6 +27,9 @@ from src.Logging import getLogger
 
 logger = getLogger()
 
+# Seconds to wait on APS requests before giving up, so a stalled response can't hang the add-in
+REQUEST_TIMEOUT_SECONDS = 30
+
 auth_path = os.path.abspath(os.path.join(ADDIN_PATH, "..", ".aps_auth"))
 
 APS_AUTH = None
@@ -114,7 +117,7 @@ def convertAuthToken(code: str, state: str | None) -> None:
     req.method = "POST"
     req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
     try:
-        res = urllib.request.urlopen(req, timeout=30)
+        res = urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS)
     except urllib.request.HTTPError as e:
         raise Exception(f"APS token exchange failed: {e.code} - {e.reason}") from e
     data = _res_json(res)
@@ -155,7 +158,7 @@ def refreshAuthToken() -> None:
     req.method = "POST"
     req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
     try:
-        res = urllib.request.urlopen(req, timeout=30)
+        res = urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS)
         data = _res_json(res)
         curr_time = time.time()
         APS_AUTH = APSAuth(
@@ -182,7 +185,7 @@ def loadUserInfo() -> Result[APSUserInfo]:
     req = urllib.request.Request(f"{USERINFO_BASE_URL}/userinfo")
     req.add_header(key="Authorization", val=f"Bearer {APS_AUTH.access_token}")
     try:
-        res = urllib.request.urlopen(req, timeout=30)
+        res = urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS)
         data = _res_json(res)
         APS_USER_INFO = APSUserInfo(
             name=data["name"],
@@ -229,7 +232,10 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
     }
 
     res = requests.post(
-        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders", headers=headers, json=data, timeout=30
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders",
+        headers=headers,
+        json=data,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not res.ok:
         return Err(f"Failed to create new folder: {res.text}", ErrorSeverity.Fatal)
@@ -352,7 +358,9 @@ def get_hub_id(auth: str, hub_name: str) -> str | None:
     """
 
     headers = {"Authorization": f"Bearer {auth}"}
-    hub_list_res = requests.get(f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs", headers=headers, timeout=30)
+    hub_list_res = requests.get(
+        f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs", headers=headers, timeout=REQUEST_TIMEOUT_SECONDS
+    )
     if not hub_list_res.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {hub_list_res.text}")
         return None
@@ -383,7 +391,9 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
 
     headers = {"Authorization": f"Bearer {auth}"}
     project_list_res = requests.get(
-        f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs/{hub_id}/projects", headers=headers, timeout=30
+        f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs/{hub_id}/projects",
+        headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not project_list_res.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {project_list_res.text}")
