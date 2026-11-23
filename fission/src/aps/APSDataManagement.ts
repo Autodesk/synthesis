@@ -2,6 +2,7 @@ import { Mutex } from "async-mutex"
 import EventSystem from "@/systems/EventSystem.ts"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import APS from "./APS"
+import { DATA_MANAGEMENT_BASE_URL } from "@/aps/APSConfig"
 
 export const FOLDER_DATA_TYPE = "folders"
 export const ITEM_DATA_TYPE = "items"
@@ -125,7 +126,7 @@ export async function getHubs(): Promise<Hub[] | undefined> {
 
     try {
         APS.incApsCalls("project-v1-hubs")
-        return await fetch("https://developer.api.autodesk.com/project/v1/hubs", {
+        return await fetch(`${DATA_MANAGEMENT_BASE_URL}/project/v1/hubs`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${auth.access_token}`,
@@ -163,7 +164,7 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
 
     try {
         APS.incApsCalls("project-v1-hubs-x-projects")
-        return await fetch(`https://developer.api.autodesk.com/project/v1/hubs/${hub.id}/projects/`, {
+        return await fetch(`${DATA_MANAGEMENT_BASE_URL}/project/v1/hubs/${hub.id}/projects/`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${auth.access_token}`,
@@ -200,15 +201,12 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
 
     try {
         APS.incApsCalls("data-v1-projects-x-folders-x-contents")
-        return await fetch(
-            `https://developer.api.autodesk.com/data/v1/projects/${project.id}/folders/${folder.id}/contents`,
-            {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${auth.access_token}`,
-                },
-            }
-        )
+        return await fetch(`${DATA_MANAGEMENT_BASE_URL}/data/v1/projects/${project.id}/folders/${folder.id}/contents`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${auth.access_token}`,
+            },
+        })
             .then(x => x.json())
             .then(x => {
                 console.log("Raw Folder Data")
@@ -244,7 +242,7 @@ function filterToQuery(filters: Filter[]): string {
 export async function searchFolder(project: Project, folder: Folder, filters?: Filter[]): Promise<Data[] | undefined> {
     const auth = await APS.getAuth()
     if (!auth) return undefined
-    let endpoint = `https://developer.api.autodesk.com/data/v1/projects/${project.id}/folders/${folder.id}/search`
+    let endpoint = `${DATA_MANAGEMENT_BASE_URL}/data/v1/projects/${project.id}/folders/${folder.id}/search`
     if (filters && filters.length > 0) {
         endpoint += `?${filterToQuery(filters)}`
     }

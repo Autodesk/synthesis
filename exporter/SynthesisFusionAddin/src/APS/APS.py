@@ -1,9 +1,13 @@
+import base64
+import hashlib
 import http.client
 import json
 import os
 import pathlib
 import pickle
+import secrets
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
@@ -12,16 +16,31 @@ from typing import Any
 import requests
 
 from src import ADDIN_PATH, gm
+from src.APS.APSConfig import (
+    AUTHENTICATION_BASE_URL,
+    CALLBACK_URL,
+    CLIENT_ID,
+    DATA_MANAGEMENT_BASE_URL,
+    USERINFO_BASE_URL,
+)
 from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
 from src.Logging import getLogger
 
 logger = getLogger()
 
-CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
+# Seconds to wait on APS requests before giving up, so a stalled response can't hang the add-in.
+# Every outbound call in this file should pass a timeout.
+REQUEST_TIMEOUT_SECONDS = 30
+# Uploads of the exported file can be large, so they get a longer window than the metadata calls
+UPLOAD_TIMEOUT_SECONDS = 300
+
 auth_path = os.path.abspath(os.path.join(ADDIN_PATH, "..", ".aps_auth"))
 
 APS_AUTH = None
 APS_USER_INFO = None
+
+# (verifier, state) for the login in progress; only ever held in memory
+_PENDING_LOGIN: tuple[str, str] | None = None
 
 
 @dataclass
@@ -37,17 +56,8 @@ class APSAuth:
 class APSUserInfo:
     name: str
     given_name: str
-    family_name: str
-    preferred_username: str
-    email: str
-    email_verified: bool
-    profile: str
-    locale: str
-    country_code: str
-    about_me: str
-    language: str
-    company: str
     picture: str
+    email: str
 
 
 def getAPSAuth() -> APSAuth | None:
@@ -58,11 +68,13 @@ def _res_json(res: http.client.HTTPResponse) -> dict[str, Any]:
     return dict(json.loads(res.read().decode(str(res.info().get_param("charset")) or "utf-8")))
 
 
-def getCodeChallenge() -> str | None:
-    endpoint = "https://synthesis.autodesk.com/api/aps/challenge/"
-    res: http.client.HTTPResponse = urllib.request.urlopen(endpoint)
-    data = _res_json(res)
-    return str(data["challenge"])
+def startLogin() -> tuple[str, str]:
+    global _PENDING_LOGIN
+    verifier = secrets.token_urlsafe(32)
+    state = secrets.token_urlsafe(16)
+    _PENDING_LOGIN = (verifier, state)
+    challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode("ascii")).digest()).rstrip(b"=").decode("ascii")
+    return challenge, state
 
 
 def getAuth() -> APSAuth | None:
@@ -88,17 +100,39 @@ def getAuth() -> APSAuth | None:
     return APS_AUTH
 
 
-def convertAuthToken(code: str) -> None:
-    global APS_AUTH
-    authUrl = f'https://synthesis.autodesk.com/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("https://synthesis.autodesk.com/api/aps/exporter/")}'
-    res = urllib.request.urlopen(authUrl)
-    data = _res_json(res)["response"]
+def convertAuthToken(code: str, state: str | None) -> None:
+    global APS_AUTH, _PENDING_LOGIN
+    pending = _PENDING_LOGIN
+    if pending is None or state is None or not secrets.compare_digest(pending[1], state):
+        raise Exception("APS login state mismatch.")
+    # Clear before redeeming so each verifier is only used once
+    _PENDING_LOGIN = None
+    verifier = pending[0]
+    body = urllib.parse.urlencode(
+        {
+            "client_id": CLIENT_ID,
+            "grant_type": "authorization_code",
+            "code": code,
+            "code_verifier": verifier,
+            "redirect_uri": CALLBACK_URL,
+        }
+    ).encode("utf-8")
+    req = urllib.request.Request(f"{AUTHENTICATION_BASE_URL}/authentication/v2/token", data=body)
+    req.method = "POST"
+    req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
+    try:
+        res = urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS)
+    except urllib.request.HTTPError as e:
+        raise Exception(f"APS token exchange failed: {e.code} - {e.reason}") from e
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        raise Exception(f"APS token exchange failed: {e}") from e
+    data = _res_json(res)
     curr_time = time.time()
     APS_AUTH = APSAuth(
         access_token=data["access_token"],
         refresh_token=data["refresh_token"],
         expires_in=data["expires_in"],
-        expires_at=int(curr_time + data["expires_in"] * 1000),
+        expires_at=int((curr_time + data["expires_in"]) * 1000),
         token_type=data["token_type"],
     )
     with open(auth_path, "wb") as f:
@@ -124,21 +158,20 @@ def refreshAuthToken() -> None:
             "client_id": CLIENT_ID,
             "grant_type": "refresh_token",
             "refresh_token": APS_AUTH.refresh_token,
-            "scope": "data:create data:write data:search data:read",
         }
     ).encode("utf-8")
-    req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
+    req = urllib.request.Request(f"{AUTHENTICATION_BASE_URL}/authentication/v2/token", data=body)
     req.method = "POST"
     req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
     try:
-        res = urllib.request.urlopen(req)
+        res = urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS)
         data = _res_json(res)
         curr_time = time.time()
         APS_AUTH = APSAuth(
             access_token=data["access_token"],
             refresh_token=data["refresh_token"],
             expires_in=data["expires_in"],
-            expires_at=int(curr_time + data["expires_in"] * 1000),
+            expires_at=int((curr_time + data["expires_in"]) * 1000),
             token_type=data["token_type"],
         )
         with open(auth_path, "wb") as f:
@@ -148,6 +181,10 @@ def refreshAuthToken() -> None:
         removeAuth()
         logger.error(f"Refresh Error:\n{e.code} - {e.reason}")
         gm.ui.messageBox("Please sign in again.")
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        # A network failure says nothing about the credentials, so keep them and let the caller retry later
+        logger.error(f"Refresh Error (network):\n{e}")
+        gm.ui.messageBox("Could not reach Autodesk to refresh your sign in. Check your connection and try again.")
 
 
 def loadUserInfo() -> Result[APSUserInfo]:
@@ -155,30 +192,23 @@ def loadUserInfo() -> Result[APSUserInfo]:
     if not APS_AUTH:
         return Err("Aps Authentication is undefined", ErrorSeverity.Fatal)
     global APS_USER_INFO
-    req = urllib.request.Request("https://api.userprofile.autodesk.com/userinfo")
-    req.add_header(key="Authorization", val=APS_AUTH.access_token)
+    req = urllib.request.Request(f"{USERINFO_BASE_URL}/userinfo")
+    req.add_header(key="Authorization", val=f"Bearer {APS_AUTH.access_token}")
     try:
-        res = urllib.request.urlopen(req)
+        res = urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS)
         data = _res_json(res)
         APS_USER_INFO = APSUserInfo(
             name=data["name"],
             given_name=data["given_name"],
-            family_name=data["family_name"],
-            preferred_username=data["preferred_username"],
-            email=data["email"],
-            email_verified=data["email_verified"],
-            profile=data["profile"],
-            locale=data["locale"],
-            country_code=data["country_code"],
-            about_me=data["about_me"],
-            language=data["language"],
-            company=data["company"],
             picture=data["picture"],
+            email=data["email"],
         )
         return Ok(APS_USER_INFO)
     except urllib.request.HTTPError as e:
         removeAuth()
         return Err(f"User Info Error:\n{e.code} - {e.reason}\nPlease sign in again", ErrorSeverity.Fatal)
+    except (urllib.error.URLError, TimeoutError, OSError) as e:
+        return Err(f"User Info Error:\nCould not reach Autodesk: {e}", ErrorSeverity.Fatal)
 
 
 def getUserInfo() -> Result[APSUserInfo]:
@@ -214,7 +244,10 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
     }
 
     res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders", headers=headers, json=data
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders",
+        headers=headers,
+        json=data,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not res.ok:
         return Err(f"Failed to create new folder: {res.text}", ErrorSeverity.Fatal)
@@ -337,7 +370,9 @@ def get_hub_id(auth: str, hub_name: str) -> str | None:
     """
 
     headers = {"Authorization": f"Bearer {auth}"}
-    hub_list_res = requests.get("https://developer.api.autodesk.com/project/v1/hubs", headers=headers)
+    hub_list_res = requests.get(
+        f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs", headers=headers, timeout=REQUEST_TIMEOUT_SECONDS
+    )
     if not hub_list_res.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {hub_list_res.text}")
         return None
@@ -368,7 +403,9 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
 
     headers = {"Authorization": f"Bearer {auth}"}
     project_list_res = requests.get(
-        f"https://developer.api.autodesk.com/project/v1/hubs/{hub_id}/projects", headers=headers
+        f"{DATA_MANAGEMENT_BASE_URL}/project/v1/hubs/{hub_id}/projects",
+        headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not project_list_res.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {project_list_res.text}")
@@ -384,8 +421,9 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
 def get_item_id(auth: str, project_id: str, parent_folder_id: str, folder_name: str, item_type: str) -> str | None:
     headers = {"Authorization": f"Bearer {auth}"}
     res = requests.get(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{parent_folder_id}/contents",
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders/{parent_folder_id}/contents",
         headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not res.ok:
         gm.ui.messageBox(f"Failed to get item: {res.text}")
@@ -456,7 +494,10 @@ def update_file_version(
         "data": {"type": "versions", "attributes": attributes, "relationships": relationships},
     }
     update_res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/versions", headers=headers, json=data
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/versions",
+        headers=headers,
+        json=data,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not update_res.ok:
         return Err(f"Updating file to new version failed\nUPLOAD ERROR:\n{update_res.text}", ErrorSeverity.Fatal)
@@ -493,9 +534,10 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> R
     params = {"filter[attributes.name]": file_name}
 
     file_res = requests.get(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{folder_id}/search",
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/folders/{folder_id}/search",
         headers=headers,
         params=params,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if file_res.status_code == 404:
         return Ok(("", "", ""))
@@ -545,7 +587,10 @@ def create_storage_location(auth: str, project_id: str, folder_id: str, file_nam
         "Content-Type": "application/vnd.api+json",
     }
     storage_location_res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/storage", json=data, headers=headers
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/storage",
+        json=data,
+        headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not storage_location_res.ok:
         return Err(
@@ -578,8 +623,9 @@ def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> Result[t
         "Authorization": f"Bearer {auth}",
     }
     signed_url_res = requests.get(
-        f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
+        f"{DATA_MANAGEMENT_BASE_URL}/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
         headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not signed_url_res.ok:
         return Err(f"Failed to get signed URL:\nUPLOAD ERROR: {signed_url_res.text}", ErrorSeverity.Fatal)
@@ -602,7 +648,7 @@ def upload_file(signed_url: str, file_contents: str) -> Result[str]:
     notes:
     - fails if the auth or the signed URL are invalid
     """
-    upload_response = requests.put(url=signed_url, data=file_contents)
+    upload_response = requests.put(url=signed_url, data=file_contents, timeout=UPLOAD_TIMEOUT_SECONDS)
     if not upload_response.ok:
         return Err(f"Failed to upload to signed url\nUPLOAD ERROR: {upload_response.text}", ErrorSeverity.Fatal)
     return Ok("")
@@ -629,9 +675,10 @@ def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str
     data = {"uploadKey": upload_key}
 
     completed_res = requests.post(
-        f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
+        f"{DATA_MANAGEMENT_BASE_URL}/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload",
         json=data,
         headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not completed_res.ok:
         return Err(
@@ -704,7 +751,10 @@ def create_first_file_version(
     }
 
     first_version_res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/items", json=data, headers=headers
+        f"{DATA_MANAGEMENT_BASE_URL}/data/v1/projects/{project_id}/items",
+        json=data,
+        headers=headers,
+        timeout=REQUEST_TIMEOUT_SECONDS,
     )
     if not first_version_res.ok:
         return Err(f"Failed to create first file version:\nUPLOAD ERROR: {first_version_res.text}", ErrorSeverity.Fatal)
