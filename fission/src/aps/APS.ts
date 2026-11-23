@@ -24,6 +24,26 @@ export interface APSAuth {
 }
 // biome-ignore-end lint/style/useNamingConvention: returned from api
 
+/**
+ * Explicitly extract only required fields for APS Auth.
+ */
+// biome-ignore lint/suspicious/noExplicitAny: raw API response
+function toStoredAuth(json: any): APSAuth {
+    return {
+        access_token: json.access_token,
+        refresh_token: json.refresh_token,
+        expires_in: json.expires_in,
+        expires_at: json.expires_in * 1000 + Date.now(),
+        token_type: json.token_type,
+    }
+}
+
+/** APS errors use different fields depending on the endpoint. */
+// biome-ignore lint/suspicious/noExplicitAny: raw API response
+function apsErrorMessage(json: any): string {
+    return `${json?.userMessage ?? json?.developerMessage ?? json?.error_description ?? json?.error ?? "Please try again."}`
+}
+
 export interface APSUserInfo {
     name: string
     picture: string
@@ -250,13 +270,12 @@ class APS {
                         client_id: CLIENT_ID,
                         grant_type: "refresh_token",
                         refresh_token: refreshToken,
-                        scope: APS_SCOPES,
                     }),
                 })
                 const json = await res.json()
                 if (!res.ok) {
                     if (shouldRelog) {
-                        globalAddToast("warning", "Must Re-signin.", `${json.userMessage}`)
+                        globalAddToast("warning", "Must Re-signin.", apsErrorMessage(json))
                         this._auth = undefined
                         await this.requestAuthCode()
                         return false
@@ -264,8 +283,7 @@ class APS {
                         return false
                     }
                 }
-                json.expires_at = json.expires_in * 1000 + Date.now()
-                this._auth = json as APSAuth
+                this._auth = toStoredAuth(json)
                 if (this._auth) {
                     await this.loadUserInfo(this._auth)
                     if (APS.userInfo) {
@@ -292,14 +310,13 @@ class APS {
         let retryLogin = false
 
         const pending = this._pendingLogin
-        // Each verifier is only good for one redemption
-        this._pendingLogin = undefined
         if (!pending || !state || state !== pending.state) {
             console.error("APS login state mismatch")
             World.analyticsSystem?.exception("APS Login Failure: State Mismatch")
             globalAddToast("error", "Error signing in.", "Please try again.")
             return
         }
+        this._pendingLogin = undefined
 
         try {
             APS.incApsCalls("authentication-v2-token")
@@ -319,12 +336,11 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.analyticsSystem?.exception("APS Login Failure")
-                globalAddToast("error", "Error signing in.", `${json.userMessage ?? json.error_description ?? ""}`)
+                globalAddToast("error", "Error signing in.", apsErrorMessage(json))
                 this._auth = undefined
                 return
             }
-            const authRes = json as APSAuth
-            authRes.expires_at = authRes.expires_in * 1000 + Date.now()
+            const authRes = toStoredAuth(json)
             this._auth = authRes
             console.log("Preloading user info")
             const auth = await this.getAuth()
@@ -366,7 +382,7 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.analyticsSystem?.exception("APS Failure: User Info")
-                globalAddToast("error", "Error fetching user data.", `${json.userMessage}`)
+                globalAddToast("error", "Error fetching user data.", apsErrorMessage(json))
                 this._auth = undefined
                 await this.requestAuthCode()
                 return

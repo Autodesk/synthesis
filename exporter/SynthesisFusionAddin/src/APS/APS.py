@@ -16,7 +16,6 @@ import requests
 
 from src import ADDIN_PATH, gm
 from src.APS.APSConfig import (
-    APS_SCOPES,
     AUTHENTICATION_BASE_URL,
     CALLBACK_URL,
     CLIENT_ID,
@@ -97,10 +96,10 @@ def getAuth() -> APSAuth | None:
 def convertAuthToken(code: str, state: str | None) -> None:
     global APS_AUTH, _PENDING_LOGIN
     pending = _PENDING_LOGIN
-    # Clear before redeeming so each verifier is only used once
-    _PENDING_LOGIN = None
     if pending is None or state is None or not secrets.compare_digest(pending[1], state):
         raise Exception("APS login state mismatch.")
+    # Clear before redeeming so each verifier is only used once
+    _PENDING_LOGIN = None
     verifier = pending[0]
     body = urllib.parse.urlencode(
         {
@@ -150,7 +149,6 @@ def refreshAuthToken() -> None:
             "client_id": CLIENT_ID,
             "grant_type": "refresh_token",
             "refresh_token": APS_AUTH.refresh_token,
-            "scope": APS_SCOPES,
         }
     ).encode("utf-8")
     req = urllib.request.Request(f"{AUTHENTICATION_BASE_URL}/authentication/v2/token", data=body)

@@ -14,6 +14,7 @@ export function AppContainer({ children }: React.PropsWithChildren) {
                     right: 0,
                     top: 0,
                     bottom: 0,
+                    overflow: "auto",
                     backgroundColor: theme.palette.background.default,
                 }}
             >

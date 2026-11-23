@@ -31,7 +31,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                 params = {
                     "response_type": "code",
                     "client_id": CLIENT_ID,
-                    "redirect_uri": urllib.parse.quote_plus(CALLBACK_URL),
+                    "redirect_uri": CALLBACK_URL,
                     "scope": APS_SCOPES,
                     "nonce": time.time(),
                     "prompt": "login",
@@ -39,7 +39,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                     "code_challenge_method": "S256",
                     "state": state,
                 }
-                query = "&".join(map(lambda pair: f"{pair[0]}={pair[1]}", params.items()))
+                query = urllib.parse.urlencode(params)
                 url = f"{AUTHENTICATION_BASE_URL}/authentication/v2/authorize?" + query
                 palette = gm.ui.palettes.add("authPalette", "APS Authentication", url, True, True, True, 400, 400)
                 palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
